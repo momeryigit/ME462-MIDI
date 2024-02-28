@@ -1,12 +1,13 @@
-__METU ME ME462 MIDI ROBOT PROJECT MEETING MINUTES
-MEETING NO: 1
-DATE: 28.02.2024
-TIME: 16:00
+__METU ME ME462 MIDI ROBOT PROJECT MEETING MINUTES   
+MEETING NO: 1   
+DATE: 28.02.2024   
+TIME: 16:00   
 TOPIC: FIRST MEETING__
  
-__ATTENDEES: Buğra Hoca, İsmail Hoca, Ömer, Omar, Seçkin, Erdem__
-1. 
-1. 1. Gİthub oluşturulacak
+__ATTENDEES: Buğra Hoca, İsmail Hoca, Ömer, Omar, Seçkin, Erdem__   
+__Writer: Erdem__
+
+1. Gİthub oluşturulacak
 1. Makita matkap şarjıyla çalışacak 1-2 üç tanesiyle belki
 1. Şarj arayüzü olacak, makita şarj aletinden gidecek belki kabloyla birşleşecek şarjı çıkarmadan şarj edecek
 1. Pil ile robot arasında bağlantı yapmak için mekanik parça lazım bu halihazırda tasarlanmış, onun tasarımını iste
