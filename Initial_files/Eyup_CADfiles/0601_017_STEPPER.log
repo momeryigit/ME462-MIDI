@@ -1,0 +1,1037 @@
+﻿STEP to UG
+! INFO-     NX STEP AP214 - V2206.8101
+! INFO-      
+! INFO-     Start of Translation: 4-DEC-2023  7:36:06 PM
+! INFO-      
+! STATUS-   Converting Part: C:\Users\furka\Desktop\car assembly v2\0601_017_STEPPER.STEP
+! SUMMARY-   
+! SUMMARY-    STEP Header Information
+! SUMMARY-   
+! SUMMARY-  Description      STEP AP214
+! SUMMARY-  Imp_Level        1
+! SUMMARY-  File_Name        0601_017_STEPPER.STEP
+! SUMMARY-  Date             2023-12-04T11:22:54
+! SUMMARY-  Author           Unknown
+! SUMMARY-  Organization     Unknown
+! SUMMARY-  Pre_Version      SwSTEP 2.0
+! SUMMARY-  Orig_System      SolidWorks 2022
+! SUMMARY-  Authorization    Unknown
+! SUMMARY-  Schema_ID        automotive_design
+! SUMMARY-   
+! SUMMARY-    Summary of STEP Entities
+! SUMMARY-   
+! SUMMARY-  Entity Type                                                   Count
+! SUMMARY-  -----------                                                   ------
+! SUMMARY-  advanced_face ..............................................:  26932
+! SUMMARY-  application_context ........................................:    188
+! SUMMARY-  axis2_placement_3d .........................................:  38318
+! SUMMARY-  b_spline_curve_with_knots ..................................:   8632
+! SUMMARY-  b_spline_curve_with_knots_and_rational_b_spline_curve ......:   2558
+! SUMMARY-  b_spline_surface_with_knots ................................:   3049
+! SUMMARY-  b_spline_surface_with_knots_and_rational_b_spline_surface ..:    876
+! SUMMARY-  brep_with_voids ............................................:      1
+! SUMMARY-  cartesian_point ............................................: 307132
+! SUMMARY-  circle .....................................................:  15050
+! SUMMARY-  closed_shell ...............................................:    328
+! SUMMARY-  conical_surface ............................................:    489
+! SUMMARY-  context_dependent_shape_representation .....................:    247
+! SUMMARY-  cylindrical_surface ........................................:   5978
+! SUMMARY-  direction ..................................................: 121859
+! SUMMARY-  edge_curve .................................................:  71463
+! SUMMARY-  edge_loop ..................................................:  29396
+! SUMMARY-  face_bound .................................................:   2464
+! SUMMARY-  face_outer_bound ...........................................:  26932
+! SUMMARY-  geometric_representation_context_and_global_uncertainty_a ..:   7034
+! SUMMARY-  item_defined_transformation ................................:    247
+! SUMMARY-  length_unit_and_si_unit ....................................:   7034
+! SUMMARY-  line .......................................................:  45223
+! SUMMARY-  manifold_solid_brep ........................................:    297
+! SUMMARY-  next_assembly_usage_occurrence .............................:    247
+! SUMMARY-  open_shell .................................................:    114
+! SUMMARY-  oriented_closed_shell ......................................:      1
+! SUMMARY-  oriented_edge ..............................................: 141458
+! SUMMARY-  plane ......................................................:  15060
+! SUMMARY-  plane_angle_unit_and_si_unit ...............................:   7034
+! SUMMARY-  product ....................................................:     94
+! SUMMARY-  product_context ............................................:     94
+! SUMMARY-  product_definition .........................................:     94
+! SUMMARY-  product_definition_context .................................:     94
+! SUMMARY-  product_definition_formation_with_specified_source .........:     94
+! SUMMARY-  product_definition_shape ...................................:    341
+! SUMMARY-  product_related_product_category ...........................:     94
+! SUMMARY-  representation_relationship_with_transformation_and_shape ..:    247
+! SUMMARY-  shape_representation .......................................:     94
+! SUMMARY-  shell_based_surface_model ..................................:      3
+! SUMMARY-  si_unit_and_solid_angle_unit ...............................:   7034
+! SUMMARY-  spherical_surface ..........................................:    674
+! SUMMARY-  toroidal_surface ...........................................:    806
+! SUMMARY-  uncertainty_measure_with_unit ..............................:   7034
+! SUMMARY-  vector .....................................................:  45223
+! SUMMARY-  vertex_point ...............................................:  46460
+! SUMMARY-                                                               -------
+! SUMMARY-  Total                                                         994121
+! STATUS-    
+! STATUS-   Converting to Output Form (Phase 2 of 3): 4-DEC-2023 7:36:11 PM
+! STATUS-    
+! INFO-     CV0305 The entities referenced by a context_dependant_shape_rep are
+! INFO-       not coded as to STEP Part 43 requirements.  The references to the
+! INFO-       component and assembly pieces is out of order.  We will attempt
+! INFO-       to correct this with the given data.  This problem should be
+! INFO-       reported to the translator vendor whose product generated this
+! INFO-       STEP file.  If we are unable to rectify this problem the
+! INFO-       components may be positioned incorrectly.
+! INFO-      
+! STATUS-    
+! STATUS-   Generating UG geometry and placing them in parts
+! STATUS-    
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:10 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Intel D435i
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:13 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_067
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_014_02
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\3s2p linear battpavk
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     6
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              6
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_055
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M3 x 8 - Z - 8N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_034
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\battery indicator
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     2
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              2
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sheet metal screws_din_Tapping screw DIN 7049-ST2.2x6.5-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\cross fh tapping 7976_din_Tapping screw DIN 7982-ST2.2x6.5-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M3 x 20 - Z - 20N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\DC-DC BUCK CONVERTER
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\XT60 Female Connector_00
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     3
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              3
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\CUI-PJ-011A_PJ-011A
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     3
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              3
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:14 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_072
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Orange Pi 3 illustration (not to dimension)
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:    69
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             69
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\XT30_MALE
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     3
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              3
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\hex nut style 1 gradeab_iso_ISO - 4032 - M3 - W - N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_007
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\socket head cap screw 4762_din_EN ISO 4762 M4 x 10 - 10N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M4 x 16 - Z - 16N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M3 x 25 - Z - 25N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_009
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:15 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Matek v1.2
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:    66
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             66
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\radial ball bearing_68_skf_SKF - 624 - Full,DE,AC,Full_68
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_010
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_004
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_037
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_030
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\radial ball bearing_68_skf_SKF - 61800 - 14,DE,AC,14_68
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_068
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\led sticker 8led
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\hex nut style 1 gradeab_iso_ISO - 4032 - M4 - W - N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sheet metal screws_din_Tapping screw DIN 7049-ST2.9x6.5-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:16 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Power Distrubution card 8x2
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sheet metal screws_din_Tapping screw DIN 7049-ST2.2x16-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sheet metal screws_din_Tapping screw DIN 7049-ST2.9x9.5-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_012
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\fs-ia10b
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\capteur de tension_Défaut
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_003
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_070
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M4 x 30 - Z - 30N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_036
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:17 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Button_ 12_Switch
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:18 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_056
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:18 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\17HS8401
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:    18
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             18
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:19 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\WemosD1_step.prt
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:    33
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             33
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:21 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_061
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:21 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_066
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\radial ball bearing_68_skf_SKF - 624 - 8,DE,AC,8_68
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_032
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_047
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M4 x 25 - Z - 25N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\radial ball bearing_68_skf_SKF - 61804 - 18,DE,AC,18_68
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sheet metal screws_din_Tapping screw DIN 7049-ST2.2x9.5-C-H-N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_069
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:22 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_033
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\GDSTIME - 5v Blower Fan_step.prt
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     3
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              3
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_008
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_071
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\circlip for bores normal_din_Circlip DIN 472 - 16 x 1
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\radial ball bearing_68_skf_SKF - 634 - Full,DE,AC,Full_68
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:23 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\RelayBoard
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:   107
+! SUMMARY-                                 -----
+! SUMMARY-  Total                            107
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:24 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_064
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:24 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\YDlidar T-mini pro
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:24 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Push Button Switch E-Stop mini D16_По умолчанию
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     7
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              7
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:24 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Push Switch Button (12mm) G
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\hex nut style 1 gradeab_iso_ISO - 4032 - M4 - D - N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\sigma20x20_CMK3
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\hex nut style 1 gradeab_iso_ISO - 4032 - M3 - D - N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\plain washer large grade ac_iso_Washer ISO 7093 - 4
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\XT60 Male Connector_00
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     3
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              3
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_002
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\9960 sensor
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_038
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:25 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\L298P_ILLUSTRATION
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:    48
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             48
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:26 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_022
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_005
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\DC-DC BUCK CONVERTER MS
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Fan 30x30x10
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     2
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              2
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\pan head cross recess screw_iso_ISO 7045 - M3 x 12 - Z - 12N
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\Fuse Holder Blade
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Solid .......................:     1
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              1
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_054
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    14
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             14
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_006
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    10
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             10
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_013
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:     9
+! SUMMARY-                                 -----
+! SUMMARY-  Total                              9
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_027
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    13
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             13
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_029
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    15
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             15
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_016
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    31
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             31
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_024_OPEN
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    26
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             26
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_019
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    37
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             37
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_063
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    35
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             35
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:27 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_015
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    31
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             31
+! STATUS-   Creating the UG part (Phase 3 of 3): 4-DEC-2023  7:37:28 PM
+! INFO-     Filing Part ..: C:\Users\furka\Desktop\car assembly v2\0601_017_STEPPER_step.prt
+! SUMMARY-   
+! SUMMARY-  Summary of Unigraphics Part Entities
+! SUMMARY-   
+! SUMMARY-  Entities Processed             Count
+! SUMMARY-  ------------------             -----
+! SUMMARY-  Component ...................:    26
+! SUMMARY-                                 -----
+! SUMMARY-  Total                             26
+! INFO-      
+! INFO-     Total number of solids input for this translation       :       298
+! INFO-      
+! INFO-     Number of solids created without body validation faults :       298
+! INFO-      
+! INFO-     Number of solids created with body validation fault(s)  :         0
+! INFO-      
+! INFO-     Number of solids ending up as sheet bodies              :         0
+! INFO-      
+! INFO-     End of Translation: 4-DEC-2023  7:37:28 PM
+! INFO-      
