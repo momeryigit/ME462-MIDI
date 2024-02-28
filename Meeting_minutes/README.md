@@ -39,5 +39,5 @@ __DATE: 06.03.2024
 TIME: 16:00   
 TOPIC: ?__
  
-__ATTENDEES: __   
-__Writer: __
+__ATTENDEES:__   
+__Writer:__
