@@ -1,5 +1,10 @@
 # PROJECT SPECIFICATION DOCUMENT OF MIDI ROBOT PROJECT
 
+
+<p align="center">
+<img src="https://github.com/momeryigit/ME462-MIDI/blob/7dae15a87a1ac55c6e7e3ea2433b3f86bfee68b8/Project_Specification_Docs/cloudy.png" width=35% height=35%>
+</p>
+
 ## PROBLEM DEFINITION
 
 Cloudy Mini - AGV is a fully open-source and autonomous robotics learning platform based on ROS 2 framework, allowing users to fully customize and modify the platform for their own educational purposes.   
