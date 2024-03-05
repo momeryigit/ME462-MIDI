@@ -18,6 +18,7 @@ Aim of this project, which is based on Cloudy Mini MKIII, is to improve the prec
 ### Example Use Cases
 Some different use cases for the robot could be:
 1. If load carrying capacity can be high enough, like around 100 kg, this robot can be used in factories with inventory management purposes. This is a simpler use case in my opinion, because the factory would be a controlled environment and the ground will be near perfectly flat, so there won't be much problem due to rough terrain. The main requirement for this use case would be high load carrying capacity and fully autonomous driving and being trackable from a main server. __(ERDEM)__
+2. If integrated with a camera as well as a lidar scanner, the robot could be used as a surveillance robot where the robot continously moves through its operating area scanning and mapping the enviorement. An algorithm could be implemented to detect changes in the previous 3d mapping such as open doors or traces left behind by a possible intruder. The camera could also be used to detect humans. If a change or human is detected the robot could inform the responsible person through the cloud. __(SARP)__
 
 
 ## PROJECT REQUIREMENTS
