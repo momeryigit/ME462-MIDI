@@ -34,10 +34,27 @@ __Writer: Erdem__
 1. NEMA 17 stepper motors
 
 
-## MEETING NO: 2  
+## MEETING NO: 2 with Bugra Hoca
 __DATE: 06.03.2024   
 TIME: 16:00   
 TOPIC: ?__
  
-__ATTENDEES:__   
-__Writer:__
+__ATTENDEES: Buğra Hoca, İsmail Hoca, Ömer, Omar, Seçkin, Erdem, Sarp__   
+__Writer: Sarp__
+
+1. Slam with color camera, slam with depth sensor (high level, be able to provide these data)
+2. This is not a robotics project, aim is to provide options, data, documentation and ease to the user.
+3. Find a guinue pig.
+4. Implement ROS, provide documentation about implemention of ROS.
+5. Rwiz is considered High Level, Try to apply all low level implementations, such that end user can apply them in high level apllications.
+6. Aruco markers
+7. Provide different ways of controlling motors.
+8. See if you can integrate phone sensonrs with ROS. Hoca will love this.
+9. For use cases, consider co-operation between other devices. Use cases are for us to implement its low level requirements and make the robot much more flexible.
+10. Bumpers (Barebones)
+11. Should not fall down from stairs (Ultrasonic sensors looking below.)
+12. Consider current sensors.
+13. Remind Bugra Hoca about ESP32, cnc shield, and stepper drivers
+14. Make things move around as soon as possible.
+15. Stepper disabling when idle, while making sure not to roll down a hill
+
