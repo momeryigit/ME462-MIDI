@@ -58,3 +58,17 @@ __Writer: Sarp__
 14. Make things move around as soon as possible.
 15. Stepper disabling when idle, while making sure not to roll down a hill
 
+
+## MEETING NO: 4   
+__DATE: 11.03.2024   
+TIME: 18:30   
+TOPIC:?__
+ 
+__ATTENDEES: Ömer, Seçkin, Erdem, Sarp__   
+__Writer: Erdem__
+
+1. Micro ros and ROS2 have been discussed.
+2. Makita charger theory have been discussed and made research.
+3. TPU prints have been examined.
+4. New 3d prints have printed.
+5. Seamless charging dock integration have been discussed.
