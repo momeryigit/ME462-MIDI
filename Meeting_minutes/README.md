@@ -67,8 +67,10 @@ TOPIC:?__
 __ATTENDEES: Ömer, Seçkin, Erdem, Sarp__   
 __Writer: Erdem__
 
-1. Micro ros and ROS2 have been discussed.
+1. Micro ros and ROS2 have been discussed and researched.
 2. Makita charger theory have been discussed and made research.
 3. TPU prints have been examined.
 4. New 3d prints have printed.
 5. Seamless charging dock integration have been discussed.
+6. Not existing parts have printed.
+7. 
