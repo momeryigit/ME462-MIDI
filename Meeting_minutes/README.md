@@ -73,4 +73,26 @@ __Writer: Erdem__
 4. New 3d prints have printed.
 5. Seamless charging dock integration have been discussed.
 6. Not existing parts have printed.
-7. 
+
+
+## MEETING NO: 5   
+__DATE: 13.03.2024   
+TIME: 16:15  
+TOPIC:?__
+ 
+__ATTENDEES: Ömer, Seçkin, Erdem, Sarp, Buğra hoca, Omar, İsmail Hoca__   
+__Writer: Erdem__
+
+1. Flex tekerler hocaya gösterildi.
+2. Sarp teker jantlarını romerde basmış, tekerler hazır halde sadece gövdeye monte edilecek.
+3. Gövdenin daha çok metal olması ve pleksiler içermesi konuşuldu ve hoca onayladı ama ortadaki gereksiz metal supportları kaldırabilirsiniz dedi.
+4. ESP8266 microros desteklemiyormuş.
+5. robot açılınca etraftaki kameralara bağlanmaya çalışabilir, eğer yoksa kendi sensörleriyle yola devam edebilir.
+6. Hoca bizden kamera infosunu kullanmamızı beklemiyor, high functionlaity vs. beklemiyor, sadece bağlanmamızı bağlanabildiğimizi göstermemizi bekliyor.
+7. micro ros için freeRTOS mu yoksa arduino mu yapmalıyız konuşuldu, hoca pure python olsun dedi.
+8. mikroişlemcide çalışacak olan şeyler: ledler, bumper sensörler, belki küçük bir ekran onun dışında büyük sensörler ana bilgisayarda rosta dönecek.
+9. Micro rosa girmeden esp32 esp8266 veya pi pico ile normal bildiğimiz kod yazıp port açıp rosla haberleşme yapmak da okey ve daha iyi de olabilir dedi hoca.
+10. Pythonla yazılacağı için c olmayacağı için readability daha iyi olacak.
+11. Self charging özellik olmasa da olabilir şart değil hatta şimdilik bunu erteledik sadece hot swappable batteries olarak yapılacak.
+12. Hot swappable battery konsepti araştırılacak ve orada neler yapılabilir bakılacak, parallel connection olması iyi mi kötü mü bir sorun olur mu araştırılacak haftaya.
+13. 
