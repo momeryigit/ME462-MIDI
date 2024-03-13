@@ -95,4 +95,5 @@ __Writer: Erdem__
 10. Pythonla yazılacağı için c olmayacağı için readability daha iyi olacak.
 11. Self charging özellik olmasa da olabilir şart değil hatta şimdilik bunu erteledik sadece hot swappable batteries olarak yapılacak.
 12. Hot swappable battery konsepti araştırılacak ve orada neler yapılabilir bakılacak, parallel connection olması iyi mi kötü mü bir sorun olur mu araştırılacak haftaya.
-13. 
+13. https://www.robolinkmarket.com/xl4016-300w-10a-dc-dc-voltaj-dusurucu-regulator-karti? elimizdeki 2 tane bundan var.
+14. 
