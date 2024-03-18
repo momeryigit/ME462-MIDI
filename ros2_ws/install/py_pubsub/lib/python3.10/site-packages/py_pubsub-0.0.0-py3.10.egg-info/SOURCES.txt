@@ -12,6 +12,7 @@ setup.py
 py_pubsub/__init__.py
 py_pubsub/publisher_member_function.py
 py_pubsub/subscriber_member_function.py
+py_pubsub/subscriber_member_function_twist.py
 py_pubsub/submodules/__init__.py
 py_pubsub/submodules/serialcom.py
 resource/py_pubsub

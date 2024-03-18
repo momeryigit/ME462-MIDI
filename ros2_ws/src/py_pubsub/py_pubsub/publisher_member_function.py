@@ -14,25 +14,32 @@
 
 import rclpy
 from rclpy.node import Node
-
 from std_msgs.msg import String
+import curses
 
 
 class MinimalPublisher(Node):
 
     def __init__(self):
         super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(String, 'topic', 10)
-        timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
+        self.publisher_ = self.create_publisher(String, 'wasd', 10)
+        self.get_key_publish()
 
-    def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello World: %d' % self.i
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.i += 1
+    def get_key_publish(self):
+        stdscr = curses.initscr()
+        curses.cbreak()
+        stdscr.keypad(True)
+
+        while True:
+            c = stdscr.getch()
+            msg = String()
+            msg.data = chr(c)
+            self.publisher_.publish(msg)
+            self.get_logger().info('Publishing: "%s"\n' % msg.data)
+            if chr(c) == 'q':
+                self.get_logger().info('Exiting...')
+                break
+
 
 
 def main(args=None):
