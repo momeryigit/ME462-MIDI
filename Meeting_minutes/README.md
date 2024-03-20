@@ -97,3 +97,57 @@ __Writer: Erdem__
 12. Hot swappable battery konsepti araştırılacak ve orada neler yapılabilir bakılacak, parallel connection olması iyi mi kötü mü bir sorun olur mu araştırılacak haftaya.
 13. https://www.robolinkmarket.com/xl4016-300w-10a-dc-dc-voltaj-dusurucu-regulator-karti? elimizdeki 2 tane bundan var.
 14. 
+
+## MEETING NO: 6   
+__DATE: 20.03.2024   
+TIME: 17:35  
+TOPIC:?__
+ 
+__ATTENDEES: Ömer, Seçkin, Erdem, Sarp, Buğra hoca, Omar, İsmail Hoca__   
+__Writer: Ömer__
+
+1. Stepper motor drivers are getting hot. May need heat sinks. 2 drivers are burnt.
+2. Dampers are good. Front and back axes should be balanced. Apparatus' length may change. We can extend the hinge.
+3. Have some stuff around that resemble carpets, obstacles.
+4. We'll need a makita charger.
+5. We may need to build a localization stuff to see our robot's position. This localization stuff can be built with aruco markers on top of our robot and camera. up. Camera can tell our robot's position. Another possibility is the opposite. That's why Raspberry Pi is desired. One camera looks up to the ceiling which is filled with aruco markers and the other camera looks front.
+6. Localization is extra.
+7. Our robot should have bumpers, ultrasonic sensors ( not a big must ), accelerometer. And there is raspberry pi.
+8. We have a laser scanner (SLAM side is opened).
+9. We should be able to place this laser scanner into our robot (a meaningful place) and let it publish to a topic.
+10. This laser scanner does not see glass.
+11. Bumpers should not be metal. Touching part should not be metal.
+12. There are some linux st keys for the scanner. This scanner is almost ros-ready.
+13. It can become a 3D laser scanner (HOW COOL IS THAT? xD).
+14. For hot swappable part: We may have 3rd battery. ALternatively, we need to come up with some capacitors, which is our buffer.
+15. We should have a swap button. When pressed, computers should minimize its processes(image processors, laser data, etc). These processes should be pausable. When we are swapping the batteries, we can measure the time it takes and perform the calculations.
+16. Pressing button idea can change. For example, it might be a switch.
+17. We can do it with regular batteries instead of using capacitors.
+18. We can put a tiny powerbank. We only want Pi to run forever.
+19. We can purchase a UPS(Uninterruptable Power Supply) for Raspberry Pi.
+20. Have the raspberry pie outside and let it get charged during the day(solar panels). Make some research about solar panels.
+21. If there is a solution, we can go for it.
+22. Also, there are some powerbank charges and discharges at the smae time.
+23. Send .stl's to Buğra hoca and he may print them. Or get a TPU from him.
+24. We may use WiFi instead of serial. Pi may not be next to ESP32.
+25. Someone may put their laptop on top of our robot and do not even use raspberry pi. Wireless provides flexibility.
+26. Wireless should be tried. Robot should support both (wireless and wired).
+27. Publisher should be all around the world. Any PC on this network should be able to publish.
+28. Generally, Ubuntu is put into pi. We can also run boot raspberry pi 4.
+29. First boot will be on SD card (not clear).
+30. Buğra hoca will give us an SD card.
+31. We should SSH into pi (developer mode). When pi boots up, it should be ROS controllable.
+32. Laser is connected to pi.
+33. We can open 2 ports for downloading and uploading in MPython.
+34. We may use Raspberry Pico or ESP32.
+35. ESP's have pwm pins which do not put any CPU work. This may be true for pico as well.
+36. Python may not be optimal for threading.
+37. We might use a timer for publishing data. We can determine time periods.
+38. Whenever a bumper is pressed, publish it(when there is a change). Battery may be updated once in 10 secs. These will be designed. Ultrasonic can be 10 Hz.
+39. We should put some effort on localization. Also, the dead reckoning.
+40. We can have some electric tapes and build grids. We can test our dead reckoning. We can figure out how much slippage we have. For example, we say go for 20 cms and test our robot.
+41. Wide angle camera (more than 140 degrees). Try to capture images with it.
+42. Major concern is good integrity. Things should be nicely plugged etc. Basic usage should be easy.
+43. For future users, prepare a tutorial for each case. (Raspberry pi and PCs or only PCs). ROS2 packages should run on anywhere (PC, raspberry pi). Our tutorial should teach how to build network (wired? wireless?).
+44. We must provide flexbility (pi pc robot, pc only robot, or anything that comes to mind).
+45. Roll of TPU, Makita charger will be provided by Buğra hoca.
