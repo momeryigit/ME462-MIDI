@@ -19,7 +19,7 @@ class MinimalSubscriber(Node):
             10)
         self.subscription  # prevent unused variable warning
         self.get_logger().info('Subscribed to wasd topic')
-        self.serial = SerialCom('/dev/ttyUSB1', 9600)
+        self.serial = SerialCom('/dev/ttyUSB0', 9600)
 
     def listener_callback(self, msg):
         self.get_logger().info(msg.data + '\n') 

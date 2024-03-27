@@ -10,8 +10,7 @@ class SerialCom:
     def send(self, msg):
         self.ser.write(msg.encode())
 
-    def receive(self):
-        if self.ser.in_waiting > 0:
+    def read(self):
             return self.ser.readline().decode()
     def check_conn(self):
         while True:

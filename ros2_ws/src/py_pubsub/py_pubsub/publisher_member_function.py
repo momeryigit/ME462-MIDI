@@ -35,7 +35,7 @@ class MinimalPublisher(Node):
             msg = String()
             msg.data = chr(c)
             self.publisher_.publish(msg)
-            self.get_logger().info('Publishing: "%s"\n' % msg.data)
+            self.get_logger().info('Publishing: "%s"' % msg.data+ '\n')
             if chr(c) == 'q':
                 self.get_logger().info('Exiting...')
                 break
