@@ -151,3 +151,23 @@ __Writer: Ömer__
 43. For future users, prepare a tutorial for each case. (Raspberry pi and PCs or only PCs). ROS2 packages should run on anywhere (PC, raspberry pi). Our tutorial should teach how to build network (wired? wireless?).
 44. We must provide flexbility (pi pc robot, pc only robot, or anything that comes to mind).
 45. Roll of TPU, Makita charger will be provided by Buğra hoca.
+
+
+## MEETING NO: 7   
+__DATE: 27.03.2024   
+TIME: 16.30  
+TOPIC:?__
+ 
+__ATTENDEES: Ömer, Seçkin, Erdem, Sarp, Buğra Hoca, İsmail Hoca__   
+__Writer: Erdem__
+1. üst düzey kontrol bizim işimiz değil biz son kullanıcıya istediği kontrolü yapabileceği bir ürün vereceğiz sadece.
+2. enkoder yerine step motor girdisi publish edilebilir.
+3. acceleration ilk başta ve sonda ekleyerek, step mtoordaki kaymaların önüne geçebilirsiniz.
+4. whycon vs aruco marker farkları nedir?
+5. tekerin dışı yumuşak ama içi sert olmalı, yüzeyi grip edip normal giderken fazla eğilmemeli.
+6. https://finance.yahoo.com/news/stairs-no-obstacle-delivery-bots-004542656.html?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAACOO3R9yx4KQmnDPahvQFhBzmoEJj4A1DRBRN6gZczRk9EQzkKruhhqxuano2nnLwpWQTOpA6milmcNneS8DYq5Uv8p4U0BRLn3sjhd4X-mHzbqLlnfN9tOyVARmYi6tnDI5hd0zoOQsbuxolyv40AH45-Po2YLdZFeI5M7rArha
+7. hyundai robot tekerine bak.
+8. rock crawler konseptine bak.
+9. https://www.facebook.com/watch/?v=438354020444625 sarhoş teker yerine üçlü pazar arabası tekeri.
+10. robotun arkasına trailer tasarımı yapılabilir. akü vs. taşısın
+11. 
