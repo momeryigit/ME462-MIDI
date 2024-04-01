@@ -14,34 +14,45 @@ class SerialNode(Node):
     def __init__(self):
         super().__init__('serial_node')
         #Serial Initialization
-        self.ser = Serial()
+        #try to initialize serial port 3 times
+        for i in range(3):
+            try:
+                self.ser = Serial()
+                break
+            except Exception as e:
+                self.get_logger().error(f'Failed to initialize serial port. {str(e)}')
+        else:
+            self.get_logger().error('Failed to initialize serial port after 3 attempts.')
+            return
+        
         self.subscription = self.create_subscription(
             String,
-            'serial_outgoing',
+            'mcu_outgoing',
             self.write_to_serial,
             10)
         self.subscription  # prevent unused variable warning
 
         self.publisher = self.create_publisher(
             String,
-            'serial_incoming',
+            'mcu_incoming',
             10)
         self.publisher  # prevent unused variable warning
-        self.writing = False
-        #whenever a message other than none is recieved from serial port, it is published to serial_incoming topic
+        #self.writing = False
+
+        #whenever a message other than none is recieved from serial port, it is published to mcu_incoming topic
         self.read_thread = threading.Thread(target=self.read_from_serial)
         self.read_thread.start()
-        print('Succesfully initialized serial node.')
+        self.get_logger().info('Succesfully initialized serial node.')
 
     def write_to_serial(self, msg):
-        self.writing = True
+        #self.writing = True
         self.ser.write(msg.data)
-        self.writing = False
+        #self.writing = False
         self.get_logger().info(f'Sent: {msg.data}')
         
     
     def read_from_serial(self):
-        while self.writing == False:
+        while True:
             msg = None
             try:
                 msg = self.ser.readline().decode('utf-8')
