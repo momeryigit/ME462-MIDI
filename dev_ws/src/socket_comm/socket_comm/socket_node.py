@@ -16,8 +16,8 @@ class SocketNode(Node):
     def __init__(self):
         super().__init__('socket_node')
         #Declare parameters
-        self.declare_parameter('ip', '192.168.0.30')
-        self.declare_parameter('port', 8080)
+        self.declare_parameter('ip', '192.168.212.127')
+        self.declare_parameter('port', 8082)
         
         #Get parameters
         ip = self.get_parameter('ip').get_parameter_value().string_value

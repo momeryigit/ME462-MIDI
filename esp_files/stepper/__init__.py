@@ -3,7 +3,7 @@ import math
 import time
 
 class Stepper:
-    def __init__(self,step_pin,dir_pin,en_pin=None,steps_per_rev=200,speed_sps=10,invert_dir=False,timer_id=-1):
+    def __init__(self,step_pin,dir_pin,en_pin=None,steps_per_rev=600,speed_sps=10,invert_dir=False,timer_id=2):
         
         if not isinstance(step_pin, machine.Pin):
             step_pin=machine.Pin(step_pin,machine.Pin.OUT)
