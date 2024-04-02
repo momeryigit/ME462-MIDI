@@ -5,7 +5,7 @@ from stepper import Stepper
 from serial import SerialComm
 from socketclass import WifiServer
 
-  
+print("J")
 beats = 0
 def heartbeat(comms):
     global beats
