@@ -13,11 +13,21 @@ class SerialNode(Node):
 
     def __init__(self):
         super().__init__('serial_node')
+
+        #Declare parameters
+        self.declare_parameter('port', '/dev/ttyUSB0')
+        self.declare_parameter('baud', 115200)
+        
+        #Get parameters
+        port = self.get_parameter('port').get_parameter_value().string_value
+        baud = self.get_parameter('baud').get_parameter_value().integer_value
+        self.get_logger().info(f'Port: {port}, Baudrate: {baud}')
+
         #Serial Initialization
         #try to initialize serial port 3 times
         for i in range(3):
             try:
-                self.ser = Serial()
+                self.ser = Serial(port, baud)
                 break
             except Exception as e:
                 self.get_logger().error(f'Failed to initialize serial port. {str(e)}')

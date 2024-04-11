@@ -1,9 +1,9 @@
 import serial
 
 class Serial():
-    def __init__(self):
+    def __init__(self, port = '/dev/ttyUSB0', baud = 115200):
         try:
-            self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=0)
+            self.ser = serial.Serial(port, baud, timeout=0)
         except Exception as e:
             print('Failed to initialize serial port.')
             print(str(e))

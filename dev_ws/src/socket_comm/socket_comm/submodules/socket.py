@@ -9,7 +9,10 @@ class ESP32Client:
     def connect(self):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.settimeout(3)
             self.client_socket.connect((self.ip, self.port))
+        except socket.timeout:
+            print("Connection timedout")
         except Exception as e:
             print("Error:", e)
 
