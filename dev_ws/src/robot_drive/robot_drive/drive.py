@@ -20,8 +20,10 @@ class DriveNode(Node):
 
     def __init__(self):
         self.b = 0.221 #Distance between the wheels
-        self.r = 0.05 #Radius of the wheel
+        self.r = 0.085 #Radius of the wheel
         self.ticks_per_rev = 600 #Number of ticks per revolution of the motor
+        self.msg_r = String()
+        self.msg_l = String()
         
         super().__init__('drive_node')
 
@@ -29,14 +31,14 @@ class DriveNode(Node):
             String,
             'mcu_outgoing',
             10)
-        
+
         self.subscription = self.create_subscription(
             Twist,
             'cmd_vel',
             self.convert_twist_to_tickfreq,
             10)
+        self.create_timer(0.1, self.publish_ticks)
         self.subscription  # prevent unused variable warning
-
         self.publisher  # prevent unused variable warning
 
     def convert_twist_to_tickfreq(self, msg):
@@ -55,13 +57,16 @@ class DriveNode(Node):
         f_l = round(f_l,3)
         f_r = round(f_r,3)
         #Create string message
-        msg1 = String()
-        msg1.data = f's r {math.copysign(1,f_r)} {abs(f_r)}'
-        msg2 = String()
-        msg2.data = f's l {math.copysign(1,f_l)} {abs(f_l)}'
-        #Publish the message
-        self.publisher.publish(msg1)
-        self.publisher.publish(msg2)
+        self.msg_r.data = f's r {math.copysign(1,f_r)} {abs(f_r)}'
+        self.msg_l.data = f's l {math.copysign(1,f_l)} {abs(f_l)}'
+    
+    def publish_ticks(self):
+        if self.msg_r.data == '' or self.msg_l.data == '':
+            return 
+        self.publisher.publish(self.msg_r)
+        self.publisher.publish(self.msg_l)
+        self.msg_r.data = ''
+        self.msg_l.data = ''
 
 
     
