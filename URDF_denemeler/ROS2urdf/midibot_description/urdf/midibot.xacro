@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<robot name="midibot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find midibot_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find midibot_description)/urdf/midibot.trans" />
+<xacro:include filename="$(find midibot_description)/urdf/midibot.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin xyz="0.058138245501266346 -0.4356917184158457 0.3982374386490078" rpy="0 0 0"/>
+    <mass value="1.669036100199427"/>
+    <inertia ixx="0.010954" iyy="0.021334" izz="0.031913" ixy="-2.8e-05" iyz="0.0" ixz="7.4e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="back_wheel_1">
+  <inertial>
+    <origin xyz="-0.0030565675631702705 7.453933822271219e-05 -0.0243059383465119" rpy="0 0 0"/>
+    <mass value="1.0328305907835604"/>
+    <inertia ixx="0.005772" iyy="0.000756" izz="0.005143" ixy="9e-06" iyz="-1.3e-05" ixz="-4.8e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.090488 0.436102 -0.36973" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/back_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.090488 0.436102 -0.36973" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/back_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="right_wheel_1">
+  <inertial>
+    <origin xyz="-0.03922643326067311 -0.008086930603845244 -0.030204983854317358" rpy="0 0 0"/>
+    <mass value="1.5935115288825157"/>
+    <inertia ixx="0.001114" iyy="0.005844" izz="0.005391" ixy="-0.000485" iyz="-0.000102" ixz="-0.000312"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.144339 0.529459 -0.36961" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.144339 0.529459 -0.36961" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="left_wheel_1">
+  <inertial>
+    <origin xyz="-0.03927003071156297 0.007873469766651764 -0.030204995415972824" rpy="0 0 0"/>
+    <mass value="1.5935106808170936"/>
+    <inertia ixx="0.001109" iyy="0.005849" izz="0.005391" ixy="0.000459" iyz="0.0001" ixz="-0.000312"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.143827 0.341455 -0.36961" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.143827 0.341455 -0.36961" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find midibot_description)/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="Revolute 1" type="continuous">
+  <origin xyz="-0.090488 -0.436102 0.36973" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="back_wheel_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+</joint>
+
+<joint name="Revolute 2" type="continuous">
+  <origin xyz="0.144339 -0.529459 0.36961" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="right_wheel_1"/>
+  <axis xyz="-0.0 -1.0 0.0"/>
+</joint>
+
+<joint name="Revolute 3" type="continuous">
+  <origin xyz="0.143827 -0.341455 0.36961" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="left_wheel_1"/>
+  <axis xyz="0.005447 -0.999985 0.0"/>
+</joint>
+
+</robot>
