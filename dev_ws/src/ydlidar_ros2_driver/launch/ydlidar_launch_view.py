@@ -50,7 +50,7 @@ def generate_launch_description():
                         arguments=[
                             "--x", "0", "--y", "0", "--z", "0.2", 
                             "--qx", "0", "--qy", "0", "--qz", "0", "--qw", "1", 
-                            "--frame-id", "axis", "--child-frame-id", "laser_frame"
+                            "--frame-id", "base_link", "--child-frame-id", "laser_frame"
                         ]
                     )
     rviz2_node = Node(package='rviz2',
