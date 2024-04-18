@@ -1,8 +1,8 @@
 import rclpy
-import math
+import math 
 from rclpy.node import Node
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Quaternion, Pose
 from rclpy.clock import ROSClock
 
 
@@ -54,6 +54,12 @@ class DriveNode(Node):
         self.create_timer(0.01, self.publish_ticks)
         self.subscription  # prevent unused variable warning
         self.publisher  # prevent unused variable warning
+
+        self.pose_publisher = self.create_publisher(
+            Pose,
+            'pose',
+            10)
+        self.pose_publisher  # prevent unused variable warning
 
     def convert_twist_to_tickfreq(self, msg):
         '''
@@ -114,13 +120,26 @@ class DriveNode(Node):
             print(f'v_r: {self.v_r}, v_l: {self.v_l}, ang_w: {self.ang_w}, r_icc: {self.r_icc}, dt: {dt}')
             print(f'x: {self.x}, y: {self.y}, theta: {(self.theta)%(math.pi*2)*180/math.pi}')
             self.published[1] = self.published[0]
+            #Publish pose
+            my_pose = Pose()
+            my_pose.position.x = self.x
+            my_pose.position.y = self.y
+            my_pose.position.z = 0.0
+            my_pose.orientation = euler_to_quaternion(0,0,self.theta)
+            self.pose_publisher.publish(my_pose)
 
             self.msg_r.data = ''
             self.msg_l.data = ''
             self.publishing = False
 
     
-
+def euler_to_quaternion(roll, pitch, yaw):
+    from math import sin, cos
+    qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
+    qy = cos(roll/2) * sin(pitch/2) * cos(yaw/2) + sin(roll/2) * cos(pitch/2) * sin(yaw/2)
+    qz = cos(roll/2) * cos(pitch/2) * sin(yaw/2) - sin(roll/2) * sin(pitch/2) * cos(yaw/2)
+    qw = cos(roll/2) * cos(pitch/2) * cos(yaw/2) + sin(roll/2) * sin(pitch/2) * sin(yaw/2)
+    return Quaternion(x=qx, y=qy, z=qz, w=qw)
 
 def main(args=None):
     rclpy.init(args=args)

@@ -10,7 +10,7 @@ beats = 0
 def heartbeat(comms):
     global beats
     beats += 1
-    comms.queue_mes('h ' + str(beats))
+    comms.send_message('h ' + str(beats))
     
 def toggle(mypin):
     mypin.value(not mypin.value())
@@ -25,8 +25,8 @@ def main():
     for i in range(3):
         try:
             # Set up Wi-Fi connection
-            ssid = 'PuffPuffPeace'
-            password = 'bilmemki'
+            ssid = 'PuffPuffPeac'
+            password = 'bilmem'
             comms = WifiServer(ssid, password, server_ip='0.0.0.0', server_port=8081)
             comms.connect_to_wifi()
             comms.start_server()
@@ -62,7 +62,7 @@ def main():
                     s1 = s_r
                 elif msg[1] == 'l':
                     s1 = s_l
-                if float(msg[3]) == 0:
+                if int(float(msg[3])) == 0:
                     en_pin.value(1)
                     s1.free_run(0)
                     continue
@@ -70,7 +70,6 @@ def main():
                 s1.free_run(0)
                 s1.speed(float(msg[3]))
                 s1.free_run(int(float(msg[2])))
-                comms.send_message(str(s1.steps_per_sec))
             if msg[0] == 'ss':
                 s1.free_run(0)
                 s1.enable(1)

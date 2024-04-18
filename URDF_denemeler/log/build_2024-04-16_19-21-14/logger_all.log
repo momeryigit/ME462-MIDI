@@ -1,0 +1,149 @@
+[0.138s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.138s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=10, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7bb96312ec80>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7bb96312e770>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7bb96312e770>>)
+[0.352s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.353s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.353s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.353s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.353s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.353s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.353s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.368s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extensions ['ignore', 'ignore_ament_install']
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extension 'ignore'
+[0.370s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extension 'ignore_ament_install'
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extensions ['colcon_pkg']
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extension 'colcon_pkg'
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extensions ['colcon_meta']
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extension 'colcon_meta'
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extensions ['ros']
+[0.371s] Level 1:colcon.colcon_core.package_identification:_identify(articubot_one) by extension 'ros'
+[0.374s] DEBUG:colcon.colcon_core.package_identification:Package 'articubot_one' with type 'ros.ament_cmake' and name 'articubot_one'
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.374s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['ignore', 'ignore_ament_install']
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'ignore'
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'ignore_ament_install'
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['colcon_pkg']
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'colcon_pkg'
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['colcon_meta']
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'colcon_meta'
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['ros']
+[0.375s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'ros'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['cmake', 'python']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'cmake'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'python'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extensions ['python_setup_py']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original) by extension 'python_setup_py'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extensions ['ignore', 'ignore_ament_install']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extension 'ignore'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extension 'ignore_ament_install'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extensions ['colcon_pkg']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extension 'colcon_pkg'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extensions ['colcon_meta']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extension 'colcon_meta'
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extensions ['ros']
+[0.376s] Level 1:colcon.colcon_core.package_identification:_identify(midi-urdf_original/URDFv4export_description) by extension 'ros'
+[0.377s] DEBUG:colcon.colcon_core.package_identification:Package 'midi-urdf_original/URDFv4export_description' with type 'ros.catkin' and name 'URDFv4export_description'
+[0.378s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.378s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.378s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.378s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.378s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.439s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.439s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.441s] WARNING:colcon.colcon_core.prefix_path.colcon:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/src/install' in the environment variable COLCON_PREFIX_PATH doesn't exist
+[0.441s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/src/install/articubot_one' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.441s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/articubot_one' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.442s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/midi_urdf' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.442s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/src/install/articubot_one' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.446s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/articubot_one' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.447s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 0 installed packages in /home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install
+[0.448s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 6 installed packages in /home/sarpdengizmen/ME462-MIDI/dev_ws/install
+[0.449s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 3 installed packages in /home/sarpdengizmen/ROS-Tutorials/ros2_ws/install
+[0.451s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 316 installed packages in /opt/ros/iron
+[0.454s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.518s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_args' from command line to 'None'
+[0.518s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_target' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'URDFv4export_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.519s] DEBUG:colcon.colcon_core.verb:Building package 'URDFv4export_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/build/URDFv4export_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description', 'merge_install': False, 'path': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/midi-urdf_original/URDFv4export_description', 'symlink_install': False, 'test_result_base': None}
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_args' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_target' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_clean_cache' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_clean_first' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'cmake_force_configure' from command line to 'False'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'ament_cmake_args' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'catkin_cmake_args' from command line to 'None'
+[0.519s] Level 5:colcon.colcon_core.verb:set package 'articubot_one' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.520s] DEBUG:colcon.colcon_core.verb:Building package 'articubot_one' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/build/articubot_one', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/articubot_one', 'merge_install': False, 'path': '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/articubot_one', 'symlink_install': False, 'test_result_base': None}
+[0.520s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.521s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.522s] INFO:colcon.colcon_ros.task.catkin.build:Building ROS package in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/midi-urdf_original/URDFv4export_description' with build type 'catkin'
+[0.522s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/midi-urdf_original/URDFv4export_description'
+[0.525s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.525s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.525s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.531s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/articubot_one' with build type 'ament_cmake'
+[0.531s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/articubot_one'
+[0.531s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.532s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.547s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/build/URDFv4export_description': /usr/bin/cmake /home/sarpdengizmen/ME462-MIDI/URDF_denemeler/midi-urdf_original/URDFv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description
+[0.585s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/build/articubot_one': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sarpdengizmen/ME462-MIDI/dev_ws/install/socket_comm:/home/sarpdengizmen/ME462-MIDI/dev_ws/install/serial_comm:/home/sarpdengizmen/ME462-MIDI/dev_ws/install/robot_drive:/home/sarpdengizmen/ME462-MIDI/dev_ws/install/py_srvcli:/home/sarpdengizmen/ME462-MIDI/dev_ws/install/py_pubsub:/home/sarpdengizmen/ROS-Tutorials/ros2_ws/install/urdf_tutorial_r2d2:/home/sarpdengizmen/ROS-Tutorials/ros2_ws/install/learning_tf2_py:/opt/ros/iron /usr/bin/cmake /home/sarpdengizmen/ME462-MIDI/URDF_denemeler/articubot_one -DCMAKE_INSTALL_PREFIX=/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/articubot_one
+[1.086s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/build/URDFv4export_description' returned '1': /usr/bin/cmake /home/sarpdengizmen/ME462-MIDI/URDF_denemeler/midi-urdf_original/URDFv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description
+[1.105s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(URDFv4export_description)
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description' for CMake module files
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description' for CMake config files
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/bin'
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/lib/pkgconfig/URDFv4export_description.pc'
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/lib/python3.10/site-packages'
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/bin'
+[1.111s] INFO:colcon.colcon_core.shell:Creating package script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/URDFv4export_description/package.ps1'
+[1.112s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/URDFv4export_description/package.dsv'
+[1.113s] INFO:colcon.colcon_core.shell:Creating package script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/URDFv4export_description/package.sh'
+[1.113s] INFO:colcon.colcon_core.shell:Creating package script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/URDFv4export_description/package.bash'
+[1.114s] INFO:colcon.colcon_core.shell:Creating package script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/URDFv4export_description/package.zsh'
+[1.115s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/URDFv4export_description/share/colcon-core/packages/URDFv4export_description)
+[1.689s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.690s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.690s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[1.690s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.701s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.701s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.701s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.717s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.717s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/local_setup.ps1'
+[1.718s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/_local_setup_util_ps1.py'
+[1.720s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/setup.ps1'
+[1.721s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/local_setup.sh'
+[1.722s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/_local_setup_util_sh.py'
+[1.723s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/setup.sh'
+[1.724s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/local_setup.bash'
+[1.725s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/setup.bash'
+[1.726s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/local_setup.zsh'
+[1.726s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/sarpdengizmen/ME462-MIDI/URDF_denemeler/install/setup.zsh'

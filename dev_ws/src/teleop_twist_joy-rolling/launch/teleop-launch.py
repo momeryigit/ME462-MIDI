@@ -14,7 +14,7 @@ def generate_launch_description():
 
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument('joy_vel', default_value='cmd_vel'),
-        launch.actions.DeclareLaunchArgument('joy_config', default_value='ps3'),
+        launch.actions.DeclareLaunchArgument('joy_config', default_value='xbox'),
         launch.actions.DeclareLaunchArgument('joy_dev', default_value='/dev/input/js0'),
         launch.actions.DeclareLaunchArgument('publish_stamped_twist', default_value='false'),
         launch.actions.DeclareLaunchArgument('config_filepath', default_value=[
@@ -27,7 +27,7 @@ def generate_launch_description():
             parameters=[{
                 'dev': joy_dev,
                 'deadzone': 0.3,
-                'autorepeat_rate': 0.0,
+                'autorepeat_rate': 20.0,
                 'sticky_buttons': True,
             }]),
         launch_ros.actions.Node(
