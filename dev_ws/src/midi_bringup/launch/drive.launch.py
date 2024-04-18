@@ -12,6 +12,10 @@ def generate_launch_description():
         package="robot_drive",
         executable="drive_node",
     )
+    state_publisher_node = Node(
+        package="state_publisher",
+        executable="state_publisher",
+    )
     # include another launch file
     state_publisher = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -36,7 +40,7 @@ def generate_launch_description():
     )
     
     ld.add_action(drive_node)
-    ld.add_action(state_publisher)
+    ld.add_action(state_publisher_node)
     ld.add_action(teleop_joy)
     ld.add_action(rviz_node)
     return ld

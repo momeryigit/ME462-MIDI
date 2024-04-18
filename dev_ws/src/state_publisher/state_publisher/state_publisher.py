@@ -29,7 +29,7 @@ class StatePublisher(Node):
         #Create message type and fill it with data
         odom_trans = TransformStamped()
         odom_trans.header.frame_id = 'world_frame'
-        odom_trans.child_frame_id = 'axis'
+        odom_trans.child_frame_id = 'base_link'
         position = msg.position
         orientation = msg.orientation
         odom_trans.header.stamp = self.get_clock().now().to_msg()
