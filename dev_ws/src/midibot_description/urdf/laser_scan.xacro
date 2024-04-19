@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<robot name="midibot" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<link name="laser_frame">
+<!--   <inertial>
+    <origin xyz="0.058138245501266346 -0.4356917184158457 0.3982374386490078" rpy="0 0 0"/>
+    <mass value="1.669036100199427"/>
+    <inertia ixx="0.010954" iyy="0.021334" izz="0.031913" ixy="-2.8e-05" iyz="0.0" ixz="7.4e-05"/>
+  </inertial> -->
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+        a cylinder with a radius of 0.1 and a length of 0.1
+        <cylinder radius="0.04" length="0.03"/>
+    </geometry>
+    <material name="red"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <cylinder radius="0.1" length="0.1"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name='laser' type='fixed'>
+  <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="laser_frame"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+
+</joint>
+</robot>

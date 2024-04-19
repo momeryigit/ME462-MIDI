@@ -4,6 +4,8 @@
 <xacro:include filename="$(find midibot_description)/urdf/materials.xacro" />
 <xacro:include filename="$(find midibot_description)/urdf/midibot.trans" />
 <xacro:include filename="$(find midibot_description)/urdf/midibot.gazebo" />
+<xacro:include filename="$(find midibot_description)/urdf/laser_scan.xacro" />
+
 <link name="base_link">
   <inertial>
     <origin xyz="0.058138245501266346 -0.4356917184158457 0.3982374386490078" rpy="0 0 0"/>
@@ -89,21 +91,21 @@
 </link>
 
 <joint name="Revolute 1" type="continuous">
-  <origin xyz="-0.090488 -0.436102 0.36973" rpy="0 0 0"/>
+  <origin xyz="-0.152 0.003 -0.043" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="back_wheel_1"/>
   <axis xyz="-1.0 0.0 0.0"/>
 </joint>
 
 <joint name="Revolute 2" type="continuous">
-  <origin xyz="0.144339 -0.529459 0.36961" rpy="0 0 0"/>
+  <origin xyz="0.083 -0.091 -0.043" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="right_wheel_1"/>
   <axis xyz="-0.0 -1.0 0.0"/>
 </joint>
 
 <joint name="Revolute 3" type="continuous">
-  <origin xyz="0.143827 -0.341455 0.36961" rpy="0 0 0"/>
+  <origin xyz="0.083 0.097 -0.043" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="left_wheel_1"/>
   <axis xyz="0.005447 -0.999985 0.0"/>
