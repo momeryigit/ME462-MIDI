@@ -9,7 +9,7 @@
 #ipc=host : use the host IPC namespace
 # ex: docker run -it --user ros --network=host --ipc=host -v $PWD/../dev_ws/src:/dev_ws/src -v /dev:/dev --privileged my_image
 
-FROM osrf/ros:iron-desktop-full
+FROM ros:iron-ros-base
 
 RUN apt-get update \
     && apt-get install -y \
