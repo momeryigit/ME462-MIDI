@@ -15,7 +15,7 @@ class SerialNode(Node):
         super().__init__('serial_node')
 
         #Declare parameters
-        self.declare_parameter('port', '/dev/ttyUSB0')
+        self.declare_parameter('port', '/dev/ttyACM0')
         self.declare_parameter('baud', 115200)
         
         #Get parameters
