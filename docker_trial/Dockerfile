@@ -7,7 +7,8 @@
 # --rm : remove the container after it is stopped
 # --network=host : use the host network
 #ipc=host : use the host IPC namespace
-# ex: docker run -it --user ros --network=host --ipc=host -v $PWD/../dev_ws/src:/dev_ws/src -v /dev:/dev --privileged my_image
+# --privileged : give the container full access to the host devices read/write
+# ex: docker run -it --user ros --network=host --ipc=host -v $PWD/../dev_ws:/dev_ws -v /dev:/dev --privileged my_image
 
 FROM ros:iron-ros-base
 
@@ -18,6 +19,7 @@ RUN apt-get update \
     nano \
     jstest-gtk \
     python3-serial \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USERNAME=ros
