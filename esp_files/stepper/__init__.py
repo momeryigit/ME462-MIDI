@@ -16,8 +16,8 @@ class Stepper:
         self.dir_value_func = dir_pin.value
         self.en_pin = en_pin
         self.invert_dir = invert_dir
-
-        self.timer = machine.Timer(timer_id)
+    
+        self.timer = machine.Timer()
         self.timer_is_running=False
         self.free_run_mode=0
         self.enabled=True
@@ -121,3 +121,4 @@ class Stepper:
     
     def is_enabled(self):
         return self.enabled
+
