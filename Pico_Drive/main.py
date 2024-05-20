@@ -66,10 +66,10 @@ def toggle(mypin):
 
 
 def main():
-    s_r = Stepper(26, 16, steps_per_rev=600, speed_sps=10, invert_dir=True)
-    s_l = Stepper(25, 27, steps_per_rev=600, speed_sps=10, timer_id=3) #step_pin,dir_pin,en_pin=None,steps_per_rev=600,speed_sps=10,invert_dir=False,timer_id=2
+    s_r = Stepper(2, 3, steps_per_rev=600, speed_sps=10, invert_dir=True)
+    s_l = Stepper(4, 5, steps_per_rev=600, speed_sps=10, timer_id=3) #step_pin,dir_pin,en_pin=None,steps_per_rev=600,speed_sps=10,invert_dir=False,timer_id=2
     ultrasonic = HCSR04(14, 15)
-    en_pin = Pin(12, Pin.OUT)
+    en_pin = Pin(6, Pin.OUT)
     
     comms = None
     for i in range(1):
@@ -124,39 +124,31 @@ def main():
                     break
         if msg != None:
             comms.send_message(str(msg))
-            if distance >= 5.0:
-                if msg[0] == 's':
-                    if msg[1] == 'r':
-                        s1 = s_r
-                    elif msg[1] == 'l':
-                        s1 = s_l
-                    if int(float(msg[3])) == 0:
-                        en_pin.value(1)
-                        s1.free_run(0)
-                        continue
-                    en_pin.value(0)
-                    s1.free_run(0)
-                    s1.speed(float(msg[3]))
-                    s1.free_run(int(float(msg[2])))
-                if msg[0] == 'ss':
-                    s1.free_run(0)
-                    s1.enable(1)
-                    s1.speed(int(msg[1]))
-                    s1.target(int(msg[2]))
-                    s1.overwrite_pos(0)
-                if msg[0]=='q':
-                    s1.free_run(0)
-                    s1.enable(0)
-                    break
-            else:
-                s_r.speed(0)
-                s_l.speed(0)
-                en_pin.value(1)
-        try:
-            comms.send_queue()
-        except Exception as e:
-            print(e)
-            pass
+        
+            if msg[0] == 's':
+                if msg[1] == 'r':
+                    s1 = s_r
+                elif msg[1] == 'l':
+                    s1 = s_l
+                if int(float(msg[3])) == 0:
+                    s1.stop()
+                    en_pin.value(1)
+                    continue
+                en_pin.value(0)
+                s1.speed(float(msg[3]))
+                s1.free_run(int(float(msg[2])))
+            if msg[0] == 'ss':
+                s1.free_run(0)
+                s1.enable(1)
+                s1.speed(int(msg[1]))
+                s1.target(int(msg[2]))
+                s1.overwrite_pos(0)
+            if msg[0]=='q':
+                s1.free_run(0)
+                s1.enable(0)
+                break
+        
+        comms.send_queue()
     en_pin.value(0)
 if __name__ == '__main__':
     main()
