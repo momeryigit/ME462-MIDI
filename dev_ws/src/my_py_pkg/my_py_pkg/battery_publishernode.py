@@ -143,7 +143,7 @@ class template_publishernode(Node): # MODIFY NAME
         super().__init__("template_publishernode") # MODIFY NAME
 
         self.ina219 = INA219(addr=0x41)
-        self.publisher_ = self.create_publisher(String, "topicname", 10) # 10 is the queue size.
+        self.publisher_ = self.create_publisher(BatteryState, "topicname", 10) # 10 is the queue size.
         self.timer_ = self.create_timer(0.5, self.publish_news)
         self.get_logger().info("baslangicta info olarak ne yazmak istiyorsan yaz.")
         
