@@ -1,6 +1,0 @@
-[console_scripts]
-battery_publishernode = my_py_pkg.battery_publishernode:main
-serial_publisher = my_py_pkg.serial_publisher:main
-template_publishernode = my_py_pkg.template_publishernode:main
-template_subscribernode = my_py_pkg.template_subscribernode:main
-

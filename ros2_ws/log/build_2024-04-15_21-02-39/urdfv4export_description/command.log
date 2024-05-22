@@ -1,2 +1,0 @@
-Invoking command in '/home/bayrakt4rdem/ros2_ws/build/urdfv4export_description': /usr/bin/cmake /home/bayrakt4rdem/ros2_ws/src/urdfv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/bayrakt4rdem/ros2_ws/install/urdfv4export_description
-Invoked command in '/home/bayrakt4rdem/ros2_ws/build/urdfv4export_description' returned '1': /usr/bin/cmake /home/bayrakt4rdem/ros2_ws/src/urdfv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/bayrakt4rdem/ros2_ws/install/urdfv4export_description
