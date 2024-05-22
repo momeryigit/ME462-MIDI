@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from sensor_msgs.msg import BatteryState
 
 ##below is ups code
 import smbus
@@ -156,22 +156,29 @@ class template_publishernode(Node): # MODIFY NAME
         p = (bus_voltage - 9)/3.6*100
         if(p > 100):p = 100
         if(p < 0):p = 0
+        # # INA219 measure bus voltage on the load side. So PSU voltage = bus_voltage + shunt_voltage
+        # #print("PSU Voltage:   {:6.3f} V".format(bus_voltage + shunt_voltage))
+        # #print("Shunt Voltage: {:9.6f} V".format(shunt_voltage))
+        # print("Load Voltage:  {:6.3f} V".format(bus_voltage))
+        # print("Current:       {:9.6f} A".format(current/1000))
+        # print("Power:         {:6.3f} W".format(power))
+        # print("Percent:       {:3.1f}%".format(p))
+        # print("")
 
-        msg = String()
-        msg.data = str(p)
+        msg = BatteryState()
+        msg.voltage = bus_voltage
+        msg.current = current/1000
+        # msg.charge = 5.0
+        # msg.capacity = 10.0
+        # msg.design_capacity = 10.0
+        msg.percentage = p
         self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg)
 
 
 
 def main(args=None):
-    # # INA219 measure bus voltage on the load side. So PSU voltage = bus_voltage + shunt_voltage
-    # #print("PSU Voltage:   {:6.3f} V".format(bus_voltage + shunt_voltage))
-    # #print("Shunt Voltage: {:9.6f} V".format(shunt_voltage))
-    # print("Load Voltage:  {:6.3f} V".format(bus_voltage))
-    # print("Current:       {:9.6f} A".format(current/1000))
-    # print("Power:         {:6.3f} W".format(power))
-    # print("Percent:       {:3.1f}%".format(p))
-    # print("")
+    
     rclpy.init(args=args)
     node = template_publishernode() # MODIFY NAME
     rclpy.spin(node)
