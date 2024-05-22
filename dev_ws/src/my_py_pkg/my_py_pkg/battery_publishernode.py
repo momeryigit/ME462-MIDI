@@ -158,7 +158,7 @@ class template_publishernode(Node): # MODIFY NAME
         if(p < 0):p = 0
 
         msg = String()
-        msg.data = string(p)
+        msg.data = str(p)
         self.publisher_.publish(msg)
 
 
