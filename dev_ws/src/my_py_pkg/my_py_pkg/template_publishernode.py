@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
+###
 
 
 class template_publishernode(Node): # MODIFY NAME
