@@ -1,0 +1,41 @@
+[0.026s] Invoking command in '/home/bayrakt4rdem/ros2_ws/build/URDFv4export_description': /usr/bin/cmake /home/bayrakt4rdem/ros2_ws/URDFv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/bayrakt4rdem/ros2_ws/install/URDFv4export_description
+[0.063s] [0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[0.063s]   Compatibility with CMake < 2.8.12 will be removed from a future version of
+[0.063s]   CMake.
+[0.063s] 
+[0.063s]   Update the VERSION argument <min> value or use a ...<max> suffix to tell
+[0.063s]   CMake that the project does not need compatibility with older versions.
+[0.063s] 
+[0.063s] [0m
+[0.238s] -- The C compiler identification is GNU 11.4.0
+[0.411s] -- The CXX compiler identification is GNU 11.4.0
+[0.426s] -- Detecting C compiler ABI info
+[0.495s] -- Detecting C compiler ABI info - done
+[0.503s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.503s] -- Detecting C compile features
+[0.504s] -- Detecting C compile features - done
+[0.508s] -- Detecting CXX compiler ABI info
+[0.585s] -- Detecting CXX compiler ABI info - done
+[0.594s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.594s] -- Detecting CXX compile features
+[0.594s] -- Detecting CXX compile features - done
+[0.607s] [31mCMake Error at CMakeLists.txt:10 (find_package):
+[0.607s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[0.608s]   asked CMake to find a package configuration file provided by "catkin", but
+[0.608s]   CMake did not find one.
+[0.608s] 
+[0.608s]   Could not find a package configuration file provided by "catkin" with any
+[0.608s]   of the following names:
+[0.608s] 
+[0.608s]     catkinConfig.cmake
+[0.608s]     catkin-config.cmake
+[0.608s] 
+[0.608s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[0.608s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[0.608s]   provides a separate development package or SDK, be sure it has been
+[0.608s]   installed.
+[0.608s] 
+[0.608s] -- Configuring incomplete, errors occurred!
+[0.608s] See also "/home/bayrakt4rdem/ros2_ws/build/URDFv4export_description/CMakeFiles/CMakeOutput.log".
+[0.608s] [0m
+[0.611s] Invoked command in '/home/bayrakt4rdem/ros2_ws/build/URDFv4export_description' returned '1': /usr/bin/cmake /home/bayrakt4rdem/ros2_ws/URDFv4export_description -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/bayrakt4rdem/ros2_ws/install/URDFv4export_description

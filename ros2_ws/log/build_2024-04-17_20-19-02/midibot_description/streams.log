@@ -1,0 +1,50 @@
+[1.008s] Invoking command in '/home/bayrakt4rdem/ros2_ws/src/midibot_description': PYTHONPATH=/home/bayrakt4rdem/ros2_ws/build/midibot_description/prefix_override:/home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/midibot_description build --build-base /home/bayrakt4rdem/ros2_ws/build/midibot_description/build install --record /home/bayrakt4rdem/ros2_ws/build/midibot_description/install.log --install-scripts $base/lib/midibot_description --single-version-externally-managed install_data
+[1.253s] /home/bayrakt4rdem/.local/lib/python3.10/site-packages/setuptools/dist.py:717: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[1.253s]   warnings.warn(
+[1.282s] running egg_info
+[1.282s] creating ../../build/midibot_description/midibot_description.egg-info
+[1.283s] writing ../../build/midibot_description/midibot_description.egg-info/PKG-INFO
+[1.283s] writing dependency_links to ../../build/midibot_description/midibot_description.egg-info/dependency_links.txt
+[1.283s] writing entry points to ../../build/midibot_description/midibot_description.egg-info/entry_points.txt
+[1.283s] writing requirements to ../../build/midibot_description/midibot_description.egg-info/requires.txt
+[1.283s] writing top-level names to ../../build/midibot_description/midibot_description.egg-info/top_level.txt
+[1.283s] writing manifest file '../../build/midibot_description/midibot_description.egg-info/SOURCES.txt'
+[1.285s] reading manifest file '../../build/midibot_description/midibot_description.egg-info/SOURCES.txt'
+[1.286s] writing manifest file '../../build/midibot_description/midibot_description.egg-info/SOURCES.txt'
+[1.288s] running build
+[1.288s] running build_py
+[1.288s] creating /home/bayrakt4rdem/ros2_ws/build/midibot_description/build
+[1.289s] creating /home/bayrakt4rdem/ros2_ws/build/midibot_description/build/lib
+[1.289s] creating /home/bayrakt4rdem/ros2_ws/build/midibot_description/build/lib/midibot_description
+[1.289s] copying midibot_description/__init__.py -> /home/bayrakt4rdem/ros2_ws/build/midibot_description/build/lib/midibot_description
+[1.289s] running install
+[1.289s] running install_lib
+[1.289s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages/midibot_description
+[1.290s] copying /home/bayrakt4rdem/ros2_ws/build/midibot_description/build/lib/midibot_description/__init__.py -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages/midibot_description
+[1.290s] byte-compiling /home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages/midibot_description/__init__.py to __init__.cpython-310.pyc
+[1.290s] running install_data
+[1.290s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/ament_index
+[1.290s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/ament_index/resource_index
+[1.290s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/ament_index/resource_index/packages
+[1.290s] copying resource/midibot_description -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/ament_index/resource_index/packages
+[1.291s] copying package.xml -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description
+[1.291s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/launch
+[1.291s] copying launch/gazebo.launch.py -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/launch
+[1.291s] copying launch/display.launch.py -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/launch
+[1.291s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/urdf
+[1.291s] copying urdf/midibot.gazebo -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/urdf
+[1.291s] copying urdf/midibot.trans -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/urdf
+[1.291s] copying urdf/midibot.xacro -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/urdf
+[1.291s] copying urdf/materials.xacro -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/urdf
+[1.291s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/meshes
+[1.291s] copying meshes/back_wheel_1.stl -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/meshes
+[1.293s] copying meshes/base_link.stl -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/meshes
+[1.293s] copying meshes/right_wheel_1.stl -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/meshes
+[1.295s] copying meshes/left_wheel_1.stl -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/meshes
+[1.297s] creating /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/config
+[1.297s] copying config/display.rviz -> /home/bayrakt4rdem/ros2_ws/install/midibot_description/share/midibot_description/config
+[1.297s] running install_egg_info
+[1.298s] Copying ../../build/midibot_description/midibot_description.egg-info to /home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages/midibot_description-0.0.0-py3.10.egg-info
+[1.299s] running install_scripts
+[1.319s] writing list of installed files to '/home/bayrakt4rdem/ros2_ws/build/midibot_description/install.log'
+[1.340s] Invoked command in '/home/bayrakt4rdem/ros2_ws/src/midibot_description' returned '0': PYTHONPATH=/home/bayrakt4rdem/ros2_ws/build/midibot_description/prefix_override:/home/bayrakt4rdem/ros2_ws/install/midibot_description/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/midibot_description build --build-base /home/bayrakt4rdem/ros2_ws/build/midibot_description/build install --record /home/bayrakt4rdem/ros2_ws/build/midibot_description/install.log --install-scripts $base/lib/midibot_description --single-version-externally-managed install_data

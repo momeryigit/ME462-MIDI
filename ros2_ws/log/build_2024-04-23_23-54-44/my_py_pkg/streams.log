@@ -1,0 +1,26 @@
+[0.660s] Invoking command in '/home/bayrakt4rdem/ros2_ws/src/my_py_pkg': PYTHONPATH=/home/bayrakt4rdem/ros2_ws/build/my_py_pkg/prefix_override:/home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/my_py_pkg build --build-base /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/build install --record /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/install.log --single-version-externally-managed install_data
+[0.918s] running egg_info
+[0.919s] writing ../../build/my_py_pkg/my_py_pkg.egg-info/PKG-INFO
+[0.921s] writing dependency_links to ../../build/my_py_pkg/my_py_pkg.egg-info/dependency_links.txt
+[0.923s] writing entry points to ../../build/my_py_pkg/my_py_pkg.egg-info/entry_points.txt
+[0.925s] writing requirements to ../../build/my_py_pkg/my_py_pkg.egg-info/requires.txt
+[0.927s] writing top-level names to ../../build/my_py_pkg/my_py_pkg.egg-info/top_level.txt
+[0.930s] reading manifest file '../../build/my_py_pkg/my_py_pkg.egg-info/SOURCES.txt'
+[0.931s] writing manifest file '../../build/my_py_pkg/my_py_pkg.egg-info/SOURCES.txt'
+[0.933s] running build
+[0.933s] running build_py
+[0.933s] copying my_py_pkg/serial_publisher.py -> /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/build/lib/my_py_pkg
+[0.933s] running install
+[0.934s] running install_lib
+[0.934s] copying /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/build/lib/my_py_pkg/serial_publisher.py -> /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages/my_py_pkg
+[0.935s] byte-compiling /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages/my_py_pkg/serial_publisher.py to serial_publisher.cpython-310.pyc
+[0.937s] running install_data
+[0.937s] running install_egg_info
+[0.939s] removing '/home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages/my_py_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[0.939s] Copying ../../build/my_py_pkg/my_py_pkg.egg-info to /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages/my_py_pkg-0.0.0-py3.10.egg-info
+[0.940s] running install_scripts
+[0.956s] Installing serial_publisher script to /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/my_py_pkg
+[0.958s] Installing template_publishernode script to /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/my_py_pkg
+[0.960s] Installing template_subscribernode script to /home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/my_py_pkg
+[0.962s] writing list of installed files to '/home/bayrakt4rdem/ros2_ws/build/my_py_pkg/install.log'
+[0.981s] Invoked command in '/home/bayrakt4rdem/ros2_ws/src/my_py_pkg' returned '0': PYTHONPATH=/home/bayrakt4rdem/ros2_ws/build/my_py_pkg/prefix_override:/home/bayrakt4rdem/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/my_py_pkg build --build-base /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/build install --record /home/bayrakt4rdem/ros2_ws/build/my_py_pkg/install.log --single-version-externally-managed install_data
