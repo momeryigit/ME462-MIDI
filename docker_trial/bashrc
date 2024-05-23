@@ -1,2 +1,3 @@
 source /opt/ros/iron/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-colcon_argcomplete.bash
+sudo chmod a+rw /dev/i2c-*

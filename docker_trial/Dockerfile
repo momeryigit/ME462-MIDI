@@ -20,7 +20,7 @@ RUN apt-get update \
     jstest-gtk \
     python3-serial \
     iputils-ping \
-    && rm -rf /var/lib/apt/lists/*
+    python3-smbus 
 
 ARG USERNAME=ros
 ARG USER_UID=1000
