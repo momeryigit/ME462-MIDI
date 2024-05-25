@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'UPS_publisher = UPS_node.UPS_node:main',
+            'UPS_pub = UPS_node.UPS_pub:main',
         ],
     },
 )
