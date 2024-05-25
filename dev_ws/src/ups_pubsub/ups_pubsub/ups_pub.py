@@ -144,8 +144,23 @@ class upsPublisher(Node):
         self.i = 0
 
     def timer_callback(self):
+
         msg = String()
-        msg.data = str(self.ina219.getBusVoltage_V())
+        bus_voltage = self.ina219.getBusVoltage_V()             # voltage on V- (load side)
+        shunt_voltage = self.ina219.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
+        current = self.ina219.getCurrent_mA()                   # current in mA
+        power = self.ina219.getPower_W()                        # power in W
+        p = (bus_voltage - 9)/3.6*100
+        if(p > 100):p = 100
+        if(p < 0):p = 0
+
+        msg.data =   "PSU Voltage:   {:6.3f} V".format(bus_voltage + shunt_voltage) + "\n" + \
+                     "Shunt Voltage: {:6.3f} V".format(shunt_voltage) + "\n" + \
+                     "Bus Voltage:   {:6.3f} V".format(bus_voltage) + "\n" + \
+                     "Current:       {:6.3f} mA".format(current) + "\n" + \
+                     "Power:         {:6.3f} W".format(power) + "\n" + \
+                     "Percent:       {:6.3f} %".format(p) + "\n"
+        
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
         self.i += 1
@@ -153,7 +168,7 @@ class upsPublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    ina219 = INA219()
+    ina219 = INA219(addr=0x41)
     ups_publisher = upsPublisher(ina219=ina219)
 
     rclpy.spin(ups_publisher)
