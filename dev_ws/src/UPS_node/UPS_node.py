@@ -160,7 +160,7 @@ class UPS_publisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     ina219 = INA219(addr=0x41)
-    ina219_publisher = UPS_pusblisher(ina219)
+    ina219_publisher = UPS_publisher(ina219)
     rclpy.spin(ina219_publisher)
 
     ina219_publisher.destroy_node()
