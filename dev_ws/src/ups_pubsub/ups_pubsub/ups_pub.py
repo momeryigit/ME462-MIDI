@@ -1,8 +1,8 @@
+
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
+from std_msgs.msg import String
 
-##below is ups code
 import smbus
 import time
 
@@ -130,41 +130,36 @@ class INA219:
         if value > 32767:
             value -= 65535
         return value * self._power_lsb
-        
 
 
-##above is ups code
-class UPS_publisher(Node):
-    def __init__(self, ina219):
-        super().__init__('UPS_publisher')
-        self.ina219 = ina219
-        self.bus_voltage_publisher = self.create_publisher(Float32, 'bus_voltage', 10)
-        self.current_publisher = self.create_publisher(Float32, 'current', 10)
-        self.power_publisher = self.create_publisher(Float32, 'power', 10)
+
+class upsPublisher(Node):
+    
+    def __init__(self,ina219):
+        super().__init__('ups_publisher')
+        self.publisher_ = self.create_publisher(String, 'ups', 10)
         timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.publish_ina219_data)
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.ina219 = ina219
+        self.i = 0
 
-    def publish_ina219_data(self):
-        bus_voltage_msg = Float32()
-        bus_voltage_msg.data = self.ina219.getBusVoltage_V()
-        self.bus_voltage_publisher.publish(bus_voltage_msg)
-
-        current_msg = Float32()
-        current_msg.data = self.ina219.getCurrent_mA()
-        self.current_publisher.publish(current_msg)
-
-        power_msg = Float32()
-        power_msg.data = self.ina219.getPower_W()
-        self.power_publisher.publish(power_msg)
+    def timer_callback(self):
+        msg = String()
+        msg.data = str(self.ina219.getBusVoltage_V())
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.i += 1
+    
 
 def main(args=None):
     rclpy.init(args=args)
-    ina219 = INA219(addr=0x41)
-    ina219_publisher = UPS_publisher(ina219)
-    rclpy.spin(ina219_publisher)
+    ina219 = INA219()
+    ups_publisher = upsPublisher(ina219=ina219)
 
-    ina219_publisher.destroy_node()
+    rclpy.spin(ups_publisher)
+
+    ups_publisher.destroy_node()
     rclpy.shutdown()
-
+    
 if __name__ == '__main__':
     main()

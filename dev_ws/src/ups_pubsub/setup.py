@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'UPS_node'
+package_name = 'ups_pubsub'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'UPS_pub = UPS_node.UPS_pub:main',
+            'ups_pub = ups_pubsub.ups_pub:main',
         ],
     },
 )
