@@ -52,7 +52,7 @@ class DriveNode(Node):
             'cmd_vel',
             self.convert_twist_to_tickfreq,
             10)
-        self.create_timer(0.01, self.publish_ticks)
+        self.create_timer(0.1, self.publish_ticks)
         self.subscription  # prevent unused variable warning
         self.publisher  # prevent unused variable warning
 
