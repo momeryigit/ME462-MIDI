@@ -11,6 +11,6 @@ class Serial():
     def write(self, msg):
         self.ser.write(f"{msg}\n".encode('utf-8'))
 
-    def readline(self):
-        return self.ser.readline()
+    def read(self):
+        return self.ser.readline().decode("utf-8").strip()
 

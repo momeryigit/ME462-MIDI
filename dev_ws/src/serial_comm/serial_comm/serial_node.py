@@ -65,7 +65,7 @@ class SerialNode(Node):
         while True:
             msg = None
             try:
-                msg = self.ser.readline().decode('utf-8')
+                msg = self.ser.read()
             except Exception as e:
                 self.get_logger().error(f'Failed to read from serial port. {str(e)}')
             if msg:
