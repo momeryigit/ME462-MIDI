@@ -85,8 +85,8 @@ class DriveNode(Node):
         f_l = round(f_l,3)
         f_r = round(f_r,3)
         #Create string message
-        self.msg_r.data = f's r {math.copysign(1,f_r)} {abs(f_r)}'
-        self.msg_l.data = f's l {math.copysign(1,f_l)} {abs(f_l)}'
+        self.msg_r.data = f's r {f_r}'
+        self.msg_l.data = f's l {f_l}'
     
     def publish_ticks(self):
         self.publishing = True

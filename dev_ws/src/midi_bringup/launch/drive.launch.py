@@ -70,13 +70,13 @@ def generate_launch_description():
         parameters=[{'use_sim_time': False}]
     )
     
-    lidar_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('ydlidar_ros2_driver'),
-                'launch/ydlidar_launch_view.py')),
-            condition=IfCondition(PythonExpression(['"True"' if lidar == 'True' else 'False']))
-    )
+    # lidar_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(
+    #             get_package_share_directory('ydlidar_ros2_driver'),
+    #             'launch/ydlidar_launch_view.py')),
+    #         condition=IfCondition(PythonExpression(['"True"' if lidar == 'True' else 'False']))
+    # )
     
     ld.add_action(drive_node)
     ld.add_action(state_publisher_node)
