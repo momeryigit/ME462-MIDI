@@ -29,7 +29,12 @@ class Stepper:
         self.step_pin = PWM(Pin(step_pin))
         self.dir_pin = Pin(dir_pin, Pin.OUT)
         self.count_pin = Pin(count_pin, Pin.IN, Pin.PULL_DOWN)
-        
+
+        self.decelerate = False
+        if invert_dir == True:
+            self.dir = 1
+        else:
+            self.dir = 0
         self.min_freq = 15
         self.max_freq = 1600
         self.np = np = neopixel.NeoPixel(Pin(led_pin), 10)
@@ -48,66 +53,48 @@ class Stepper:
         self.target_freq = 0
         self.timer = Timer()
 
-        if invert_dir == True:
-            self.dir = 1
-        else:
-            self.dir = 0
+
 
 
         
             
     def accelerate(self, target_freq): 
-        # Calculate the absolute difference between the target and current frequencies
+        if target_freq < self.freq:
+            self.decelerate = True
+        else:
+            self.decelerate = False
         freq_diff = abs(target_freq - self.freq)
-
-        # Use the frequency difference as the time period (in seconds)
-        time_period = (freq_diff / self.max_freq) * 1 # 1 seconds to reach max speed
-
-        # Calculate the required acceleration
-        required_acceleration = freq_diff / (time_period) # in Hz/s^2
-
-        # Calculate the step size to be used in the timer callback
-        self.step_size = 20 # in Hz
         self.target_freq = target_freq
-
-        # Calculate the period for the frequency change timer (in seconds)
-        timer_period = self.step_size / required_acceleration
-
-        # Convert timer_period to milliseconds
-        timer_period = int(timer_period * 1000)
-
+        self.step_size = 40 #Hz
+        timer_period = 10 #ms
         #debug prinnt
-        print("Time Period: ", time_period)
-        print("Timer Period: ", timer_period)
-        print("Required Acceleration: ", required_acceleration)
+        print("Time Period in seconds: ", timer_period*freq_diff/self.step_size/1000)
         # Start the timer
-        self.timer.init(period=timer_period, mode=Timer.PERIODIC, callback=self._increase_freq)
+        self.timer.init(period=timer_period, mode=Timer.PERIODIC, callback=self._change_freq)
 
     
-    def _increase_freq(self, timer):
-        if self.freq < self.target_freq:
+    def _change_freq(self, timer):
+        if self.freq < self.target_freq and self.decelerate == False:
             self.freq += self.step_size
-            self.step_pin.freq(self.freq)
+            self.step_pin.freq(abs(self.freq))
+        elif self.freq > self.target_freq and self.decelerate == True:
+            self.freq -= self.step_size
+            self.step_pin.freq(abs(self.freq))
         else:
             # Stop the timer when the target frequency is reached
+            self.freq = self.target_freq
+            self.step_pin.freq(abs(self.freq))
             self.timer.deinit()
 
-    def step(self, direction, freq):
-        if freq <= self.min_freq:
-            self.freq = 15
-        elif freq >= self.max_freq:
-            self.freq = 2000
+    def step(self, freq):
+        if abs(freq) <= self.min_freq:
+            self.freq = self.min_freq
+        elif abs(freq) >= self.max_freq:
+            self.freq = self.max_freq
         else:
             self.freq = freq
             
-        if direction<0:
-            self.dir_pin.value(1-self.dir)
-            self.direction = -1
-        else:
-            self.dir_pin.value(self.dir)
-            self.direction = 1
-            
-        self.step_pin.freq(self.freq)
+        self.step_pin.freq(abs(self.freq))
         self.step_pin.duty_u16(32768)  # 50% duty cycle
 
     def stop(self):
@@ -129,16 +116,27 @@ class Stepper:
     @freq.setter
     def freq(self, value):
         self._freq = value
+        if abs(self._freq) < self.min_freq and self.decelerate == True:
+            self._freq = -1 * self.min_freq
+        elif abs(self._freq) < self.min_freq and self.decelerate == False:
+            self._freq = self.min_freq
+        if self._freq<0:
+            self.dir_pin.value(1-self.dir)
+            self.direction = -1
+        else:
+            self.dir_pin.value(self.dir)
+            self.direction = 1
+            
         steps = (self.max_freq - self.min_freq) / 10
         
-        if ((self._freq - self.min_freq) / steps) < 0:
+        if ((abs(self._freq) - self.min_freq) / steps) < 0:
             for i in range(10):
                 self.np[i] = (0, 0, 0)
             self.np.write()
             return
         
-        elif self.led_index != round((self._freq - self.min_freq) / steps):
-            self.led_index = round((self._freq - self.min_freq) / steps) 
+        elif self.led_index != round((abs(self._freq) - self.min_freq) / steps):
+            self.led_index = round((abs(self._freq)  - self.min_freq) / steps) 
             for i in range(10):
                 if i <= self.led_index:
                     self.np[i] = (0, 60, 20)
@@ -308,15 +306,15 @@ def main():
                     s1 = s_l
                 else:
                     continue
-                if int(float(msg[3])) <= 15: #To avoid low frequency error.
+                if int(float(msg[2])) <= 15 and int(float(msg[2])) >= -15: #To avoid low frequency error.
                     s1.stop()
                     print(s1.pos)
                     if s_r.freq <= 15 and s_l.freq <= 15:
                         en_pin.value(1)
                     continue
                 en_pin.value(0)
-                s1.step(int(float(msg[2])), s1.freq)
-                s1.accelerate(int(float(msg[3])))
+                s1.step(s1.freq)
+                s1.accelerate(int(float(msg[2])))
 
         gc.collect()
     
@@ -324,6 +322,8 @@ def main():
 if __name__ == '__main__':
     main()
     
+
+
 
 
 
