@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Source the ROS setup script
 source /opt/ros/iron/setup.bash
 
 # sudo apt-get update
@@ -10,4 +11,5 @@ source /opt/ros/iron/setup.bash
 
 echo "Provided command: $@"
 
+# Execute the provided command
 exec $@
