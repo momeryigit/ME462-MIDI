@@ -14,9 +14,13 @@ class SerialComm:
     
     def read_parse(self):
         message = self.read_message()
-        if message:
+        if message != None:
             message = message.strip()
-            return message.split(' ') 
+            message = message.split(' ')
+            if message == ['']:
+                return None
+            else:
+                return message
         else:
             return None
         

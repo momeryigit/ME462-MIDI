@@ -5,7 +5,7 @@ from machine import Pin, PWM, Timer, WDT
 from serial import SerialComm
 from hcsr04 import HCSR04
 from imu import MPU6050
-from machine import Pin, I2C
+from machine import Pin, I2C, freq
 from ADS1115 import *
 import neopixel
 import _thread
@@ -25,39 +25,34 @@ import os
 #
 
 class Stepper:
+    # Constructor for the Stepper class
     def __init__(self, step_pin, dir_pin, count_pin, led_pin, invert_dir=False):
-        self.step_pin = PWM(Pin(step_pin))
-        self.dir_pin = Pin(dir_pin, Pin.OUT)
-        self.count_pin = Pin(count_pin, Pin.IN, Pin.PULL_DOWN)
+        # Initialize pins and variables
+        self.step_pin = PWM(Pin(step_pin))  # Step pin for stepper motor
+        self.dir_pin = Pin(dir_pin, Pin.OUT)  # Direction pin for stepper motor
+        self.count_pin = Pin(count_pin, Pin.IN, Pin.PULL_DOWN)  # Count pin for stepper motor
 
-        self.decelerate = False
+        self.decelerate = False  # Flag to indicate if the motor is decelerating
         if invert_dir == True:
             self.dir = 1
         else:
             self.dir = 0
-        self.min_freq = 15
-        self.max_freq = 1600
-        self.np = np = neopixel.NeoPixel(Pin(led_pin), 10)
-        self.led_index = -1
+        self.min_freq = 15  # Minimum frequency for stepper motor
+        self.max_freq = 4000  # Maximum frequency for stepper motor
+        self.np = np = neopixel.NeoPixel(Pin(led_pin), 10)  # NeoPixel for LED control
+        self.led_index = -1  # Index for LED control
         
-        self.freq = 0
-        self.pos = 0
-        self.count_pin.irq(trigger=Pin.IRQ_RISING, handler=self._step_callback)
-        self.direction = 0 #Represents active direction of stepper
-        
-
-        
-        self.min_accel = 10 #delta(freq)/S
-        self.max_accel = 1000
-        self.step_size = 0
-        self.target_freq = 0
-        self.timer = Timer()
+        self.freq = 0  # Current frequency of stepper motor
+        self.pos = 0  # Current position of stepper motor
+        #self.count_pin.irq(trigger=Pin.IRQ_RISING, handler=self._step_callback)  # Interrupt for step callback
+        self.direction = 0  # Represents active direction of stepper
 
 
+        self.step_size = 0  # Step size for frequency change
+        self.target_freq = 0  # Target frequency for stepper motor
+        self.timer = Timer()  # Timer for frequency change
 
-
-        
-            
+    # Method to accelerate the stepper motor to a target frequency
     def accelerate(self, target_freq): 
         if target_freq < self.freq:
             self.decelerate = True
@@ -65,14 +60,12 @@ class Stepper:
             self.decelerate = False
         freq_diff = abs(target_freq - self.freq)
         self.target_freq = target_freq
-        self.step_size = 40 #Hz
-        timer_period = 10 #ms
-        #debug prinnt
-        print("Time Period in seconds: ", timer_period*freq_diff/self.step_size/1000)
+        self.step_size = 50  # Hz
+        timer_period = 20  # ms
         # Start the timer
         self.timer.init(period=timer_period, mode=Timer.PERIODIC, callback=self._change_freq)
 
-    
+    # Callback method to change the frequency of the stepper motor
     def _change_freq(self, timer):
         if self.freq < self.target_freq and self.decelerate == False:
             self.freq += self.step_size
@@ -86,40 +79,54 @@ class Stepper:
             self.step_pin.freq(abs(self.freq))
             self.timer.deinit()
 
+    # Method to step the stepper motor at a certain frequency
     def step(self, freq):
-        if abs(freq) <= self.min_freq:
-            self.freq = self.min_freq
-        elif abs(freq) >= self.max_freq:
-            self.freq = self.max_freq
-        else:
-            self.freq = freq
-            
+        self.freq = freq  
         self.step_pin.freq(abs(self.freq))
-        self.step_pin.duty_u16(32768)  # 50% duty cycle
+        self.step_pin.duty_u16(int((30/100)*65_535))  
 
+    # Method to stop the stepper motor
     def stop(self):
         self.freq = 0
         self.step_pin.duty_u16(0)
     
+    # Callback method for step interrupt
     def _step_callback(self, pin):
         if self.dir_pin.value() == 1:
             self.pos += 1
         else:
             self.pos -= 1
-        if self.pos >= 600:
+        if self.pos >= 1200 or self.pos <= -1200:
             self.pos = 0
-    
+
+    def update_leds(self, led_index):
+        # Update the LEDs
+        for i in range(10):
+            if i <= led_index:
+                self.np[i] = (0, 30, 60)
+            else:
+                self.np[i] = (0, 0, 0)
+        self.np.write()
+
+    # Property for frequency
     @property
     def freq(self):
         return self._freq
     
+    # Setter for frequency
     @freq.setter
     def freq(self, value):
-        self._freq = value
+        if abs(value) > self.max_freq:
+            self._freq = self.max_freq
+        else:
+            self._freq = value
+
         if abs(self._freq) < self.min_freq and self.decelerate == True:
             self._freq = -1 * self.min_freq
         elif abs(self._freq) < self.min_freq and self.decelerate == False:
             self._freq = self.min_freq
+
+        
         if self._freq<0:
             self.dir_pin.value(1-self.dir)
             self.direction = -1
@@ -128,27 +135,20 @@ class Stepper:
             self.direction = 1
             
         steps = (self.max_freq - self.min_freq) / 10
-        
-        if ((abs(self._freq) - self.min_freq) / steps) < 0:
-            for i in range(10):
-                self.np[i] = (0, 0, 0)
-            self.np.write()
+
+        if self._freq == 0 or ((abs(value) - self.min_freq) / steps) <= 0:
+            self.update_leds(-1)  # Turn off all LEDs
             return
         
-        elif self.led_index != round((abs(self._freq) - self.min_freq) / steps):
-            self.led_index = round((abs(self._freq)  - self.min_freq) / steps) 
-            for i in range(10):
-                if i <= self.led_index:
-                    self.np[i] = (0, 60, 20)
-                else:
-                    self.np[i] = (0, 0, 0)
-
-            self.np.write()
+        led_index = round((abs(self._freq) - self.min_freq) / steps)
+        if self.led_index != led_index:
+            self.led_index = led_index
+            self.update_leds(self.led_index)
 
         
         
         
-s_r = Stepper(2, 3, 7, 27)
+s_r = Stepper(2, 3, 7, 28)
 s_l = Stepper(4, 5, 8, 28, invert_dir = True) #step_pin,dir_pin, steps_per_rev=600,invert_dir=False
 en_pin = Pin(6, Pin.OUT)
 
@@ -174,7 +174,8 @@ class Sensors():
 
 
     def poll_ultrasonic(self, id):
-        print('u '+ str(id) + " " + str(self.types['ultrasonic']['sensor'][id].distance_cm()))
+        print('u '+ str(id) + " " + str(self.types['ultrasonic']['sensor'][id].distance_cm())) 
+       
     
     def poll_imu(self, id):
         print('i '+ str(self.types['imu']['sensor'][id]) + " " + self.types['imu']['sensor'][id].accel.x + " " + self.types['imu']['sensor'][id].accel.y + " " + self.types['imu']['sensor'][id].accel.z + " " + self.types['imu']['sensor'][id].gyro.x + " " + self.types['imu']['sensor'][id].gyro.y + " " + self.types['imu']['sensor'][id].gyro.z)
@@ -269,7 +270,8 @@ timer_for_ultrasonic = Timer()
 # 
 def main():
     time.sleep(3)
-    
+    freq(120000000) # set the CPU frequency to 240 MHz
+    print(freq())
     comms = None
     for i in range(3):
         try:
@@ -280,7 +282,7 @@ def main():
             pass
 
 
-    timer_for_ultrasonic.init(freq=0.1, mode=Timer.PERIODIC, callback =lambda t: getdist())     
+    timer_for_ultrasonic.init(freq=0.5, mode=Timer.PERIODIC, callback =lambda t: getdist())     
  #   timer_for_IMU.init(freq=1, mode=Timer.PERIODIC, callback =lambda t: IMUprint())
 #     #timer_for_heartbeat.init(freq=1, mode=Timer.PERIODIC, callback=lambda t:heartbeat(comms,write_lock))
 #   #  timer_for_ADC.init(freq=1, mode=Timer.PERIODIC, callback =lambda t: ADCprint())
@@ -306,11 +308,12 @@ def main():
                     s1 = s_l
                 else:
                     continue
-                if int(float(msg[2])) <= 15 and int(float(msg[2])) >= -15: #To avoid low frequency error.
+                if int(float(msg[2])) == 0 : #To avoid low frequency error.
                     s1.stop()
                     print(s1.pos)
-                    if s_r.freq <= 15 and s_l.freq <= 15:
-                        en_pin.value(1)
+                    en_pin.value(1)
+                    if s_r.freq == 0 and s_l.freq == 0:
+                        pass
                     continue
                 en_pin.value(0)
                 s1.step(s1.freq)
@@ -322,6 +325,7 @@ def main():
 if __name__ == '__main__':
     main()
     
+
 
 
 
