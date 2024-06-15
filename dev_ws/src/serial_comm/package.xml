@@ -5,6 +5,8 @@
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="e.dengizmen@gmail.com">sarpdengizmen</maintainer>
+  <maintainer email="omar1farouk@gmail.com">Omar Habib</maintainer>
+
   <license>Apache-2.0</license>
 
   <test_depend>ament_copyright</test_depend>
@@ -17,6 +19,7 @@
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>python3-serial</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>midibot_py</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>

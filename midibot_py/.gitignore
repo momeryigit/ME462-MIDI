@@ -1,0 +1,4 @@
+build/
+midibot_py.egg-info/
+midibot.egg-info/
+__pycache__/
