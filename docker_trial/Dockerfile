@@ -27,6 +27,10 @@ RUN apt-get update && \
     cmake \
     pkg-config \
     python3-pip \
+    libopencv-dev \
+    python3-opencv \
+    v4l-utils \
+    rpicam-apps-lite \
     swig && \
     rm -rf /var/lib/apt/lists/*
 
@@ -42,7 +46,8 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     chown ${USER_UID}:${USER_GID} /home/$USERNAME/.config && \
     echo "$USERNAME ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME && \
-    usermod -aG dialout ${USERNAME}
+    usermod -aG dialout ${USERNAME} && \
+    usermod -aG video ${USERNAME}
 
 # Switch to the non-root user
 USER $USERNAME
