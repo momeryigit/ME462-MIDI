@@ -41,7 +41,8 @@ RUN apt-get update && \
     libqt5gui5 \
     libqt5widgets5 \
     python3-yaml \
-    python3-ply \
+    python3-ply \ 
+    ninja-build \ 
     libglib2.0-dev \
     libgstreamer-plugins-base1.0-dev \
     swig
@@ -76,13 +77,12 @@ RUN sudo apt-get install -y libavcodec-dev libavdevice-dev libavformat-dev libsw
     sudo meson setup build --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled && \
     sudo ninja -C build && \
     sudo ninja -C build install
-    
+
 WORKDIR /home/$USERNAME
 
 # Build the rpicam-apps drivers from source
 RUN sudo apt-get install -y libcamera-dev libjpeg-dev libtiff5-dev libpng-dev && \
     sudo apt-get install -y cmake libboost-program-options-dev libdrm-dev libexif-dev && \ 
-    sudo apt-get install -y ninja-build && \
     sudo git clone https://github.com/raspberrypi/rpicam-apps.git && \
     cd rpicam-apps && \
     sudo meson setup build -Denable_libav=disabled -Denable_drm=enabled -Denable_egl=disabled -Denable_qt=disabled -Denable_opencv=enabled -Denable_tflite=disabled && \
