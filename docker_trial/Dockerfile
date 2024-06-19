@@ -8,7 +8,7 @@
 # --network=host : use the host network
 #ipc=host : use the host IPC namespace
 # --privileged : give the container full access to the host devices read/write
-# ex: docker run -it --user ros --network=host --ipc=host -v $PWD/../dev_ws:/dev_ws -v /dev:/dev --privileged my_image
+# ex: docker run -it --user ros --network=host --ipc=host -v $PWD/../dev_ws:/dev_ws -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged my_image
 
 # Use the official ROS iron base image
 FROM ros:iron-ros-base
@@ -30,9 +30,22 @@ RUN apt-get update && \
     libopencv-dev \
     python3-opencv \
     v4l-utils \
-    rpicam-apps-lite \
-    swig && \
-    rm -rf /var/lib/apt/lists/*
+    libboost-dev \
+    libgnutls28-dev \
+    openssl \
+    libtiff5-dev \
+    pybind11-dev \
+    qtbase5-dev \
+    libqt5core5a \
+    libqt5gui5 \
+    libqt5widgets5 \
+    python3-yaml \
+    python3-ply \
+    libglib2.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    swig
+    #swig && \
+    ##rm -rf /var/lib/apt/lists/*
 
 # Arguments for user creation
 ARG USERNAME=ros
@@ -53,6 +66,22 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
+# Build the rpicam-apps drivers from source
+RUN sudo pip3 install meson && \
+    sudo apt-get install -y libcamera-dev libjpeg-dev libtiff5-dev libpng-dev && \
+    sudo apt-get install libavcodec-dev libavdevice-dev libavformat-dev libswresample-dev &&\
+    sudo apt-get install -y cmake libboost-program-options-dev libdrm-dev libexif-dev && \ 
+    sudo apt-get install -y ninja-build && \
+    sudo git clone https://github.com/raspberrypi/rpicam-apps.git && \
+    cd rpicam-apps && \
+    sudo meson setup build -Denable_libav=disabled -Denable_drm=enabled -Denable_egl=disabled -Denable_qt=disabled -Denable_opencv=enabled -Denable_tflite=disabled && \
+    sudo meson compile -C build && \
+    sudo meson install -C build && \
+    sudo ldconfig -v
+
+
+
+WORKDIR /home/$USERNAME 
 # Clone, build, and install YDLidar SDK
 RUN git clone https://github.com/YDLIDAR/YDLidar-SDK.git && \
     mkdir -p YDLidar-SDK/build && \
