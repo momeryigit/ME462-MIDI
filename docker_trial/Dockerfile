@@ -69,7 +69,7 @@ WORKDIR /home/$USERNAME
 # Build the rpicam-apps drivers from source
 RUN sudo pip3 install meson && \
     sudo apt-get install -y libcamera-dev libjpeg-dev libtiff5-dev libpng-dev && \
-    sudo apt-get install libavcodec-dev libavdevice-dev libavformat-dev libswresample-dev &&\
+    sudo apt-get install -y libavcodec-dev libavdevice-dev libavformat-dev libswresample-dev &&\
     sudo apt-get install -y cmake libboost-program-options-dev libdrm-dev libexif-dev && \ 
     sudo apt-get install -y ninja-build && \
     sudo git clone https://github.com/raspberrypi/rpicam-apps.git && \
