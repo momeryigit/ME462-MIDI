@@ -30,6 +30,7 @@ RUN apt-get update && \
     libopencv-dev \
     python3-opencv \
     v4l-utils \
+    python3-jinja2 \
     libboost-dev \
     libgnutls28-dev \
     openssl \
@@ -66,10 +67,20 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
+RUN sudo pip3 install meson
+
+#Build libcamera from source
+RUN sudo apt-get install -y libavcodec-dev libavdevice-dev libavformat-dev libswresample-dev &&\
+    sudo git clone https://github.com/raspberrypi/libcamera.git && \
+    cd libcamera && \
+    sudo meson setup build --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled && \
+    sudo ninja -C build && \
+    sudo ninja -C build install
+    
+WORKDIR /home/$USERNAME
+
 # Build the rpicam-apps drivers from source
-RUN sudo pip3 install meson && \
-    sudo apt-get install -y libcamera-dev libjpeg-dev libtiff5-dev libpng-dev && \
-    sudo apt-get install -y libavcodec-dev libavdevice-dev libavformat-dev libswresample-dev &&\
+RUN sudo apt-get install -y libcamera-dev libjpeg-dev libtiff5-dev libpng-dev && \
     sudo apt-get install -y cmake libboost-program-options-dev libdrm-dev libexif-dev && \ 
     sudo apt-get install -y ninja-build && \
     sudo git clone https://github.com/raspberrypi/rpicam-apps.git && \
