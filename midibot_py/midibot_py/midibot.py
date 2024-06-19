@@ -1,8 +1,9 @@
 import threading
 import time
 from collections import deque
-from .serial_comm import SerialCommunication
-from .socket_comm import SocketCommunication
+from serial_comm import SerialCommunication
+from socket_comm import SocketCommunication
+import math
 
 
 class DifferentialDriveRobot:
@@ -43,6 +44,9 @@ class DifferentialDriveRobot:
 
         self._internal_lock = threading.Lock()
         self._initialized = True
+
+        self.wheel_radius = 0.045
+        self.wheel_separation = 0.30
 
     def connect(self, connection_type=None):
         """
@@ -117,23 +121,36 @@ class DifferentialDriveRobot:
         """
         Set the speed of the left and right wheels of the robot.
         """
-        command = f"s l {left_speed} r {right_speed}"
-        self.send_command(command)
+        command_l = f"s l {left_speed}"
+        command_r = f"s r {right_speed}"
+        self.send_command(command_l)
+        self.send_command(command_r)
 
     def move_forward(self, duration):
         """
         Move the robot forward for a specified duration.
         """
-        self.set_speed(400, 400)  # Example values, adjust as needed
+        self.set_speed(500, 500)  # Example values, adjust as needed
         time.sleep(duration)
         self.stop()
 
-    def turn(self, direction, steps, frequency):
+    def turn_90(self, direction, speed):
         """
-        Turn the robot in a specified direction for a given number of steps and frequency.
+        Turn the robot 90 degrees in the specified direction.
         """
-        command = f"s {direction} {steps} {frequency}"
-        self.send_command(command)
+        w = (speed * math.pi) / 600  # wheel angular speed
+        l = w * self.wheel_radius  # wheel linear speed
+        turning_angular = 2*l / self.wheel_separation
+        t_duration = math.pi / (2 * turning_angular)
+
+        if direction == "left":
+            self.set_speed(-speed, speed)
+            time.sleep(t_duration)
+            self.stop()
+        elif direction == "right":
+            self.set_speed(speed, -speed)
+            time.sleep(t_duration)
+            self.stop()
 
     def stop(self):
         """
@@ -153,5 +170,11 @@ class DifferentialDriveRobot:
         """
         self.send_command("GET_STATUS")
 
+
+
+        
+
+
     def __del__(self):
         self.disconnect()
+

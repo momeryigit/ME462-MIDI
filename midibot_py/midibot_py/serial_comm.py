@@ -29,9 +29,10 @@ class SerialCommunication:
         self.timeout = timeout
         self.serial_connection = None
         self.running = False
-        self.data_queue = deque()
         self.data_callback = None
         self.polling_thread = None
+        self.usonic_data = [12, 68, 94, 98]
+        self._u_moving_avg = [[], [], [], []]
         self._internal_lock = threading.Lock()
         self._initialized = True
 
@@ -66,10 +67,8 @@ class SerialCommunication:
         while self.running:
             if self.serial_connection.in_waiting > 0:
                 data = self.serial_connection.readline().decode("utf-8").strip()
-                if self.data_callback:
-                    self.data_callback(data)
-                else:
-                    self.data_queue.append(data)
+                if data:
+                    self._parse_serial_data(data)
             time.sleep(0.1)
 
     def send_command(self, command):
@@ -93,6 +92,32 @@ class SerialCommunication:
         """
         with self._internal_lock:
             return self.serial_connection.is_open if self.serial_connection else False
+
+    def _parse_serial_data(self, data):
+        parts = data.split()
+        if len(parts) < 2:
+            return
+        command = parts[0]
+        if command == "u":  # Assuming 'u' is for sensor data updates
+            sensor_id = parts[1]
+            sensor_value = parts[2]        
+            if self.data_callback:
+                self._mov_avg(sensor_id, sensor_value)
+                if sensor_id == "4":
+                    self.data_callback(self.usonic_data)
+            
+    def _mov_avg(self, sensor_id, sensor_value):
+        """
+        Filter and process sensor data as needed.
+        """
+        index = int(sensor_id) - 1
+        if len(self._u_moving_avg[index]) < 10:
+            self._u_moving_avg[index].append(float(sensor_value))
+            self.usonic_data[index] = (sum(self._u_moving_avg)) / len(self._u_moving_avg)
+        else:
+            self._u_moving_avg[index].append(float(sensor_value))
+            self.usonic_data[index] = self.usonic_data[index] + (float(sensor_value) - self._u_moving_avg.popleft()) / 10
+        
 
     def __del__(self):
         self.disconnect()
