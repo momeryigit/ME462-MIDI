@@ -89,45 +89,5 @@ class SerialCommunication:
         with self._internal_lock:
             return self.serial_connection.is_open if self.serial_connection else False
 
-    def _parse_serial_data(self):
-        with self._internal_lock:
-            if self.sensor_1:
-                print(self.sensor_1)
-                if self.sensor_1 == -0.017:
-                    self.sensor_1 = 260.0
-                self._mov_avg("1", self.sensor_1)
-
-                self.data_callback(self.usonic_data[0])
-                self.sensor_1 = None
-                # parts = data.split()
-            # if len(parts) < 2:
-            #     return
-            # command = parts[0]
-            # if command == "u":  # Assuming 'u' is for sensor data updates
-            #     sensor_id = parts[1]
-            #     sensor_value = parts[2]
-            #     if sensor_value == "-0.017":
-            #         sensor_value = "260.0"
-            #     if self.data_callback:
-            #         #self._mov_avg(sensor_id, sensor_value)
-            #         if sensor_id == "1":
-            #             self.data_callback(sensor_id, sensor_value)
-                
-    def _mov_avg(self, sensor_id, sensor_value):
-        """
-        Filter and process sensor data as needed.
-        """
-        
-        index = int(sensor_id) - 1
-        sensor_value = sensor_value
-        if len(self._u_moving_avg[index]) < 3:
-            self._u_moving_avg[index].append(sensor_value)
-            self.usonic_data[index] = round(sum(self._u_moving_avg[index]) / len(self._u_moving_avg[index]), 3)
-        else:
-            # Calculate the new average
-            _old = self._u_moving_avg[index].popleft()
-            self._u_moving_avg[index].append(sensor_value)
-            self.usonic_data[index] = round(self.usonic_data[index] + (sensor_value - _old) / 3, 3)
-
     def __del__(self):
         self.disconnect()
