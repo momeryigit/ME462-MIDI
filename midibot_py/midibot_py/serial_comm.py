@@ -1,7 +1,7 @@
 import threading
 import serial
 from .sensors import Sensors
-import queue
+from collections import deque
 import time
 
 class SerialCommunication:
