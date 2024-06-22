@@ -40,6 +40,21 @@ class Sensors:
         
         self._initialized = True
 
+    def request_sensor_data(self, sensor_type):
+        """
+        Request sensor data from the robot.
+
+        Args:
+            sensor_type (str): The type of sensor data to request.
+        """
+        if sensor_type == "u":
+            return self.u_sonic_data
+        elif sensor_type == "i":
+            return self.imu_data
+        elif sensor_type == "b":
+            return self.b_switch_data
+
+
     def parse_data(self, data):
         """
         Parse the received data and update the sensor data dictionaries.
