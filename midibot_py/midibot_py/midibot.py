@@ -170,7 +170,7 @@ class DifferentialDriveRobot:
         time.sleep(duration)
         self.stop()
 
-    def linear_ang_speed_to_freq(self, linear_speed, angular_speed):
+    def send_twist(self, linear_speed, angular_speed):
         """
         Convert desired linear and angular speeds to wheel frequencies and set the robot speed.
 
