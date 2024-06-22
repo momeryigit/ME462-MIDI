@@ -124,11 +124,11 @@ class DifferentialDriveRobot:
         """
         Send a command to the robot using either serial or socket communication.
         """
-        with self._internal_lock:
-            if self.serial_running:
-                self.serial_comm.send_command(command)
-            if self.socket_running:
-                self.socket_comm.send_command(command)
+
+        if self.serial_running:
+            self.serial_comm.send_command(command)
+        if self.socket_running:
+            self.socket_comm.send_command(command)
 
     def set_speed(self, left_speed, right_speed):
         """
@@ -138,11 +138,16 @@ class DifferentialDriveRobot:
         command_r = f"s r {right_speed}"
         self.send_command(command_l)
         self.send_command(command_r)
+        command_l = f"s l {left_speed}"
+        command_r = f"s r {right_speed}"
+        self.send_command(command_l)
+        self.send_command(command_r)
 
     def move_forward(self, duration):
         """
         Move the robot forward for a specified duration.
         """
+        self.set_speed(500, 500)  # Example values, adjust as needed
         self.set_speed(500, 500)  # Example values, adjust as needed
         time.sleep(duration)
         self.stop()
@@ -187,6 +192,12 @@ class DifferentialDriveRobot:
         """
         self.send_command("GET_STATUS")
 
+
+
+        
+
+
     def __del__(self):
         self.stop()
         self.disconnect()
+

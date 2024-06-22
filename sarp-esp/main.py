@@ -245,7 +245,7 @@ sensors.create_ultrasonic(1, 22, 26)
 sensors.create_ultrasonic(2, 16, 17)
 sensors.create_ultrasonic(3, 18, 19)
 sensors.create_ultrasonic(4, 20, 21)
-sensors.create_imu(1, 0, 1)
+# sensors.create_imu(1, 0, 1)
 
 ultrasonic_flag = False
 IMU_flag = False
@@ -268,7 +268,6 @@ def send_sensory_data(comms):
         sensors.poll_ultrasonic(2)
         sensors.poll_ultrasonic(3)
         sensors.poll_ultrasonic(4)
-        sensors.poll_imu(1)
         ultrasonic_flag = False
 
 # def handle_emergency(stepper_l, stepper_r, sensors):
@@ -345,3 +344,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
