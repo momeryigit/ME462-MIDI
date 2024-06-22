@@ -63,7 +63,6 @@ class Sensors:
             data (str): A string containing sensor data in the format "<type> <id> <values>".
         """
         parts = data.split()
-        print(parts)
         if len(parts) < 2:
             return
         
@@ -77,6 +76,8 @@ class Sensors:
             self._manage_imu_data(sensor_data)
         elif identifier == "b":
             self._manage_b_switch_data(sensor_id, sensor_data[0])
+        elif identifier == "s":
+            pass
         else:
             print(f"Unknown identifier: {identifier}")
 

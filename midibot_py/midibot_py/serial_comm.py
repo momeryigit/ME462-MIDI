@@ -70,7 +70,6 @@ class SerialCommunication:
                 with self._internal_lock:
                     raw_data = self.serial_connection.readline().decode("utf-8").strip()
                 if raw_data:
-                    print(raw_data)
                     self.sensors.parse_data(raw_data)
             time.sleep(0.01)
     
