@@ -75,6 +75,10 @@ class Sensors:
         """
         index = int(u_id) - 1
         u_value = round(float(u_value), 3)
+        if u_value == -0.017:
+            u_value = 260.0
+        elif u_value == -0.032:
+            u_value = "sensor disconnected"
         self.u_moving_avg[index].append(u_value)
         
         # Calculate the moving average
