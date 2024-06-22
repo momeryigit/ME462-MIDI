@@ -1,7 +1,10 @@
 import threading
 import serial
-import time
 from collections import deque
+import os
+import time
+from queue import Queue
+
 
 
 class SerialCommunication:
@@ -21,7 +24,7 @@ class SerialCommunication:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, port, baudrate=9600, timeout=1):
+    def __init__(self, port, baudrate=115200, timeout=1):
         if self._initialized:
             return
         self.port = port
@@ -30,11 +33,15 @@ class SerialCommunication:
         self.serial_connection = None
         self.running = False
         self.data_callback = None
+        self.data_queue = deque()
         self.polling_thread = None
-        self.usonic_data = [12, 68, 94, 98]
-        self._u_moving_avg = [[], [], [], []]
+        self.usonic_data = [0.0, 0.0, 0.0, 0.0]
+        self._u_moving_avg = [deque(maxlen=3) for _ in range(4)]  # Initialize a deque for each sensor
         self._internal_lock = threading.Lock()
         self._initialized = True
+        self.start_time = time.time()
+        self.counter = 0
+        self.sensor_1 = 0
 
     def connect(self):
         """
@@ -66,18 +73,24 @@ class SerialCommunication:
         """
         while self.running:
             if self.serial_connection.in_waiting > 0:
-                data = self.serial_connection.readline().decode("utf-8").strip()
+                with self._internal_lock:
+                    data = self.serial_connection.readline().decode("utf-8").strip() 
                 if data:
-                    self._parse_serial_data(data)
-            time.sleep(0.1)
+                    try:
+                        if data[2] == "3":
+                            self.sensor_1 = round(float(data[3:]),3)
+                    except Exception as e:
+                        print(e, data)    
+
+                # if data
+                #     self._parse_serial_data(data)
 
     def send_command(self, command):
         """
         Send a command through the serial connection.
         """
-        with self._internal_lock:
-            if self.serial_connection:
-                self.serial_connection.write((command + "\n").encode("utf-8"))
+        if self.serial_connection:
+            self.serial_connection.write((command + "\n").encode("utf-8"))
 
     def set_data_callback(self, callback):
         """
@@ -93,31 +106,45 @@ class SerialCommunication:
         with self._internal_lock:
             return self.serial_connection.is_open if self.serial_connection else False
 
-    def _parse_serial_data(self, data):
-        parts = data.split()
-        if len(parts) < 2:
-            return
-        command = parts[0]
-        if command == "u":  # Assuming 'u' is for sensor data updates
-            sensor_id = parts[1]
-            sensor_value = parts[2]        
-            if self.data_callback:
-                self._mov_avg(sensor_id, sensor_value)
-                if sensor_id == "4":
-                    self.data_callback(self.usonic_data)
-            
+    def _parse_serial_data(self):
+        with self._internal_lock:
+            if self.sensor_1:
+                print(self.sensor_1)
+                if self.sensor_1 == -0.017:
+                    self.sensor_1 = 260.0
+                self._mov_avg("1", self.sensor_1)
+
+                self.data_callback(self.usonic_data[0])
+                self.sensor_1 = None
+                # parts = data.split()
+            # if len(parts) < 2:
+            #     return
+            # command = parts[0]
+            # if command == "u":  # Assuming 'u' is for sensor data updates
+            #     sensor_id = parts[1]
+            #     sensor_value = parts[2]
+            #     if sensor_value == "-0.017":
+            #         sensor_value = "260.0"
+            #     if self.data_callback:
+            #         #self._mov_avg(sensor_id, sensor_value)
+            #         if sensor_id == "1":
+            #             self.data_callback(sensor_id, sensor_value)
+                
     def _mov_avg(self, sensor_id, sensor_value):
         """
         Filter and process sensor data as needed.
         """
-        index = int(sensor_id) - 1
-        if len(self._u_moving_avg[index]) < 10:
-            self._u_moving_avg[index].append(float(sensor_value))
-            self.usonic_data[index] = (sum(self._u_moving_avg)) / len(self._u_moving_avg)
-        else:
-            self._u_moving_avg[index].append(float(sensor_value))
-            self.usonic_data[index] = self.usonic_data[index] + (float(sensor_value) - self._u_moving_avg.popleft()) / 10
         
+        index = int(sensor_id) - 1
+        sensor_value = sensor_value
+        if len(self._u_moving_avg[index]) < 3:
+            self._u_moving_avg[index].append(sensor_value)
+            self.usonic_data[index] = round(sum(self._u_moving_avg[index]) / len(self._u_moving_avg[index]), 3)
+        else:
+            # Calculate the new average
+            _old = self._u_moving_avg[index].popleft()
+            self._u_moving_avg[index].append(sensor_value)
+            self.usonic_data[index] = round(self.usonic_data[index] + (sensor_value - _old) / 3, 3)
 
     def __del__(self):
         self.disconnect()

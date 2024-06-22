@@ -24,7 +24,7 @@ class DifferentialDriveRobot:
         return cls._instance
 
     def __init__(
-        self, port, baudrate=9600, timeout=1, ip="192.168.137.28", socket_port=8080
+        self, port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080
     ):
         if self._initialized:
             return
@@ -102,11 +102,11 @@ class DifferentialDriveRobot:
         """
         Send a command to the robot using either serial or socket communication.
         """
-        with self._internal_lock:
-            if self.serial_running:
-                self.serial_comm.send_command(command)
-            if self.socket_running:
-                self.socket_comm.send_command(command)
+
+        if self.serial_running:
+            self.serial_comm.send_command(command)
+        if self.socket_running:
+            self.socket_comm.send_command(command)
 
     def set_data_callback(self, callback):
         """

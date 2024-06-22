@@ -33,23 +33,23 @@ class PIDController:
         #     self.previous_error = 0
         #     return
         self.previous_error = error
-        if control_effort < -260:
+        if control_effort < -130:
             self.adjust_robot_turning(control_effort)
         else:
             self.adjust_robot_linear_direction(control_effort)
 
     def adjust_robot_linear_direction(self, control_effort):
         self._counter = 0
-        self.robot.set_speed(1400 + control_effort, 1400 - control_effort)
+        self.robot.set_speed(700 + control_effort, 700 - control_effort)
     def adjust_robot_turning(self, control_effort):
         self._counter = 0
-        self.robot.set_speed(1200 + 0.4*control_effort, 1400 - 2*1.87*control_effort)
+        self.robot.set_speed(600 + 0.2*control_effort, 700 - 1.87*control_effort)
 
 robot = DifferentialDriveRobot("/dev/ttyACM0")
-pid = PIDController(11, 3*0.011, 2*0.02, 50.0, robot)  # Example PID parameters, adjust as needed
+pid = PIDController(8, 0.011, 0.02, 50.0, robot)  # Example PID parameters, adjust as needed
 
 def manage_data(data):
-    global d3c
+    global d3
     d3 = data
     print("Data: ", d3)
     pid.calculate_control_effort(d3)
