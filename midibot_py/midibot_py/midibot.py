@@ -83,19 +83,18 @@ class DifferentialDriveRobot:
         Args:
             connection_type (str, optional): Type of connection ('serial' or 'socket'). Defaults to None.
         """
-        with self._internal_lock:
-            if connection_type == "serial":
+        if connection_type == "serial":
+            self._connect_serial()
+        elif connection_type == "socket":
+            self._connect_socket()
+        else:
+            for _ in range(3):
                 self._connect_serial()
-            elif connection_type == "socket":
-                self._connect_socket()
+                if self.serial_running:
+                    break
             else:
-                for _ in range(3):
-                    self._connect_serial()
-                    if self.serial_running:
-                        break
-                else:
-                    if not self.serial_running:
-                        self._connect_socket()
+                if not self.serial_running:
+                    self._connect_socket()
 
     def _connect_serial(self):
         """
@@ -121,11 +120,10 @@ class DifferentialDriveRobot:
         """
         Disconnect both serial and socket connections.
         """
-        with self._internal_lock:
-            self.serial_comm.disconnect()
-            self.socket_comm.disconnect()
-            self.serial_running = False
-            self.socket_running = False
+        self.serial_comm.disconnect()
+        self.socket_comm.disconnect()
+        self.serial_running = False
+        self.socket_running = False
 
     def set_data_callback(self, callback):
         """
