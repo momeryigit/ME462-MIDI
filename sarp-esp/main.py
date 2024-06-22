@@ -1,59 +1,90 @@
 import time
 import builtins
 from machine import Pin, PWM, Timer, WDT
-#from stepper import Stepper
+import rp2
 from serial import SerialComm
 from hcsr04 import HCSR04
 from imu import MPU6050
-from machine import Pin, I2C, freq
-from ADS1115 import *
+from machine import I2C, freq
 import neopixel
-import _thread
-import sys
 import gc
-import os
+
+gc.collect()
+
+# Limit switch pins
+# 10 11 12 13
+
+# Ultasonic Sensor Pins (trig, echo)
+# u1
+# 14 15
+
+# u2
+# 16 17
+
+# u3
+# 18 19
+
+# u4
+# 20 21
+
+# imu
+# sda pin: 0
+# scl pin: 1
+
+# stepper r pins
+# en: 2 step: 3 dir: 4 led: 8
+
+# stepper l pins
+# en: 5 step: 6 dir: 7 led: 9
 
 
-#i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
-#imu = MPU6050(i2c)
-# #BUMPER1 = Pin(13, Pin.IN, Pin.PULL_DOWN)
-# #ADS1115_ADDRESS = 0x48
-# #adc = ADS1115(ADS1115_ADDRESS, i2c=i2c)
-# #adc.setVoltageRange_mV(ADS1115_RANGE_6144)
-# #adc.setConvRate(ADS1115_128_SPS)
-# #adc.setMeasureMode(ADS1115_CONTINUOUS)
-#
 
 class Stepper:
-    # Constructor for the Stepper class
-    def __init__(self, step_pin, dir_pin, count_pin, led_pin, invert_dir=False):
+    def __init__(self, enable_pin, step_pin, dir_pin, led_pin, invert_dir=False, count_pin=None):
         # Initialize pins and variables
-        self.step_pin = PWM(Pin(step_pin))  # Step pin for stepper motor
-        self.dir_pin = Pin(dir_pin, Pin.OUT)  # Direction pin for stepper motor
-        self.count_pin = Pin(count_pin, Pin.IN, Pin.PULL_DOWN)  # Count pin for stepper motor
+        self.en_pin = Pin(enable_pin, Pin.OUT)
+        self.en_pin.value(0)
+        self.step_pin = PWM(Pin(step_pin))
+        self.dir_pin = Pin(dir_pin, Pin.OUT)
+        self.count_pin = count_pin
+        self.decelerate = False
+        self.invert_dir = invert_dir
+        self.dir = 1 if invert_dir else 0
+        self.min_freq = 15
+        self.max_freq = 4000
+        self.np = neopixel.NeoPixel(Pin(led_pin), 10)
+        self.led_index = -1
+        self.freq = 0
+        self.pos = 0
+        self.direction = 0
+        self.step_size = 0
+        self.target_freq = 0
+        self.timer = Timer()
 
-        self.decelerate = False  # Flag to indicate if the motor is decelerating
-        if invert_dir == True:
-            self.dir = 1
-        else:
-            self.dir = 0
-        self.min_freq = 15  # Minimum frequency for stepper motor
-        self.max_freq = 4000  # Maximum frequency for stepper motor
-        self.np = np = neopixel.NeoPixel(Pin(led_pin), 10)  # NeoPixel for LED control
-        self.led_index = -1  # Index for LED control
-        
-        self.freq = 0  # Current frequency of stepper motor
-        self.pos = 0  # Current position of stepper motor
-        #self.count_pin.irq(trigger=Pin.IRQ_RISING, handler=self._step_callback)  # Interrupt for step callback
-        self.direction = 0  # Represents active direction of stepper
-
-
-        self.step_size = 0  # Step size for frequency change
-        self.target_freq = 0  # Target frequency for stepper motor
-        self.timer = Timer()  # Timer for frequency change
+        # Initialize the PIO state machine for step counting
+#         @rp2.asm_pio()
+#         def step_counter():
+#             wrap_target()
+#             wait(1, pin, 0)  # Wait for the pin to go high
+#             wait(0, pin, 0)  # Wait for the pin to go low
+#             irq(rel(0))  # Trigger an interrupt for each complete pulse
+#             wrap()
+# 
+#         self.sm = rp2.StateMachine(step_pin, step_counter, freq=5000, in_base=Pin(step_pin))
+#         self.sm.irq(self._pio_callback)
+#         self.sm.active(1)
+# 
+#     def _pio_callback(self, sm):
+#         if self.dir_pin.value() == 1:
+#             self.pos += 1
+#         else:
+#             self.pos -= 1
+#         if self.pos >= 1200 or self.pos <= -1200:
+#             self.pos = 0
+# #         print("wri", self.pos)
 
     # Method to accelerate the stepper motor to a target frequency
-    def accelerate(self, target_freq): 
+    def accelerate(self, target_freq):
         if target_freq < self.freq:
             self.decelerate = True
         else:
@@ -63,14 +94,16 @@ class Stepper:
         self.step_size = 50  # Hz
         timer_period = 20  # ms
         # Start the timer
-        self.timer.init(period=timer_period, mode=Timer.PERIODIC, callback=self._change_freq)
+        self.timer.init(
+            period=timer_period, mode=Timer.PERIODIC, callback=self._change_freq
+        )
 
     # Callback method to change the frequency of the stepper motor
     def _change_freq(self, timer):
-        if self.freq < self.target_freq and self.decelerate == False:
+        if self.freq < self.target_freq and not self.decelerate:
             self.freq += self.step_size
             self.step_pin.freq(abs(self.freq))
-        elif self.freq > self.target_freq and self.decelerate == True:
+        elif self.freq > self.target_freq and self.decelerate:
             self.freq -= self.step_size
             self.step_pin.freq(abs(self.freq))
         else:
@@ -81,15 +114,19 @@ class Stepper:
 
     # Method to step the stepper motor at a certain frequency
     def step(self, freq):
-        self.freq = freq  
+        self.en_pin.value(0)
+        self.freq = freq
         self.step_pin.freq(abs(self.freq))
-        self.step_pin.duty_u16(int((30/100)*65_535))  
+        self.step_pin.duty_u16(int((30 / 100) * 65_535))
 
     # Method to stop the stepper motor
     def stop(self):
         self.freq = 0
         self.step_pin.duty_u16(0)
-    
+#         self.sm.active(0)
+        self.en_pin.value(1)
+        self.timer.deinit()
+
     # Callback method for step interrupt
     def _step_callback(self, pin):
         if self.dir_pin.value() == 1:
@@ -112,7 +149,7 @@ class Stepper:
     @property
     def freq(self):
         return self._freq
-    
+
     # Setter for frequency
     @freq.setter
     def freq(self, value):
@@ -121,112 +158,94 @@ class Stepper:
         else:
             self._freq = value
 
-        if abs(self._freq) < self.min_freq and self.decelerate == True:
-            self._freq = -1 * self.min_freq
-        elif abs(self._freq) < self.min_freq and self.decelerate == False:
-            self._freq = self.min_freq
+        if abs(self._freq) < self.min_freq:
+            self._freq = -self.min_freq if self.decelerate else self.min_freq
 
-        
-        if self._freq<0:
-            self.dir_pin.value(1-self.dir)
+        if self._freq < 0:
+            self.dir_pin.value(1 - self.dir)
             self.direction = -1
         else:
             self.dir_pin.value(self.dir)
             self.direction = 1
-            
+
         steps = (self.max_freq - self.min_freq) / 10
 
         if self._freq == 0 or ((abs(value) - self.min_freq) / steps) <= 0:
             self.update_leds(-1)  # Turn off all LEDs
             return
-        
+
         led_index = round((abs(self._freq) - self.min_freq) / steps)
         if self.led_index != led_index:
             self.led_index = led_index
             self.update_leds(self.led_index)
 
-        
-        
-        
-s_r = Stepper(2, 3, 7, 28)
-s_l = Stepper(4, 5, 8, 28, invert_dir = True) #step_pin,dir_pin, steps_per_rev=600,invert_dir=False
-en_pin = Pin(6, Pin.OUT)
+s_r = Stepper(2, 3, 4, 8)
+s_l = Stepper(5, 6, 7, 9, invert_dir=True)  # step_pin, dir_pin, steps_per_rev=600, invert_dir=False
 
-class Sensors():
+
+class Sensors:
     def __init__(self):
         self.types = {
-            'ultrasonic': {'poll_rate': 50, 'sensor': {}}, 
-            'imu': {'poll_rate': 10, 'sensor': {}},
-            'bumper': {'poll_rate': 1, 'sensor': {}},
-            'adc': {'poll_rate': 1, 'sensor': {}},
+            "ultrasonic": {"poll_rate": 10, "sensor": {}},
+            "imu": {"poll_rate": 10, "sensor": {}},
+            "bumper": {"poll_rate": 1, "sensor": {}},
+            "adc": {"poll_rate": 1, "sensor": {}},
         }
         self.timers = {}
 
     def create_ultrasonic(self, id, trigger, echo):
-        self.types['ultrasonic']['sensor'][id] = HCSR04(trigger, echo)
+        self.types["ultrasonic"]["sensor"][id] = HCSR04(trigger, echo)
 
     def create_imu(self, id, sda, scl):
         i2c = I2C(0, sda=Pin(sda), scl=Pin(scl), freq=400000)
-        self.types['imu']['sensor'][id] = MPU6050(i2c)
-    
-    def create_bumper(self, id, pin):
-        self.types['bumper']['sensor'][id] = Pin(pin, Pin.IN, Pin.PULL_DOWN)
+        self.types["imu"]["sensor"][id] = MPU6050(i2c)
 
+    def create_bumper(self, id, pin):
+        self.types["bumper"]["sensor"][id] = Pin(pin, Pin.IN, Pin.PULL_DOWN)
 
     def poll_ultrasonic(self, id):
-        print('u '+ str(id) + " " + str(self.types['ultrasonic']['sensor'][id].distance_cm())) 
-       
-    
+        
+        print(
+            (
+            "u "
+            + str(id)
+            + " "
+            + str(self.types["ultrasonic"]["sensor"][id].distance_cm())
+            )
+        )
+
     def poll_imu(self, id):
-        print('i '+ str(self.types['imu']['sensor'][id]) + " " + self.types['imu']['sensor'][id].accel.x + " " + self.types['imu']['sensor'][id].accel.y + " " + self.types['imu']['sensor'][id].accel.z + " " + self.types['imu']['sensor'][id].gyro.x + " " + self.types['imu']['sensor'][id].gyro.y + " " + self.types['imu']['sensor'][id].gyro.z)
+        imu = self.types["imu"]["sensor"][id]
+        print(
+            f"i {id} {imu.accel.x} {imu.accel.y} {imu.accel.z} {imu.gyro.x} {imu.gyro.y} {imu.gyro.z}"
+        )
 
     def poll_bumper(self, id):
-        print('b '+ str(self.types['bumper']['sensor'][id]) + " " + self.types['bumper']['sensor'][id].value())
+        print("b " + str(id) + " " + str(self.types["bumper"]["sensor"][id].value()))
 
     def start_polling(self, sensor_type, id):
         if sensor_type in self.timers:
             self.timers[sensor_type].deinit()  # stop previous timer
         self.timers[sensor_type] = Timer(-1)
-        self.timers[sensor_type].init(freq=self.types[sensor_type]['poll_rate'], mode=Timer.PERIODIC, callback=lambda t: getattr(self, f'poll_{sensor_type}')(id))
+        self.timers[sensor_type].init(
+            freq=self.types[sensor_type]["poll_rate"],
+            mode=Timer.PERIODIC,
+            callback=lambda t: getattr(self, f"poll_{sensor_type}")(id),
+        )
 
     def set_poll_rate(self, sensor_type, poll_rate):
-        self.types[sensor_type]['poll_rate'] = poll_rate
-
+        self.types[sensor_type]["poll_rate"] = poll_rate
     def stop_polling(self, sensor_type):
         self.timers[sensor_type].deinit()
         del self.timers[sensor_type]
 
-    
-# def BUMPERprint():
-#     # print BUMPER readings
-#     print("Bumper1:",BUMPER1.value())
-#     
-# def ADCprint():
-#     #print ADC readings
-#     voltage0 = readChannel(ADS1115_COMP_0_GND)
-#     voltage1 = readChannel(ADS1115_COMP_1_GND)
-#     voltage2 = readChannel(ADS1115_COMP_2_GND)
-#     voltage3 = readChannel(ADS1115_COMP_3_GND)
-#     print("ADC1: {:<8.2f} ADC2: {:<8.2f} ADC3: {:<8.2f} ADC4: {:<8.2f}".format(voltage0, voltage1, voltage2, voltage3))
-#     #print ADC readings
-#     
-# def readChannel(channel):
-#     adc.setCompareChannels(channel)
-#     voltage = adc.getResult_V()
-#     return voltage
 
-# def heartbeat(comms, write_lock):
-#     global beats
-#     beats += 1
-#     with write_lock:
-#         comms.send_message('h ' + str(beats))
-
-
-Sensors = Sensors()
-Sensors.create_ultrasonic(1, 9, 10)
-Sensors.create_ultrasonic(2, 11, 12)
-Sensors.create_ultrasonic(3, 13, 14)
-Sensors.create_ultrasonic(4, 15, 16)
+sensors = Sensors()
+sensors.create_ultrasonic(1, 22, 26)
+sensors.create_ultrasonic(2, 16, 17)
+sensors.create_ultrasonic(3, 18, 19)
+sensors.create_ultrasonic(4, 20, 21)
+sensors.create_imu(1, 0, 1)
 
 ultrasonic_flag = False
 IMU_flag = False
@@ -235,103 +254,94 @@ IMU_flag = False
 def IMUprint():
     global IMU_flag
     IMU_flag = True
-    
+
+
 def getdist():
     global ultrasonic_flag
     ultrasonic_flag = True
-    
+
+
 def send_sensory_data(comms):
     global ultrasonic_flag, IMU_flag
-    if ultrasonic_flag == True:
-        Sensors.poll_ultrasonic(1)
-        Sensors.poll_ultrasonic(2)
-        Sensors.poll_ultrasonic(3)
-        Sensors.poll_ultrasonic(4)
+    if ultrasonic_flag:
+        sensors.poll_ultrasonic(1)
+        sensors.poll_ultrasonic(2)
+        sensors.poll_ultrasonic(3)
+        sensors.poll_ultrasonic(4)
+        sensors.poll_imu(1)
         ultrasonic_flag = False
-    # if IMU_flag == True:
-    #     ax=round(imu.accel.x,2)
-    #     ay=round(imu.accel.y,2)
-    #     az=round(imu.accel.z,2)
-    #     gx=round(imu.gyro.x,2)
-    #     gy=round(imu.gyro.y,2)
-    #     gz=round(imu.gyro.z,2)
-    #     comms.send_message("i "+ "1 " + str(ax) + " " + str(ay) + " " + str(az) + " "+ str(gx) + " "+ str(gy) + " "+ str(gz))
-    #     IMU_flag = False
 
+# def handle_emergency(stepper_l, stepper_r, sensors):
+#     emergency_ultrasonic = sensors.types["ultrasonic"]["sensor"][1].distance_cm()
+#     if  emergency_ultrasonic < 10.0:
+#         return True
 
-# timer_for_heartbeat =Timer()
+#     # Uncomment this block if IMU functionality is fully implemented
+#     if IMU_flag:
+#         sensors.poll_imu(1)
+#         IMU_flag = False
+
 timer_for_ultrasonic = Timer()
-#timer_for_IMU = Timer()
-# timer_for_ADC = Timer()
-# timer_for_BUMPER = Timer()
-# print(gc.mem_free())
-# 
-# main_running = True
-# 
+timer_for_imu = Timer()
+
+
 def main():
-    time.sleep(3)
-    freq(120000000) # set the CPU frequency to 240 MHz
+    time.sleep(0.1)
+    freq(80000000)
     print(freq())
     comms = None
+
     for i in range(3):
         try:
             comms = SerialComm()
             break
         except Exception as e:
-            print(f'Failed to initialize serial port. {str(e)}')
+            print(f"Failed to initialize serial port. {str(e)}")
             pass
 
-
-    timer_for_ultrasonic.init(freq=0.5, mode=Timer.PERIODIC, callback =lambda t: getdist())     
- #   timer_for_IMU.init(freq=1, mode=Timer.PERIODIC, callback =lambda t: IMUprint())
-#     #timer_for_heartbeat.init(freq=1, mode=Timer.PERIODIC, callback=lambda t:heartbeat(comms,write_lock))
-#   #  timer_for_ADC.init(freq=1, mode=Timer.PERIODIC, callback =lambda t: ADCprint())
-#    # timer_for_BUMPER.init(freq=1, mode=Timer.PERIODIC, callback =lambda t: BUMPERprint())
-
-    en_pin.value(1)
+    timer_for_ultrasonic.init(
+        freq=1, mode=Timer.PERIODIC, callback=lambda t: getdist()
+    )
+#     timer_for_imu.init(
+#         freq=5, mode=Timer.PERIODIC, callback=lambda t: IMUprint()
+#         )
+    s_r.en_pin.value(1)
+    s_l.en_pin.value(1)
 
     while True:
         try:
             msg = comms.read_parse()
         except Exception as e:
             print(type(e))
+
         send_sensory_data(comms)
-        if msg != None:
+#         if handle_emergency(s_r, s_l, sensors):
+#             
+        
+        if msg is not None:
             mystring = ""
             for data in msg:
                 mystring += str(data) + " "
             print(mystring)
-            if msg[0] == 's':
-                if msg[1] == 'r':
-                    s1 = s_r
-                elif msg[1] == 'l':
-                    s1 = s_l
+            if msg[0] == "s":
+                if msg[1] == "r":
+                    stepper = s_r
+                elif msg[1] == "l":
+                    stepper = s_l
                 else:
                     continue
-                if int(float(msg[2])) == 0 : #To avoid low frequency error.
-                    s1.stop()
-                    print(s1.pos)
-                    en_pin.value(1)
-                    if s_r.freq == 0 and s_l.freq == 0:
-                        pass
-                    continue
-                en_pin.value(0)
-                s1.step(s1.freq)
-                s1.accelerate(int(float(msg[2])))
+
+                if int(float(msg[2])) == 0:
+                    stepper.stop()
+                    print(stepper.pos)
+
+                else:
+                    stepper.step(stepper.freq)
+                    stepper.accelerate(int(float(msg[2])))
+                    speed = int(float(msg[2]))
 
         gc.collect()
-    
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()
-    
-
-
-
-
-
-
-
-
-
-
