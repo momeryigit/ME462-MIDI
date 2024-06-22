@@ -1,8 +1,8 @@
 import threading
 import serial
+from .sensors import Sensors
+import queue
 import time
-from collections import deque
-
 
 class SerialCommunication:
     """
@@ -21,19 +21,19 @@ class SerialCommunication:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, port, baudrate=9600, timeout=1):
+    def __init__(self, serial_port, baudrate=9600, timeout=1):
         if self._initialized:
             return
-        self.port = port
+        self.serial_port = serial_port
         self.baudrate = baudrate
         self.timeout = timeout
         self.serial_connection = None
         self.running = False
-        self.data_queue = deque()
-        self.data_callback = None
         self.polling_thread = None
         self._internal_lock = threading.Lock()
         self._initialized = True
+
+        self.sensors = Sensors()  # Access singleton instance of Sensors class
 
     def connect(self):
         """
@@ -42,7 +42,7 @@ class SerialCommunication:
         with self._internal_lock:
             if not self.serial_connection or not self.serial_connection.is_open:
                 self.serial_connection = serial.Serial(
-                    self.port, self.baudrate, timeout=self.timeout
+                    self.serial_port, self.baudrate, timeout=self.timeout
                 )
                 self.running = True
                 self.polling_thread = threading.Thread(target=self._poll_serial)
@@ -65,12 +65,13 @@ class SerialCommunication:
         """
         while self.running:
             if self.serial_connection.in_waiting > 0:
-                data = self.serial_connection.readline().decode("utf-8").strip()
-                if self.data_callback:
-                    self.data_callback(data)
-                else:
-                    self.data_queue.append(data)
-            time.sleep(0.1)
+                with self._internal_lock:
+                    raw_data = self.serial_connection.readline().decode("utf-8").strip()
+                if raw_data:
+                    print(raw_data)
+                    self.sensors.parse_data(raw_data)
+            time.sleep(0.01)
+    
 
     def send_command(self, command):
         """
@@ -79,13 +80,6 @@ class SerialCommunication:
         with self._internal_lock:
             if self.serial_connection:
                 self.serial_connection.write((command + "\n").encode("utf-8"))
-
-    def set_data_callback(self, callback):
-        """
-        Set a callback function to handle received data.
-        """
-        with self._internal_lock:
-            self.data_callback = callback
 
     def is_connected(self):
         """

@@ -1,7 +1,6 @@
-import socket
 import threading
-import time
-from collections import deque
+import socket
+from .sensors import Sensors
 
 
 class SocketCommunication:
@@ -28,11 +27,11 @@ class SocketCommunication:
         self.port = port
         self.connection = None
         self.running = False
-        self.data_callback = None
-        self.data_queue = deque()
         self.polling_thread = None
         self._internal_lock = threading.Lock()
         self._initialized = True
+
+        self.sensors = Sensors()  # Access singleton instance of Sensors class
 
     def connect(self):
         """
@@ -70,15 +69,11 @@ class SocketCommunication:
         """
         while self.running:
             try:
-                data = self.receive_newline()
-                if data:
-                    if self.data_callback:
-                        self.data_callback(data)
-                    else:
-                        self.data_queue.append(data)
+                raw_data = self.receive_newline()
+                if raw_data:
+                    self.sensors.parse_data(raw_data)
             except Exception as e:
                 print("Socket receive error:", e)
-            time.sleep(0.1)
 
     def send_command(self, data):
         """
@@ -105,13 +100,6 @@ class SocketCommunication:
                 data += chunk
             except Exception as e:
                 print("Socket receive error:", e)
-
-    def set_data_callback(self, callback):
-        """
-        Set a callback function to handle received data.
-        """
-        with self._internal_lock:
-            self.data_callback = callback
 
     def is_connected(self):
         """
