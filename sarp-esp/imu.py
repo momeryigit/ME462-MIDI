@@ -1,4 +1,5 @@
 from utime import sleep_ms
+import time
 from machine import I2C
 from vector3d import Vector3d
 
@@ -34,7 +35,9 @@ class MPU6050(object):
     def __init__(self, side_str, device_addr=None, transposition=(0, 1, 2), scaling=(1, 1, 1)):
 
         self._accel = Vector3d(transposition, scaling, self._accel_callback)
+        self._accel.calibrate(self.stop_func)
         self._gyro = Vector3d(transposition, scaling, self._gyro_callback)
+        self._gyro.calibrate(self.stop_func)
         self.buf1 = bytearray(1)                # Pre-allocated buffers for reads: allows reads to
         self.buf2 = bytearray(2)                # be done in interrupt handlers
         self.buf3 = bytearray(3)
@@ -106,6 +109,12 @@ class MPU6050(object):
         except OSError:
             raise MPUException(self._I2Cerror)
         return 'asleep'
+
+    def stop_func(duration=10):
+        start_time = time.time()
+        def stop():
+            return time.time() - start_time > duration
+        return stop
 
     # chip_id
     @property
