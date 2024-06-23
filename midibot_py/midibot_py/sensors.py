@@ -16,7 +16,7 @@ class Sensors:
             cls._instance._initialize(*args, **kwargs)
         return cls._instance
 
-    def _initialize(self, u_count=4, b_count=4, imu_connected=False, u_moving_avg_len=3):
+    def _initialize(self, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=True, u_moving_avg_len=3):
         """
         Initialize the sensor data storage and moving average configuration.
 
@@ -24,20 +24,34 @@ class Sensors:
             u_count (int): Number of ultrasonic sensors.
             b_count (int): Number of bumper switches.
             imu_connected (bool): Flag indicating if IMU is connected.
-            u_moving_avg_len (int): Length of the moving average window for ultrasonic sensors.
+            u_moving_avg_len (int): Length of the moving average window for ul  trasonic sensors.
         """
         if getattr(self, '_initialized', False):
             return
-
-        self.u_moving_avg_len = u_moving_avg_len
-        self.u_sonic_data = {f'u_{i + 1}': 0.0 for i in range(u_count)}  # Ultrasonic sensor data
-        self.u_moving_avg = [deque(maxlen=self.u_moving_avg_len) for _ in range(u_count)]  # Deques for moving average
-
-        if imu_connected:
-            self.imu_data = {'accel_x': 0.0, 'accel_y': 0.0, 'accel_z': 0.0, 'gyro_x': 0.0, 'gyro_y': 0.0, 'gyro_z': 0.0}  # IMU sensor data
-
-        self.b_switch_data = {f'b_{i + 1}': False for i in range(b_count)}  # Bumper switch data
         
+        self.stepper_ids = stepper_ids
+        self.u_ids = u_ids
+        self.b_ids = b_ids
+        self.imu_connected = imu_connected
+        self.u_moving_avg_len = u_moving_avg_len
+
+        self.u_sonic_data = {f'u_{u_id}': 0.0 for u_id in u_ids}  # Ultrasonic sensor data
+        self.u_moving_avg = {u_id: deque(maxlen=self.u_moving_avg_len) for u_id in u_ids}  # Deques for u_sonic moving average
+
+        # IMU sensor data
+        if imu_connected:
+            self.imu_data = {'accel_x': 0.0, 'accel_y': 0.0, 'accel_z': 0.0, 'gyro_x': 0.0, 'gyro_y': 0.0, 'gyro_z': 0.0}
+
+        self.b_switch_data = {f'b_{b_id}': False for b_id in b_ids}  # Bumper switch data
+
+        # Stepper motor counts
+        if stepper_ids:
+            self.stepper_count = {}
+            if 1 in stepper_ids:
+                self.stepper_count['S_L'] = 0
+            if 2 in stepper_ids:
+                self.stepper_count['S_R'] = 0
+                        
         self._initialized = True
 
     def request_sensor_data(self, sensor_type):
@@ -53,7 +67,8 @@ class Sensors:
             return self.imu_data
         elif sensor_type == "b":
             return self.b_switch_data
-
+        elif sensor_type == "sc":
+            return self.stepper_count
 
     def parse_data(self, data):
         """
@@ -76,8 +91,8 @@ class Sensors:
             self._manage_imu_data(sensor_data)
         elif identifier == "b":
             self._manage_b_switch_data(sensor_id, sensor_data[0])
-        elif identifier == "s":
-            pass
+        elif identifier == "sc":
+            self._manage_stepper_count(sensor_id, sensor_data)
         else:
             print(f"Unknown identifier: {identifier}")
 
@@ -134,21 +149,17 @@ class Sensors:
         """
         b_state = b_data.lower() == 'true'
         self.b_switch_data[f'b_{b_id}'] = b_state
-
-# Example usage
-# sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_moving_avg_len=3)
-# sensors2 = Sensors(u_count=6, b_count=6, imu_connected=False, u_moving_avg_len=5)
-
-# # Simulated sensor data
-# sensors1.parse_data("u 1 230.24738")
-# sensors1.parse_data("u 1 240.12345")
-# sensors1.parse_data("u 1 250.56789")
-
-# sensors1.parse_data("b 3 False")
-# sensors1.parse_data("i 1 0.1 6.5 8.2 20.243 18.3 9.1")
-
-# print(sensors1.u_sonic_data)  # Output will show the moving average
-# print(sensors1.b_switch_data)
-# print(sensors1.imu_data)
-
-# print(sensors1 is sensors2)  # True, both are the same instance
+    
+    def _manage_stepper_count(self, stepper_id, count_data):
+        """
+        Manage stepper motor count data.
+        
+        Args:
+            stepper_id (str): The ID of the stepper motor.
+            count_data (list): The list containing the count data from the stepper motor.
+        """
+        count = int(count_data[0])
+        if stepper_id == '1':
+            self.stepper_count['S_L'] = count
+        elif stepper_id == '2':
+            self.stepper_count['S_R'] = count
