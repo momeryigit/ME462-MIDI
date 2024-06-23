@@ -1,4 +1,5 @@
 from collections import deque
+from .MPU import MPU
 #from .serial_comm import SerialCommunication
 
 class Sensors:
@@ -37,11 +38,26 @@ class Sensors:
         
         self.heartbeat = False
         
+        self.mpu_poll_interval = 1 # Polling interval for MPU sensor in s
+        self.mpu_discharging = False
+        # MPU intitialization
+        try:
+            self.mpu = MPU(addr=0x41)
+        except Exception as e:
+            self.mpu = None
+            print("MPU sensor not connected: ", e)
+            
+        if self.mpu:
+            self.mpu_data = {'bus_voltage': 0.0, 'shunt_voltage': 0.0, 'current': 0.0, 'power': 0.0, 'percent': 0.0, 'discharging': False}
+        else:
+            self.mpu_data = None
+        
+        
         self.u_moving_avg_len = u_moving_avg_len
 
         self.u_sonic_data = {f'u_{u_id}': 0.0 for u_id in u_ids}  # Ultrasonic sensor data
         self.u_moving_avg = {u_id: deque(maxlen=self.u_moving_avg_len) for u_id in u_ids}  # Deques for u_sonic moving average
-
+        
         # IMU sensor data
         if imu_connected:
             self.imu_data = {'accel_x': 0.0, 'accel_y': 0.0, 'accel_z': 0.0, 'gyro_x': 0.0, 'gyro_y': 0.0, 'gyro_z': 0.0}
@@ -182,6 +198,34 @@ class Sensors:
         print("Heartbeat received")
         self.heartbeat = True
         pass
+
+    def get_mpu_data(self):
+        """
+        Get the MPU sensor data.
+        
+        Return a dictionary of the MPU data at time of request and updates the data.
+        """
+        if not self.mpu:
+            return None
+        bus_voltage = self.mpu.getBusVoltage_V()             # voltage on V- (load side)
+        shunt_voltage = self.mpu.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
+        current = self.mpu.getCurrent_mA()                   # current in mA
+        power = self.mpu.getPower_W()                        # power in W
+        p = (bus_voltage - 9)/3.6*100
+        if(p > 100):p = 100
+        if(p < 0):p = 0
+        
+        if current < 0:
+            self.mpu_discharging = True
+        
+        self.mpu_data['bus_voltage'] = bus_voltage
+        self.mpu_data['shunt_voltage'] = shunt_voltage
+        self.mpu_data['current'] = current
+        self.mpu_data['power'] = power
+        self.mpu_data['percent'] = p
+        self.mpu_data['discharging'] = self.mpu_discharging
+        
+        return self.mpu_data
 
 # Example usage
 # sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_moving_avg_len=3)

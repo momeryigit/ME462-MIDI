@@ -36,6 +36,7 @@ class SerialCommunication:
         self._initialized = True
 
         self.sensors = Sensors()  # Access singleton instance of Sensors class
+        self.mpu_timer = time.time()
 
     def connect(self):
         """
@@ -111,8 +112,10 @@ class SerialCommunication:
                         logging.critical("Failed to reconnect to serial port after multiple attempts.")
                         self.polling_thread.join()
                         self.__del__()  # Consider a more graceful shutdown approach
-                        
-             
+            
+            if time.time() - self.mpu_timer > self.sensors.mpu_poll_interval:
+                self.sensors.update_mpu_data()
+                self.mpu_timer = time.time()
                 
                 
 
