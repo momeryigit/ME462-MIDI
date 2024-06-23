@@ -1,5 +1,6 @@
 import time
 import comms
+import machine
 from utils import get_configs
 
 # Establish a connection via serial or socket
@@ -22,6 +23,7 @@ def main():
     """
     Main function to establish a connection and get configurations.
     """
+    machine.mem32[0x40058000] = machine.mem32[0x40058000] & ~(1<<30)
     try:
         pico_connection()
         get_configs(comms.serial_comms)
