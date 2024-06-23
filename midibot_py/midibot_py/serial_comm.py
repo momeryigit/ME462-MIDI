@@ -34,6 +34,7 @@ class SerialCommunication:
         self.polling_thread = None
         self._internal_lock = threading.Lock()
         self._initialized = True
+        self.data_callback = None
 
         self.sensors = Sensors()  # Access singleton instance of Sensors class
         self.mpu_timer = time.time()
@@ -84,6 +85,8 @@ class SerialCommunication:
                     with self._internal_lock:
                         raw_data = self.serial_connection.readline().decode("utf-8").strip()
                     if raw_data:
+                        if self.data_callback:
+                            self.data_callback(raw_data)
                         self.sensors.parse_data(raw_data)
                         if self.sensors.heartbeat:
                             self.send_command("h")
@@ -114,12 +117,15 @@ class SerialCommunication:
                         self.__del__()  # Consider a more graceful shutdown approach
             
             if time.time() - self.mpu_timer > self.sensors.mpu_poll_interval:
-                self.sensors.update_mpu_data()
+                self.sensors.get_mpu_data()
                 self.mpu_timer = time.time()
                 
-                
-
     
+    def set_data_callback(self, callback):
+        """
+        Set a callback function to handle incoming data.
+        """
+        self.data_callback = callback
 
     def send_command(self, command):
         """

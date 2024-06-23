@@ -1,5 +1,5 @@
 from collections import deque
-from .MPU import MPU
+
 #from .serial_comm import SerialCommunication
 
 class Sensors:
@@ -38,10 +38,13 @@ class Sensors:
         
         self.heartbeat = False
         
+        self.handshake = False
+        
         self.mpu_poll_interval = 1 # Polling interval for MPU sensor in s
         self.mpu_discharging = False
         # MPU intitialization
         try:
+            from .MPU import MPU
             self.mpu = MPU(addr=0x41)
         except Exception as e:
             self.mpu = None
@@ -102,15 +105,21 @@ class Sensors:
             data (str): A string containing sensor data in the format "<type> <id> <values>".
         """
         parts = data.split()
-        print(parts)
-        identifier = parts[0]
-        
-        if identifier == "h":
-            self._manage_heartbeat_data()
-            return
-        
-        sensor_id = parts[1]
-        sensor_data = parts[2:]
+        nonsensor = False
+        try:
+            identifier = parts[0]
+            if identifier == "h":
+                self._manage_heartbeat_data()
+                return
+            elif identifier == "HANDSHAKE":
+                self.handshake = True
+                return
+            
+            sensor_id = parts[1]
+            sensor_data = parts[2:]
+        except IndexError:
+            nonsensor = True
+            
 
         if identifier == "u":
             self._manage_u_sonic_data(sensor_id, sensor_data)
@@ -120,8 +129,10 @@ class Sensors:
             self._manage_b_switch_data(sensor_id, sensor_data[0])
         elif identifier == "sc":
             self._manage_stepper_count(sensor_id, sensor_data)
+        elif nonsensor:
+            print(data)
         else:
-            print(f"Unknown identifier: {identifier}")
+            print("Unknown identifier: ")
 
     def _moving_avg(self, u_id, u_value):
         """
@@ -217,6 +228,8 @@ class Sensors:
         
         if current < 0:
             self.mpu_discharging = True
+        else:
+            self.mpu_discharging = False
         
         self.mpu_data['bus_voltage'] = bus_voltage
         self.mpu_data['shunt_voltage'] = shunt_voltage
