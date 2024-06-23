@@ -1,4 +1,5 @@
 import threading
+import json
 import time
 import math
 from .serial_comm import SerialCommunication
@@ -23,7 +24,7 @@ class DifferentialDriveRobot:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, serial_port, baudrate=9600, timeout=1, ip="192.168.137.28", socket_port=8080, u_count=4, b_count=4, imu_connected=False, u_moving_avg_len=3):
+    def __init__(self, serial_port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=False, u_moving_avg_len=3):
         """
         Initialize the robot with connection parameters and setup communication interfaces.
 
@@ -47,13 +48,14 @@ class DifferentialDriveRobot:
         self.ip = ip
         self.socket_port = socket_port
         self.timeout = timeout
-        self.u_count = u_count
-        self.b_count = b_count
+        self.stepper_ids = stepper_ids
+        self.u_ids = u_ids
+        self.b_ids = b_ids
         self.imu_connected = imu_connected
         self.u_moving_avg_len = u_moving_avg_len
 
         # Initialize communication and sensor objects
-        self.sensors = Sensors(u_count, b_count, imu_connected, u_moving_avg_len)
+        self.sensors = Sensors(stepper_ids, u_ids, b_ids, imu_connected, u_moving_avg_len)
         self.serial_comm = SerialCommunication(serial_port, baudrate, timeout)
         self.socket_comm = SocketCommunication(ip, socket_port)
         
@@ -74,6 +76,7 @@ class DifferentialDriveRobot:
         self.left_speed = 0
         self.right_speed = 0
         self.angular_speed = 0
+
 
     def connect(self, connection_type=None):
         """
@@ -144,6 +147,18 @@ class DifferentialDriveRobot:
             self.serial_comm.send_command(command)
         if self.socket_running:
             self.socket_comm.send_command(command)
+    
+    def pico_config(self):
+        config = {
+            "sensors": {
+                "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],
+                "bumper_switches": [{"id": i, "enabled": True} for i in self.b_ids],
+                "imu": {"enabled": self.imu_enabled}
+            },
+            "stepper_motors": [{"id": i, "enabled": True} for i in self.stepper_ids]
+        }
+        
+        self.send_command(json.dumps(config))
 
     def set_speed(self, left_speed, right_speed):
         """
@@ -212,4 +227,3 @@ class DifferentialDriveRobot:
         """
         self.stop()
         self.disconnect()
-

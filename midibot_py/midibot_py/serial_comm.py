@@ -1,7 +1,6 @@
 import threading
 import serial
 from .sensors import Sensors
-from collections import deque
 import time
 import errno
 import logging
@@ -23,7 +22,7 @@ class SerialCommunication:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, serial_port, baudrate=9600, timeout=1):
+    def __init__(self, serial_port, baudrate=115200, timeout=1):
         if self._initialized:
             return
         self.possible_ports = []

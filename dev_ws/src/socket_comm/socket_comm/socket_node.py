@@ -24,7 +24,7 @@ class SocketNode(Node):
         self.get_logger().info(f"IP: {ip}, Port: {port}")
 
         # Initialize socket client
-        self.client = Socket(ip, port)
+        self.client = Socket(ip=ip, socket_port=port)
 
         # Try to connect to the server up to 5 times
         for _ in range(5):
