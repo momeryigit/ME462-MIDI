@@ -77,6 +77,8 @@ class DifferentialDriveRobot:
         self.right_speed = 0
         self.angular_speed = 0
 
+        
+        
 
     def connect(self, connection_type=None):
         """
@@ -98,16 +100,18 @@ class DifferentialDriveRobot:
             else:
                 if not self.serial_running:
                     self._connect_socket()
+        
+        
 
     def _connect_serial(self):
         """
         Attempt to establish a serial connection.
         """
-        try:
-            self.serial_comm.connect()
-            self.serial_running = self.serial_comm.is_connected()
-        except Exception as e:
-            print("Serial connection error:", e)
+        
+        self.serial_comm.connect()
+        self.serial_running = self.serial_comm.is_connected()
+        self.pico_config()
+
 
     def _connect_socket(self):
         """
@@ -116,6 +120,7 @@ class DifferentialDriveRobot:
         try:
             self.socket_comm.connect()
             self.socket_running = self.socket_comm.is_connected()
+            self.pico_config()
         except Exception as e:
             print("Socket connection error:", e)
 
@@ -135,7 +140,10 @@ class DifferentialDriveRobot:
         Args:
             callback (function): Callback function to handle incoming data.
         """
-        self.data_callback = callback
+        if self.serial_running:
+            self.serial_comm.set_data_callback(callback)
+        elif self.socket_running:
+            self.socket_comm.set_data_callback(callback)
 
     def send_command(self, command):
         """
@@ -150,6 +158,13 @@ class DifferentialDriveRobot:
             self.socket_comm.send_command(command)
     
     def pico_config(self):
+        #Establish handshake and send configuration
+        self.send_command("HANDSHAKE")
+        
+        while not self.sensors.handshake:
+            print('Waiting for handshake...')
+            time.sleep(0.1)
+            
         config = {
             "sensors": {
                 "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],

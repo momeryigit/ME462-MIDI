@@ -1,5 +1,7 @@
 from collections import deque
 
+#from .serial_comm import SerialCommunication
+
 class Sensors:
     """
     A class to manage all received data from sensors. Singleton class.
@@ -33,11 +35,32 @@ class Sensors:
         self.u_ids = u_ids
         self.b_ids = b_ids
         self.imu_connected = imu_connected
+        
+        self.heartbeat = False
+        
+        self.handshake = False
+        
+        self.mpu_poll_interval = 1 # Polling interval for MPU sensor in s
+        self.mpu_discharging = False
+        # MPU intitialization
+        try:
+            from .MPU import MPU
+            self.mpu = MPU(addr=0x41)
+        except Exception as e:
+            self.mpu = None
+            print("MPU sensor not connected: ", e)
+            
+        if self.mpu:
+            self.mpu_data = {'bus_voltage': 0.0, 'shunt_voltage': 0.0, 'current': 0.0, 'power': 0.0, 'percent': 0.0, 'discharging': False}
+        else:
+            self.mpu_data = None
+        
+        
         self.u_moving_avg_len = u_moving_avg_len
 
         self.u_sonic_data = {f'u_{u_id}': 0.0 for u_id in u_ids}  # Ultrasonic sensor data
         self.u_moving_avg = {u_id: deque(maxlen=self.u_moving_avg_len) for u_id in u_ids}  # Deques for u_sonic moving average
-
+        
         # IMU sensor data
         if imu_connected:
             self.imu_data = {'accel_x': 0.0, 'accel_y': 0.0, 'accel_z': 0.0, 'gyro_x': 0.0, 'gyro_y': 0.0, 'gyro_z': 0.0}
@@ -53,6 +76,10 @@ class Sensors:
                 self.stepper_count['S_R'] = 0
                         
         self._initialized = True
+        
+        #Initialize the singleton instance of SerialCommunication
+        #self.serial = SerialCommunication()
+        
 
     def request_sensor_data(self, sensor_type):
         """
@@ -78,12 +105,21 @@ class Sensors:
             data (str): A string containing sensor data in the format "<type> <id> <values>".
         """
         parts = data.split()
-        if len(parts) < 2:
-            return
-        
-        identifier = parts[0]
-        sensor_id = parts[1]
-        sensor_data = parts[2:]
+        nonsensor = False
+        try:
+            identifier = parts[0]
+            if identifier == "h":
+                self._manage_heartbeat_data()
+                return
+            elif identifier == "HANDSHAKE":
+                self.handshake = True
+                return
+            
+            sensor_id = parts[1]
+            sensor_data = parts[2:]
+        except IndexError:
+            nonsensor = True
+            
 
         if identifier == "u":
             self._manage_u_sonic_data(sensor_id, sensor_data)
@@ -93,8 +129,10 @@ class Sensors:
             self._manage_b_switch_data(sensor_id, sensor_data[0])
         elif identifier == "sc":
             self._manage_stepper_count(sensor_id, sensor_data)
+        elif nonsensor:
+            print(data)
         else:
-            print(f"Unknown identifier: {identifier}")
+            print("Unknown identifier: ")
 
     def _moving_avg(self, u_id, u_value):
         """
@@ -163,3 +201,59 @@ class Sensors:
             self.stepper_count['S_L'] = count
         elif stepper_id == '2':
             self.stepper_count['S_R'] = count
+    
+    def _manage_heartbeat_data(self):
+        """
+        Manage heartbeat data.
+        """
+        print("Heartbeat received")
+        self.heartbeat = True
+        pass
+
+    def get_mpu_data(self):
+        """
+        Get the MPU sensor data.
+        
+        Return a dictionary of the MPU data at time of request and updates the data.
+        """
+        if not self.mpu:
+            return None
+        bus_voltage = self.mpu.getBusVoltage_V()             # voltage on V- (load side)
+        shunt_voltage = self.mpu.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
+        current = self.mpu.getCurrent_mA()                   # current in mA
+        power = self.mpu.getPower_W()                        # power in W
+        p = (bus_voltage - 9)/3.6*100
+        if(p > 100):p = 100
+        if(p < 0):p = 0
+        
+        if current < 0:
+            self.mpu_discharging = True
+        else:
+            self.mpu_discharging = False
+        
+        self.mpu_data['bus_voltage'] = bus_voltage
+        self.mpu_data['shunt_voltage'] = shunt_voltage
+        self.mpu_data['current'] = current
+        self.mpu_data['power'] = power
+        self.mpu_data['percent'] = p
+        self.mpu_data['discharging'] = self.mpu_discharging
+        
+        return self.mpu_data
+
+# Example usage
+# sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_moving_avg_len=3)
+# sensors2 = Sensors(u_count=6, b_count=6, imu_connected=False, u_moving_avg_len=5)
+
+# # Simulated sensor data
+# sensors1.parse_data("u 1 230.24738")
+# sensors1.parse_data("u 1 240.12345")
+# sensors1.parse_data("u 1 250.56789")
+
+# sensors1.parse_data("b 3 False")
+# sensors1.parse_data("i 1 0.1 6.5 8.2 20.243 18.3 9.1")
+
+# print(sensors1.u_sonic_data)  # Output will show the moving average
+# print(sensors1.b_switch_data)
+# print(sensors1.imu_data)
+
+# print(sensors1 is sensors2)  # True, both are the same instance
