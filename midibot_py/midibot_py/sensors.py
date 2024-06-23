@@ -1,4 +1,5 @@
 from collections import deque
+#from .serial_comm import SerialCommunication
 
 class Sensors:
     """
@@ -28,7 +29,9 @@ class Sensors:
         """
         if getattr(self, '_initialized', False):
             return
-
+        
+        self.heartbeat = False
+        
         self.u_moving_avg_len = u_moving_avg_len
         self.u_sonic_data = {f'u_{i + 1}': 0.0 for i in range(u_count)}  # Ultrasonic sensor data
         self.u_moving_avg = [deque(maxlen=self.u_moving_avg_len) for _ in range(u_count)]  # Deques for moving average
@@ -39,6 +42,10 @@ class Sensors:
         self.b_switch_data = {f'b_{i + 1}': False for i in range(b_count)}  # Bumper switch data
         
         self._initialized = True
+        
+        #Initialize the singleton instance of SerialCommunication
+        #self.serial = SerialCommunication()
+        
 
     def request_sensor_data(self, sensor_type):
         """
@@ -63,10 +70,13 @@ class Sensors:
             data (str): A string containing sensor data in the format "<type> <id> <values>".
         """
         parts = data.split()
-        if len(parts) < 2:
+        print(parts)
+        identifier = parts[0]
+        
+        if identifier == "h":
+            self._manage_heartbeat_data()
             return
         
-        identifier = parts[0]
         sensor_id = parts[1]
         sensor_data = parts[2:]
 
@@ -134,6 +144,14 @@ class Sensors:
         """
         b_state = b_data.lower() == 'true'
         self.b_switch_data[f'b_{b_id}'] = b_state
+    
+    def _manage_heartbeat_data(self):
+        """
+        Manage heartbeat data.
+        """
+        print("Heartbeat received")
+        self.heartbeat = True
+        pass
 
 # Example usage
 # sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_moving_avg_len=3)

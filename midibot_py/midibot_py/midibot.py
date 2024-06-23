@@ -100,11 +100,10 @@ class DifferentialDriveRobot:
         """
         Attempt to establish a serial connection.
         """
-        try:
-            self.serial_comm.connect()
-            self.serial_running = self.serial_comm.is_connected()
-        except Exception as e:
-            print("Serial connection error:", e)
+        
+        self.serial_comm.connect()
+        self.serial_running = self.serial_comm.is_connected()
+
 
     def _connect_socket(self):
         """

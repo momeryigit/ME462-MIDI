@@ -1,6 +1,6 @@
 import time
 import builtins
-from machine import Pin, PWM, Timer, WDT
+from machine import Pin, PWM, Timer
 import rp2
 from serial import SerialComm
 from hcsr04 import HCSR04
@@ -8,6 +8,8 @@ from imu import MPU6050
 from machine import I2C, freq
 import neopixel
 import gc
+
+
 
 gc.collect()
 
@@ -182,14 +184,50 @@ class Stepper:
 s_r = Stepper(2, 3, 4, 8)
 s_l = Stepper(5, 6, 7, 9, invert_dir=True)  # step_pin, dir_pin, steps_per_rev=600, invert_dir=False
 
+class Heartbeat:
+    def __init__(self, timeout=4000):
+        from machine import WDT
+        self.wdt = WDT(timeout=timeout)  # enable it with a timeout of 2s
+        self.sent = False
+        self._internal_timer = time.ticks_ms()
+        self._timeout = timeout/2 #half of WDT timeout
+        
+        
+    def beat(self):
+        #If the time since the last beat is greater than the timeout, send a heartbeat
+        if time.ticks_diff(time.ticks_ms(), self._internal_timer) > self._timeout and not self.sent:
+            print('h')
+            self.sent = True
+            self._internal_timer = time.ticks_ms()
+            
+            
+    
+    def feed(self):
+        if self.sent:
+            self.wdt.feed()
+            self._internal_timer = time.ticks_ms()
+            self.sent = False
+            print("Im Fed")
+        
+    def virtual_reset(self):
+        if time.ticks_diff(time.ticks_ms(), self._internal_timer) > self._timeout*2 and self.sent == True:
+            print("I am resetting")
+            time.sleep(0.5)
+            self._internal_timer = time.ticks_ms()
+            self.sent = False
+            
+        
+        
+        
+        
 
 class Sensors:
     def __init__(self):
         self.types = {
-            "ultrasonic": {"poll_rate": 10, "sensor": {}},
-            "imu": {"poll_rate": 10, "sensor": {}},
-            "bumper": {"poll_rate": 1, "sensor": {}},
-            "adc": {"poll_rate": 1, "sensor": {}},
+            "ultrasonic": {"poll_rate": 0.1, "sensor": {}},
+            "imu": {"poll_rate": 0.1, "sensor": {}},
+            "bumper": {"poll_rate": 0.1, "sensor": {}},
+            "adc": {"poll_rate": 0.1, "sensor": {}},
         }
         self.timers = {}
 
@@ -240,12 +278,14 @@ class Sensors:
         del self.timers[sensor_type]
 
 
-sensors = Sensors()
-sensors.create_ultrasonic(1, 22, 26)
-sensors.create_ultrasonic(2, 16, 17)
-sensors.create_ultrasonic(3, 18, 19)
-sensors.create_ultrasonic(4, 20, 21)
+#sensors = Sensors()
+# sensors.create_ultrasonic(1, 22, 26)
+# sensors.create_ultrasonic(2, 16, 17)
+# sensors.create_ultrasonic(3, 18, 19)
+# sensors.create_ultrasonic(4, 20, 21)
 # sensors.create_imu(1, 0, 1)
+
+
 
 ultrasonic_flag = False
 IMU_flag = False
@@ -260,6 +300,9 @@ def getdist():
     global ultrasonic_flag
     ultrasonic_flag = True
 
+
+    
+    
 
 def send_sensory_data(comms):
     global ultrasonic_flag, IMU_flag
@@ -284,6 +327,7 @@ timer_for_ultrasonic = Timer()
 timer_for_imu = Timer()
 
 
+
 def main():
     time.sleep(0.1)
     freq(80000000)
@@ -297,31 +341,29 @@ def main():
         except Exception as e:
             print(f"Failed to initialize serial port. {str(e)}")
             pass
-
-    timer_for_ultrasonic.init(
-        freq=1, mode=Timer.PERIODIC, callback=lambda t: getdist()
-    )
+    
 #     timer_for_imu.init(
 #         freq=5, mode=Timer.PERIODIC, callback=lambda t: IMUprint()
 #         )
     s_r.en_pin.value(1)
     s_l.en_pin.value(1)
-
+    
+    hb = Heartbeat(8000)
     while True:
+        hb.beat() #Send a heartbeat
         try:
             msg = comms.read_parse()
         except Exception as e:
             print(type(e))
 
-        send_sensory_data(comms)
+        #send_sensory_data(comms)
 #         if handle_emergency(s_r, s_l, sensors):
-#             
-        
+
         if msg is not None:
             mystring = ""
             for data in msg:
                 mystring += str(data) + " "
-            print(mystring)
+            #print(mystring)
             if msg[0] == "s":
                 if msg[1] == "r":
                     stepper = s_r
@@ -338,6 +380,10 @@ def main():
                     stepper.step(stepper.freq)
                     stepper.accelerate(int(float(msg[2])))
                     speed = int(float(msg[2]))
+            elif msg[0] == "h":
+                hb.feed()
+                
+                
 
         gc.collect()
 
