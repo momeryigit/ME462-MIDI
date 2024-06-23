@@ -1,7 +1,6 @@
 import threading
 import serial
 from .sensors import Sensors
-from collections import deque
 import time
 
 class SerialCommunication:
@@ -21,7 +20,7 @@ class SerialCommunication:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, serial_port, baudrate=9600, timeout=1):
+    def __init__(self, serial_port, baudrate=115200, timeout=1):
         if self._initialized:
             return
         self.serial_port = serial_port
@@ -30,8 +29,6 @@ class SerialCommunication:
         self.serial_connection = None
         self.running = False
         self.polling_thread = None
-        self.usonic_data = [0.0, 0.0, 0.0, 0.0]
-        self._u_moving_avg = [deque(maxlen=3) for _ in range(4)]  # Initialize a deque for each sensor
         self._internal_lock = threading.Lock()
         self._initialized = True
 

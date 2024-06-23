@@ -24,7 +24,7 @@ class SerialNode(Node):
         self.get_logger().info(f"Port: {port}, Baudrate: {baud}")
 
         # Serial Initialization
-        self.ser = Serial(port, baud)
+        self.ser = Serial(serial_port=port, baudrate=baud)
         for _ in range(3):
             try:
                 self.ser.connect()

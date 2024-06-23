@@ -20,11 +20,11 @@ class SocketCommunication:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, ip="192.168.137.28", port=8080):
+    def __init__(self, ip="192.168.137.28", socket_port=8080):
         if self._initialized:
             return
         self.ip = ip
-        self.port = port
+        self.socket_port = socket_port
         self.connection = None
         self.running = False
         self.polling_thread = None
