@@ -37,7 +37,7 @@ class SerialCommunication:
         self.data_callback = None
 
         self.sensors = Sensors()  # Access singleton instance of Sensors class
-        self.mpu_timer = time.time()
+        self.ups_timer = time.time()
 
     def connect(self):
         """
@@ -117,9 +117,9 @@ class SerialCommunication:
                         self.polling_thread.join()
                         self.__del__()  # Consider a more graceful shutdown approach
             
-            if time.time() - self.mpu_timer > self.sensors.mpu_poll_interval:
-                self.sensors.get_mpu_data()
-                self.mpu_timer = time.time()
+            if time.time() - self.ups_timer > self.sensors.ups_poll_interval:
+                self.sensors.get_ups_data()
+                self.ups_timer = time.time()
                 
     
     def set_data_callback(self, callback):

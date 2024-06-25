@@ -1,4 +1,3 @@
-from .MPU import MPU as UPS
 from collections import deque
 
 
@@ -46,6 +45,7 @@ class Sensors:
 
         # UPS intitialization
         try:
+            from .MPU import MPU as UPS
             self.ups = UPS(addr=0x41)
         except Exception as e:
             self.ups = None
