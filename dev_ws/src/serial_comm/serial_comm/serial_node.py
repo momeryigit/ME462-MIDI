@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from midibot_py import SerialCommunication as Serial
+from midibot_py import DifferentialDriveRobot as Robot
 
 
 class SerialNode(Node):
@@ -22,33 +22,29 @@ class SerialNode(Node):
         port = self.get_parameter("port").get_parameter_value().string_value
         baud = self.get_parameter("baud").get_parameter_value().integer_value
         self.get_logger().info(f"Port: {port}, Baudrate: {baud}")
+        
 
-        # Serial Initialization
-        self.ser = Serial(serial_port=port, baudrate=baud)
-        for _ in range(3):
-            try:
-                self.ser.connect()
-                break
-            except Exception as e:
-                self.get_logger().error(f"Failed to initialize serial port. {str(e)}")
-        else:
-            self.get_logger().error(
-                "Failed to initialize serial port after 3 attempts."
-            )
-            return
-
-        # Set the data callback to publish the data to the 'mcu_incoming' topic
-        self.ser.set_data_callback(self.publish_serial_data)
+        #Robot Init
+        self.robot = Robot(serial_port=port, baudrate=baud)
+        
+        # Try connecting to robot
+        try:
+            self.robot.connect(connection_type="serial")
+            self.get_logger().info(f"Robot connected to {port} at {baud} baud.")
+        except Exception as e:
+            self.get_logger().error(f"Robot connection error: {str(e)}")
 
         # Create a subscription to the 'mcu_outgoing' topic
         self.subscription = self.create_subscription(
             String, "mcu_outgoing", self.write_to_serial, 10
         )
         self.subscription  # Prevent unused variable warning
-
-        # Create a publisher to the 'mcu_incoming' topic
+        
         self.publisher = self.create_publisher(String, "mcu_incoming", 10)
-        self.publisher  # Prevent unused variable warning
+        self.publisher
+        
+        # Set the data callback to publish the data to the 'mcu_incoming' topic
+        self.robot.set_data_callback(self.publish_serial_data)
 
         self.get_logger().info("Successfully initialized serial node.")
 
@@ -56,11 +52,9 @@ class SerialNode(Node):
         """
         Send the message to the serial port.
         """
-        try:
-            self.ser.send_command(msg.data)
-            self.get_logger().info(f"Sent: {msg.data}")
-        except Exception as e:
-            self.get_logger().error(f"Failed to write to serial port. {str(e)}")
+        if msg:
+            self.get_logger().info(f"Sending: {msg.data}")
+            self.robot.send_command(msg.data)
 
     def publish_serial_data(self, data):
         """

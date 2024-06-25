@@ -46,13 +46,14 @@ class DriveNode(Node):
             10)
         self.publishing = False
         self.published = [0.0,0.0,0.0,0.0]
+        self.prev_sent = ['s r 0', 's l 0']
 
         self.subscription = self.create_subscription(
             Twist,
             'cmd_vel',
             self.convert_twist_to_tickfreq,
             10)
-        self.create_timer(0.1, self.publish_ticks)
+        self.create_timer(0.2, self.publish_ticks)
         self.subscription  # prevent unused variable warning
         self.publisher  # prevent unused variable warning
 
@@ -85,6 +86,7 @@ class DriveNode(Node):
         f_l = round(f_l,3)
         f_r = round(f_r,3)
         #Create string message
+        
         self.msg_r.data = f's r {f_r}'
         self.msg_l.data = f's l {f_l}'
     
@@ -93,19 +95,21 @@ class DriveNode(Node):
         if self.msg_r.data == '' or self.msg_l.data == '':
             self.publishing = False
             return
-        self.publisher.publish(self.msg_r)
-        self.publisher.publish(self.msg_l)
-        if self.published[3] == 0:
-            self.published = [self.v_r, self.v_l, self.ang_w, self.timer.now().nanoseconds/1e9]
-            self.publishing = False
+        if self.prev_sent[0] != self.msg_r.data and self.prev_sent[1] != self.msg_l.data:
+            self.publisher.publish(self.msg_r)
+            self.publisher.publish(self.msg_l)
+            self.prev_sent = [self.msg_r.data, self.msg_l.data]
+            if self.published[3] == 0:
+                self.published = [self.v_r, self.v_l, self.ang_w, self.timer.now().nanoseconds/1e9]
+                self.publishing = False
+                self.msg_r.data = ''
+                self.msg_l.data = ''
+                return
+            self.integrate_pose(self.published[0], self.published[1], self.published[2], self.timer.now().nanoseconds/1e9 - self.published[3])
+            self.published = [self.v_r, self.v_l, self.ang_w, self.timer.now().nanoseconds/1e9] #Store the new values for next integration
+            self.publish_pose()
             self.msg_r.data = ''
             self.msg_l.data = ''
-            return
-        self.integrate_pose(self.published[0], self.published[1], self.published[2], self.timer.now().nanoseconds/1e9 - self.published[3])
-        self.published = [self.v_r, self.v_l, self.ang_w, self.timer.now().nanoseconds/1e9] #Store the new values for next integration
-        self.publish_pose()
-        self.msg_r.data = ''
-        self.msg_l.data = ''
         self.publishing = False
 
     def integrate_pose(self, v_r, v_l, w, dt):
