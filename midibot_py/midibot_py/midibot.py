@@ -5,6 +5,7 @@ import math
 from .serial_comm import SerialCommunication
 from .socket_comm import SocketCommunication
 from .sensors import Sensors
+from .default_configs import default_config
 
 
 class DifferentialDriveRobot:
@@ -24,7 +25,7 @@ class DifferentialDriveRobot:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, serial_port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080, config_file=None, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=False, u_median_filter_len=3, default_bumper_behavior = True):
+    def __init__(self, serial_port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080, config_file=None, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=False, u_median_filter_len=3, default_emergency_behavior = False):
         """
         Initialize the robot with connection parameters and setup communication interfaces.
 
@@ -39,7 +40,7 @@ class DifferentialDriveRobot:
             b_ids ([int], optional): Integer array of bumper sensors. Defaults to [1, 2, 3, 4].
             imu_connected (bool, optional): Whether IMU is connected. Defaults to False.
             u_median_filter_len (int, optional): Length of median filter window. Defaults to 3.
-            default_bumper_behavior (bool, optional): Default behavior of bumper switches coded on pico. Defaults to True.
+            default_emergency_behavior (bool, optional): Default behavior of bumper switches coded on pico. Defaults to True.
                         Change to False if custom behavior is desired. Bumper switches are be polled for data if enabled.
         """
         if self._initialized:
@@ -51,8 +52,12 @@ class DifferentialDriveRobot:
         self.ip = ip
         self.socket_port = socket_port
         self.timeout = timeout
-        self.config_file = config_file 
+        self.config_file = config_file
         self.configs = None
+
+        # Initialize flags for connection states
+        self.serial_running = False
+        self.socket_running = False
 
         # If not config file, initialize sensor as provided in the arguments else, read from config file
         if not config_file:
@@ -60,18 +65,14 @@ class DifferentialDriveRobot:
             self.u_ids = u_ids
             self.b_ids = b_ids
             self.imu_connected = imu_connected
-            self.default_bumper_behavior = default_bumper_behavior
+            self.default_emergency_behavior = default_emergency_behavior
         else:
-            self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_bumper_behavior = self.read_config_file(config_file)
+            self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
         # Initialize communication and sensor objects
         self.sensors = Sensors(stepper_ids, u_ids, b_ids, imu_connected, u_median_filter_len)
         self.serial_comm = SerialCommunication(serial_port, baudrate, timeout)
         self.socket_comm = SocketCommunication(ip, socket_port)
-        
-        # Initialize flags for connection states
-        self.serial_running = False
-        self.socket_running = False
 
         # Initialize internal thread lock
         self._internal_lock = threading.Lock()
@@ -199,76 +200,93 @@ class DifferentialDriveRobot:
         while not self.sensors.handshake:
             print('User waiting for handshake...')
             time.sleep(0.5)
-        if not self.pico_config:
-            config = {
-                "sensors": {
-                    "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],
-                    "bumper_switches": [{"id": i, "enabled": True} for i in self.b_ids],
-                    "imu": {"enabled": self.imu_connected}
-                },
-                "stepper_motors": [{"id": i, "enabled": True} for i in self.stepper_ids]
-            }
+
+        if not self.configs:
+            config = default_config
+
+            # Update the configuration based on user input
+            if "SENSORS" in config:
+                if "ultrasonic" in config["SENSORS"]:
+                    for sensor in config["SENSORS"]["ultrasonic"]["sensors"]:
+                        if sensor["id"] in self.u_ids:
+                            sensor["enabled"] = True
+                if "bumper_switches" in config["SENSORS"]:
+                    for sensor in config["SENSORS"]["bumper_switches"]["sensors"]:
+                        if sensor["id"] in self.b_ids:
+                            sensor["enabled"] = True
+                if "imu" in config["SENSORS"]:
+                    config["SENSORS"]["imu"]["enabled"] = self.imu_connected
+
+            if "stepper_motors" in config:
+                for motor in config["stepper_motors"]:
+                    if motor["id"] in self.stepper_ids:
+                        motor["enabled"] = True
+
+            config["default_emergency_behavior"] = self.default_emergency_behavior
+
             self.send_command(json.dumps(config))
         else:
             self.send_command(json.dumps(self.configs))
     
-    def read_config_file(self, config_file_path):
-        """
-        Read a config.json file and return arrays of enabled sensor IDs.
+    def read_config_file(self, config_file):
+            """
+            Read a config.json file and return arrays of enabled sensor IDs and polling rates.
 
-        Args:
-            config_file_path (str): Path to the config.json file.
+            Args:
+                config_file (str): Path to the config.json file.
 
-        Returns: 
-            ultrasonic_ids (list): List of enabled ultrasonic sensor IDs.
-            bumper_switch_ids (list): List of enabled bumper switch IDs.
-            imu_enabled (bool): Flag indicating whether IMU is enabled.
-            stepper_ids (list): List of enabled stepper motor IDs.
+            Returns: 
+                ultrasonic_ids (list): List of enabled ultrasonic sensor IDs.
+                bumper_switch_ids (list): List of enabled bumper switch IDs.
+                imu_enabled (bool): Flag indicating whether IMU is enabled.
+                stepper_ids (list): List of enabled stepper motor IDs.
+                default_emergency_behavior (bool): Flag indicating whether default bumper behavior is enabled.
 
-        """
-        try:
-            with open(config_file_path, 'r') as f:
-                config_data = json.load(f)
-                self.configs = config_data
-        except FileNotFoundError:
-            print(f"Error: Config file '{config_file_path}' not found")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error: Unable to parse JSON from config file '{config_file_path}'")
-            return None
-        
-        ultrasonic_ids = []
-        bumper_switch_ids = []
-        imu_enabled = False
-        stepper_ids = []
-        default_bumper_behavior = True
+            """
+            try:
+                with open(config_file, 'r') as f:
+                    config_data = json.load(f)
+                    self.configs = config_data
+            except FileNotFoundError:
+                print(f"Error: Config file '{config_file}' not found")
+                return None
+            except json.JSONDecodeError:
+                print(f"Error: Unable to parse JSON from config file '{config_file}'")
+                return None
 
-        # Read ultrasonic sensor IDs
-        if "sensors" in config_data and "ultrasonic" in config_data["sensors"]:
-            for sensor in config_data["sensors"]["ultrasonic"]:
-                if sensor.get("enabled", False):
-                    ultrasonic_ids.append(sensor["id"])
+            ultrasonic_ids = []
+            bumper_switch_ids = []
+            imu_enabled = False
+            stepper_ids = []
+            default_emergency_behavior = False
 
-        # Read bumper switch IDs
-        if "sensors" in config_data and "bumper_switches" in config_data["sensors"]:
-            for sensor in config_data["sensors"]["bumper_switches"]:
-                if sensor.get("enabled", False):
-                    bumper_switch_ids.append(sensor["id"])
 
-        # Read IMU enabled status
-        if "sensors" in config_data and "imu" in config_data["sensors"]:
-            imu_enabled = config_data["sensors"]["imu"].get("enabled", False)
+            # Read ultrasonic sensor IDs
+            if "SENSORS" in config_data and "ultrasonic" in config_data["SENSORS"]:
+                for sensor in config_data["SENSORS"]["ultrasonic"]["sensors"]:
+                    if sensor.get("enabled", False):
+                        ultrasonic_ids.append(sensor["id"])
 
-        # Read stepper motor IDs
-        if "stepper_motors" in config_data:
-            for motor in config_data["stepper_motors"]:
-                if motor.get("enabled", False):
-                    stepper_ids.append(motor["id"])
+            # Read bumper switch IDs
+            if "SENSORS" in config_data and "bumper_switches" in config_data["SENSORS"]:
+                for sensor in config_data["SENSORS"]["bumper_switches"]["sensors"]:
+                    if sensor.get("enabled", False):
+                        bumper_switch_ids.append(sensor["id"])
 
-        # Read enable default bumper behavior flag
-        default_bumper_behavior = config_data.get("enable_default_bumper_behavior", False)
+            # Read IMU enabled status
+            if "SENSORS" in config_data and "imu" in config_data["SENSORS"]:
+                imu_enabled = config_data["SENSORS"]["imu"].get("enabled", False)
 
-        return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_bumper_behavior
+            # Read stepper motor IDs
+            if "stepper_motors" in config_data:
+                for motor in config_data["stepper_motors"]:
+                    if motor.get("enabled", False):
+                        stepper_ids.append(motor["id"])
+
+            # Read enable default bumper behavior flag
+            default_emergency_behavior = config_data.get("default_emergency_behavior", False)
+
+            return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_emergency_behavior
 
     def set_speed(self, left_speed, right_speed):
         """
