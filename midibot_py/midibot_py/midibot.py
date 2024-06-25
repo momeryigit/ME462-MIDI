@@ -67,7 +67,7 @@ class DifferentialDriveRobot:
         self._internal_lock = threading.Lock()
         self._initialized = True
 
-        # Robot parameters
+        # Robot parameters (should be read only)
         self._wheel_radius = 0.045  # in meters
         self._wheel_separation = 0.295  # in meters
         self._ticks_per_rev = 600  # Number of ticks per revolution of the motor
@@ -128,10 +128,12 @@ class DifferentialDriveRobot:
         """
         Disconnect both serial and socket connections.
         """
-        self.serial_comm.disconnect()
-        self.socket_comm.disconnect()
-        self.serial_running = False
-        self.socket_running = False
+        if self.serial_running:
+            self.serial_comm.disconnect()
+            self.serial_running = False
+        if self.socket_running:
+            self.socket_comm.disconnect()
+            self.socket_running = False
 
     def set_data_callback(self, callback):
         """
@@ -158,22 +160,21 @@ class DifferentialDriveRobot:
             self.socket_comm.send_command(command)
     
     def pico_config(self):
-        #Establish handshake and send configuration
+        #Establish handshake and send configuration to Pico
         self.send_command("HANDSHAKE")
         
         while not self.sensors.handshake:
-            print('Waiting for handshake...')
-            time.sleep(0.1)
+            print('User waiting for handshake...')
+            time.sleep(0.5)
             
         config = {
             "sensors": {
                 "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],
                 "bumper_switches": [{"id": i, "enabled": True} for i in self.b_ids],
-                "imu": {"enabled": self.imu_enabled}
+                "imu": {"enabled": self.imu_connected}
             },
             "stepper_motors": [{"id": i, "enabled": True} for i in self.stepper_ids]
         }
-        
         self.send_command(json.dumps(config))
 
     def set_speed(self, left_speed, right_speed):
@@ -181,7 +182,7 @@ class DifferentialDriveRobot:
         Set the speed of the left and right wheels of the robot.
 
         Args:
-            left_speed (float): Speed of the left wheel.
+            left_speed (float): Speed of the left wheel. 
             right_speed (float): Speed of the right wheel.
         """
         command_l = f"s l {left_speed}"
@@ -189,14 +190,14 @@ class DifferentialDriveRobot:
         self.send_command(command_l)
         self.send_command(command_r)
 
-    def move_forward(self, duration):
+    def move_forward(self, duration=1, speed=500 ):
         """
         Move the robot forward for a specified duration.
 
         Args:
             duration (float): Duration to move forward in seconds.
         """
-        self.set_speed(500, 500)  # Example values, adjust as needed
+        self.set_speed(speed, speed)  # Example values, adjust as needed
         time.sleep(duration)
         self.stop()
 
@@ -229,7 +230,7 @@ class DifferentialDriveRobot:
         """
         Get sensor data from the robot. Default is ultrasound sensor data.
         """
-        self.sensors.request_sensor_data(sensor_type)
+        return self.sensors.request_sensor_data(sensor_type)
 
     def get_status(self):
         """

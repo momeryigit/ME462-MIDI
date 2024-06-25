@@ -54,6 +54,7 @@ class SerialCommunication:
                         return
                     self.polling_thread = threading.Thread(target=self._poll_serial)
                     self.polling_thread.start()
+                    print("Serial connection established.")
         except Exception as e:
             print("Serial connection error: ", e)
                 

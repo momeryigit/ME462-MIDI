@@ -1,4 +1,6 @@
+from .MPU import MPU as UPS
 from collections import deque
+
 
 #from .serial_comm import SerialCommunication
 
@@ -18,15 +20,15 @@ class Sensors:
             cls._instance._initialize(*args, **kwargs)
         return cls._instance
 
-    def _initialize(self, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=True, u_moving_avg_len=3):
+    def _initialize(self, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=True, u_median_filter_len=3):
         """
-        Initialize the sensor data storage and moving average configuration.
+        Initialize the sensor data storage, steppers, and median_filter for ultrasonics configuration.
 
-        Args:
-            u_count (int): Number of ultrasonic sensors.
-            b_count (int): Number of bumper switches.
+        Args (as specified from config file):
+            u_ids ([int]): Integer array of ids of ultrasonic sensors intialized.
+            b_ids ([int]): Integer array of ids of bumper switches to be initialized.
             imu_connected (bool): Flag indicating if IMU is connected.
-            u_moving_avg_len (int): Length of the moving average window for ul  trasonic sensors.
+            u_median_filter_len (int): Length of the median filter window for ultrasonic sensors.
         """
         if getattr(self, '_initialized', False):
             return
@@ -36,30 +38,29 @@ class Sensors:
         self.b_ids = b_ids
         self.imu_connected = imu_connected
         
-        self.heartbeat = False
+        self.heartbeat = False # Flag to indicate if heartbeat is received
+        self.handshake = False # Flag to indicate if handshake is successful
         
-        self.handshake = False
-        
-        self.mpu_poll_interval = 1 # Polling interval for MPU sensor in s
-        self.mpu_discharging = False
-        # MPU intitialization
+        self.ups_poll_interval = 1 # Polling interval for UPS sensor in seconds
+        self.ups_discharging = False
+
+        # UPS intitialization
         try:
-            from .MPU import MPU
-            self.mpu = MPU(addr=0x41)
+            self.ups = UPS(addr=0x41)
         except Exception as e:
-            self.mpu = None
-            print("MPU sensor not connected: ", e)
+            self.ups = None
+            print("UPS sensor not connected: ", e)
             
-        if self.mpu:
-            self.mpu_data = {'bus_voltage': 0.0, 'shunt_voltage': 0.0, 'current': 0.0, 'power': 0.0, 'percent': 0.0, 'discharging': False}
+        if self.ups:
+            self.ups_data = {'bus_voltage': 0.0, 'shunt_voltage': 0.0, 'current': 0.0, 'power': 0.0, 'percent': 0.0, 'discharging': False}
         else:
-            self.mpu_data = None
+            self.ups_data = None
         
         
-        self.u_moving_avg_len = u_moving_avg_len
+        self.u_median_filter_len = u_median_filter_len
 
         self.u_sonic_data = {f'u_{u_id}': 0.0 for u_id in u_ids}  # Ultrasonic sensor data
-        self.u_moving_avg = {u_id: deque(maxlen=self.u_moving_avg_len) for u_id in u_ids}  # Deques for u_sonic moving average
+        self.u_median_filter = {f'u_{u_id}': deque(maxlen=u_median_filter_len) for u_id in u_ids}  # Deques for u_sonic data median filter
         
         # IMU sensor data
         if imu_connected:
@@ -77,16 +78,17 @@ class Sensors:
                         
         self._initialized = True
         
-        #Initialize the singleton instance of SerialCommunication
-        #self.serial = SerialCommunication()
-        
 
-    def request_sensor_data(self, sensor_type):
+    def request_sensor_data(self, sensor_type="u"):
         """
         Request sensor data from the robot.
 
         Args:
             sensor_type (str): The type of sensor data to request.
+            "u" : ultrasonic data stored in self.u_sonic_data
+            "i" : IMU data stored in self.imu_data
+            "b" : bumper switch data stored in self.b_switch_data
+            "sc" : stepper count data stored in self.stepper_count
         """
         if sensor_type == "u":
             return self.u_sonic_data
@@ -96,6 +98,8 @@ class Sensors:
             return self.b_switch_data
         elif sensor_type == "sc":
             return self.stepper_count
+        else:
+            return "Unknown request. Please specify a valid sensor type (u, i, b, sc)."
 
     def parse_data(self, data):
         """
@@ -103,6 +107,8 @@ class Sensors:
         
         Args:
             data (str): A string containing sensor data in the format "<type> <id> <values>".
+            data format: "<identifier> <id> <values>"
+            <values> could be multiple data.
         """
         parts = data.split()
         nonsensor = False
@@ -111,8 +117,11 @@ class Sensors:
             if identifier == "h":
                 self._manage_heartbeat_data()
                 return
-            elif identifier == "HANDSHAKE":
+            elif identifier == "handshake":
                 self.handshake = True
+                return
+            elif identifier not in ["u", "i", "b", "sc"]:
+                print("PICO message:", (" ").join(parts))
                 return
             
             sensor_id = parts[1]
@@ -122,7 +131,7 @@ class Sensors:
             
 
         if identifier == "u":
-            self._manage_u_sonic_data(sensor_id, sensor_data)
+            self._manage_u_sonic_data(sensor_id, sensor_data[0])
         elif identifier == "i":
             self._manage_imu_data(sensor_data)
         elif identifier == "b":
@@ -134,25 +143,29 @@ class Sensors:
         else:
             print("Unknown identifier: ")
 
-    def _moving_avg(self, u_id, u_value):
+    def _median_filter(self, u_id, u_value):
         """
-        Calculate the moving average of the ultrasonic sensor data to smooth out the noise.
+        Implement a median filter for ultrasonic sensor data.
         
         Args:
             u_id (str): The ID of the ultrasonic sensor.
             u_value (float): The latest reading from the ultrasonic sensor.
         """
-        index = int(u_id) - 1
         u_value = round(float(u_value), 3)
         if u_value == -0.017:
             u_value = 260.0
         elif u_value == -0.032:
-            u_value = "sensor disconnected"
-        self.u_moving_avg[index].append(u_value)
-        
-        # Calculate the moving average
-        self.u_sonic_data[f'u_{u_id}'] = round(sum(self.u_moving_avg[index]) / len(self.u_moving_avg[index]), 3)
+            self.u_sonic_data[f'u_{u_id}'] = "sensor disconnected"
+            return
 
+        self.u_median_filter[f'u_{u_id}'].append(u_value)
+
+        if len(self.u_median_filter[f'u_{u_id}']) == self.u_median_filter_len:
+            sorted_values = sorted(self.u_median_filter[f'u_{u_id}'])
+            median_value = sorted_values[self.u_median_filter_len // 2]
+            self.u_sonic_data[f'u_{u_id}'] = median_value
+            # Reset the deque
+            self.u_median_filter[f'u_{u_id}'].clear()
     def _manage_u_sonic_data(self, u_id, u_data):
         """
         Manage ultrasonic sensor data.
@@ -161,7 +174,7 @@ class Sensors:
             u_id (str): The ID of the ultrasonic sensor.
             u_data (list): The list containing the data from the ultrasonic sensor.
         """
-        self._moving_avg(u_id, u_data[0])
+        self._median_filter(u_id, u_data)
 
     def _manage_imu_data(self, i_data):
         """
@@ -210,39 +223,39 @@ class Sensors:
         self.heartbeat = True
         pass
 
-    def get_mpu_data(self):
+    def get_ups_data(self):
         """
-        Get the MPU sensor data.
+        Get the UPS sensor data.
         
-        Return a dictionary of the MPU data at time of request and updates the data.
+        Return a dictionary of the UPS data at time of request and updates the data.
         """
-        if not self.mpu:
+        if not self.ups:
             return None
-        bus_voltage = self.mpu.getBusVoltage_V()             # voltage on V- (load side)
-        shunt_voltage = self.mpu.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
-        current = self.mpu.getCurrent_mA()                   # current in mA
-        power = self.mpu.getPower_W()                        # power in W
+        bus_voltage = self.ups.getBusVoltage_V()             # voltage on V- (load side)
+        shunt_voltage = self.ups.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
+        current = self.ups.getCurrent_mA()                   # current in mA
+        power = self.ups.getPower_W()                        # power in W
         p = (bus_voltage - 9)/3.6*100
         if(p > 100):p = 100
         if(p < 0):p = 0
         
         if current < 0:
-            self.mpu_discharging = True
+            self.ups_discharging = True
         else:
-            self.mpu_discharging = False
+            self.ups_discharging = False
         
-        self.mpu_data['bus_voltage'] = bus_voltage
-        self.mpu_data['shunt_voltage'] = shunt_voltage
-        self.mpu_data['current'] = current
-        self.mpu_data['power'] = power
-        self.mpu_data['percent'] = p
-        self.mpu_data['discharging'] = self.mpu_discharging
+        self.ups_data['bus_voltage'] = bus_voltage
+        self.ups_data['shunt_voltage'] = shunt_voltage
+        self.ups_data['current'] = current
+        self.ups_data['power'] = power
+        self.ups_data['percent'] = p
+        self.ups_data['discharging'] = self.ups_discharging
         
-        return self.mpu_data
+        return self.ups_data
 
 # Example usage
-# sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_moving_avg_len=3)
-# sensors2 = Sensors(u_count=6, b_count=6, imu_connected=False, u_moving_avg_len=5)
+# sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_median_filter_len=3)
+# sensors2 = Sensors(u_count=6, b_count=6, imu_connected=False, u_median_filter_len=5)
 
 # # Simulated sensor data
 # sensors1.parse_data("u 1 230.24738")
@@ -252,7 +265,6 @@ class Sensors:
 # sensors1.parse_data("b 3 False")
 # sensors1.parse_data("i 1 0.1 6.5 8.2 20.243 18.3 9.1")
 
-# print(sensors1.u_sonic_data)  # Output will show the moving average
 # print(sensors1.b_switch_data)
 # print(sensors1.imu_data)
 
