@@ -17,8 +17,11 @@ class Sensors:
         self.types["ultrasonic"]["sensor"][id] = HCSR04(trigger, echo)
 
     def create_imu(self, id, sda, scl):
-        i2c = I2C(0, sda=Pin(sda), scl=Pin(scl), freq=400000)
-        self.types["imu"]["sensor"][id] = MPU6050(i2c)
+        try:
+            i2c = I2C(0, sda=Pin(sda), scl=Pin(scl), freq=400000)
+            self.types["imu"]["sensor"][id] = MPU6050(i2c)
+        except Exception as e:
+            print("Could not initialize IMU: ", e)
 
     def create_bumper(self, id, pin):
         self.types["bumper"]["sensor"][id] = Pin(pin, Pin.IN, Pin.PULL_DOWN)

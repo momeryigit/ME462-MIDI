@@ -24,20 +24,23 @@ class DifferentialDriveRobot:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, serial_port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=False, u_moving_avg_len=3):
+    def __init__(self, serial_port, baudrate=115200, timeout=1, ip="192.168.137.28", socket_port=8080, config_file=None, stepper_ids=[1,2], u_ids=[1,2,3,4], b_ids=[1,2,3,4], imu_connected=False, u_median_filter_len=3, default_bumper_behavior = True):
         """
         Initialize the robot with connection parameters and setup communication interfaces.
 
         Args:
-            serial_port (str): Serial port for connecting to the robot.
-            baudrate (int, optional): Baud rate for serial communication. Defaults to 9600.
-            timeout (int, optional): Timeout for communication operations. Defaults to 1.
-            ip (str, optional): IP address for socket communication. Defaults to "192.168.137.28".
-            socket_port (int, optional): Port for socket communication. Defaults to 8080.
-            u_count (int, optional): Number of ultrasonic sensors. Defaults to 4.
-            b_count (int, optional): Number of bump sensors. Defaults to 4.
+            serial_port (str): Serial port on pc or raspberry pi for connecting to the robot.
+            baudrate (int, optional): Baud rate for serial communication. Defaults to 115200.
+            timeout (int, optional): Timeout in seconds for communication operations. Defaults to 1.
+            ip (str, optional): IP address of pico for socket communication. Defaults to "192.168.137.28".
+            socket_port (int, optional): Port for socket communication on pc raspberry pi. Defaults to 8080.
+            stepper_ids ([int], optional): Integer array of stepper motor IDs. Defaults to [1, 2].
+            u_ids ([int], optional): Integer array of ultrasonic sensors. Defaults to [1, 2, 3, 4].
+            b_ids ([int], optional): Integer array of bumper sensors. Defaults to [1, 2, 3, 4].
             imu_connected (bool, optional): Whether IMU is connected. Defaults to False.
-            u_moving_avg_len (int, optional): Length of moving average for ultrasonic sensors. Defaults to 3.
+            u_median_filter_len (int, optional): Length of median filter window. Defaults to 3.
+            default_bumper_behavior (bool, optional): Default behavior of bumper switches coded on pico. Defaults to True.
+                        Change to False if custom behavior is desired. Bumper switches are be polled for data if enabled.
         """
         if self._initialized:
             return
@@ -48,14 +51,21 @@ class DifferentialDriveRobot:
         self.ip = ip
         self.socket_port = socket_port
         self.timeout = timeout
-        self.stepper_ids = stepper_ids
-        self.u_ids = u_ids
-        self.b_ids = b_ids
-        self.imu_connected = imu_connected
-        self.u_moving_avg_len = u_moving_avg_len
+        self.config_file = config_file 
+        self.configs = None
+
+        # If not config file, initialize sensor as provided in the arguments else, read from config file
+        if not config_file:
+            self.stepper_ids = stepper_ids
+            self.u_ids = u_ids
+            self.b_ids = b_ids
+            self.imu_connected = imu_connected
+            self.default_bumper_behavior = default_bumper_behavior
+        else:
+            self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_bumper_behavior = self.read_config_file(config_file)
 
         # Initialize communication and sensor objects
-        self.sensors = Sensors(stepper_ids, u_ids, b_ids, imu_connected, u_moving_avg_len)
+        self.sensors = Sensors(stepper_ids, u_ids, b_ids, imu_connected, u_median_filter_len)
         self.serial_comm = SerialCommunication(serial_port, baudrate, timeout)
         self.socket_comm = SocketCommunication(ip, socket_port)
         
@@ -67,18 +77,43 @@ class DifferentialDriveRobot:
         self._internal_lock = threading.Lock()
         self._initialized = True
 
-        # Robot parameters (should be read only)
+        # Robot parameters
         self._wheel_radius = 0.045  # in meters
         self._wheel_separation = 0.295  # in meters
         self._ticks_per_rev = 600  # Number of ticks per revolution of the motor
 
-        # Current speeds
-        self.left_speed = 0
-        self.right_speed = 0
-        self.angular_speed = 0
+    @property
+    def wheel_radius(self):
+        return self._wheel_radius
 
-        
-        
+    @wheel_radius.setter
+    def wheel_radius(self, value):
+        if value > 0:
+            self._wheel_radius = value
+        else:
+            raise ValueError("Wheel radius must be a positive value")
+
+    @property
+    def wheel_separation(self):
+        return self._wheel_separation
+
+    @wheel_separation.setter
+    def wheel_separation(self, value):
+        if value > 0:
+            self._wheel_separation = value
+        else:
+            raise ValueError("Wheel separation must be a positive value")
+
+    @property
+    def ticks_per_rev(self):
+        return self._ticks_per_rev
+
+    @ticks_per_rev.setter
+    def ticks_per_rev(self, value):
+        if value > 0:
+            self._ticks_per_rev = value
+        else:
+            raise ValueError("Ticks per revolution must be a positive value")
 
     def connect(self, connection_type=None):
         """
@@ -99,9 +134,7 @@ class DifferentialDriveRobot:
                     break
             else:
                 if not self.serial_running:
-                    self._connect_socket()
-        
-        
+                    self._connect_socket()        
 
     def _connect_serial(self):
         """
@@ -166,16 +199,76 @@ class DifferentialDriveRobot:
         while not self.sensors.handshake:
             print('User waiting for handshake...')
             time.sleep(0.5)
-            
-        config = {
-            "sensors": {
-                "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],
-                "bumper_switches": [{"id": i, "enabled": True} for i in self.b_ids],
-                "imu": {"enabled": self.imu_connected}
-            },
-            "stepper_motors": [{"id": i, "enabled": True} for i in self.stepper_ids]
-        }
-        self.send_command(json.dumps(config))
+        if not self.pico_config:
+            config = {
+                "sensors": {
+                    "ultrasonic": [{"id": i, "enabled": True} for i in self.u_ids],
+                    "bumper_switches": [{"id": i, "enabled": True} for i in self.b_ids],
+                    "imu": {"enabled": self.imu_connected}
+                },
+                "stepper_motors": [{"id": i, "enabled": True} for i in self.stepper_ids]
+            }
+            self.send_command(json.dumps(config))
+        else:
+            self.send_command(json.dumps(self.configs))
+    
+    def read_config_file(self, config_file_path):
+        """
+        Read a config.json file and return arrays of enabled sensor IDs.
+
+        Args:
+            config_file_path (str): Path to the config.json file.
+
+        Returns: 
+            ultrasonic_ids (list): List of enabled ultrasonic sensor IDs.
+            bumper_switch_ids (list): List of enabled bumper switch IDs.
+            imu_enabled (bool): Flag indicating whether IMU is enabled.
+            stepper_ids (list): List of enabled stepper motor IDs.
+
+        """
+        try:
+            with open(config_file_path, 'r') as f:
+                config_data = json.load(f)
+                self.configs = config_data
+        except FileNotFoundError:
+            print(f"Error: Config file '{config_file_path}' not found")
+            return None
+        except json.JSONDecodeError:
+            print(f"Error: Unable to parse JSON from config file '{config_file_path}'")
+            return None
+        
+        ultrasonic_ids = []
+        bumper_switch_ids = []
+        imu_enabled = False
+        stepper_ids = []
+        default_bumper_behavior = True
+
+        # Read ultrasonic sensor IDs
+        if "sensors" in config_data and "ultrasonic" in config_data["sensors"]:
+            for sensor in config_data["sensors"]["ultrasonic"]:
+                if sensor.get("enabled", False):
+                    ultrasonic_ids.append(sensor["id"])
+
+        # Read bumper switch IDs
+        if "sensors" in config_data and "bumper_switches" in config_data["sensors"]:
+            for sensor in config_data["sensors"]["bumper_switches"]:
+                if sensor.get("enabled", False):
+                    bumper_switch_ids.append(sensor["id"])
+
+        # Read IMU enabled status
+        if "sensors" in config_data and "imu" in config_data["sensors"]:
+            imu_enabled = config_data["sensors"]["imu"].get("enabled", False)
+
+        # Read stepper motor IDs
+        if "stepper_motors" in config_data:
+            for motor in config_data["stepper_motors"]:
+                if motor.get("enabled", False):
+                    stepper_ids.append(motor["id"])
+
+        # Read enable default bumper behavior flag
+        default_bumper_behavior = config_data.get("enable_default_bumper_behavior", False)
+
+        return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_bumper_behavior
 
     def set_speed(self, left_speed, right_speed):
         """
@@ -190,12 +283,13 @@ class DifferentialDriveRobot:
         self.send_command(command_l)
         self.send_command(command_r)
 
-    def move_forward(self, duration=1, speed=500 ):
+    def move_forward(self, duration=1, speed=500):
         """
         Move the robot forward for a specified duration.
 
         Args:
             duration (float): Duration to move forward in seconds.
+            speed (float, optional): Speed at which to move forward. Defaults to 500.
         """
         self.set_speed(speed, speed)  # Example values, adjust as needed
         time.sleep(duration)
