@@ -27,7 +27,6 @@ def get_configs(comms):
             time.sleep(1)  # Avoid tight loop if there's an issue
     config_file = False
     while not config_file:
-#         print("in config")
         try:
             msg = comms.read_message()
             if msg:
@@ -43,54 +42,18 @@ def get_configs(comms):
 
 def config_pico(msg):
     """
-    Update the config.json file on pico during boot. Called from boot.py
+    Save the received config.json message directly as config.json on the Pico.
     """
-    print("in second config")
     try:
-        # Parse the received JSON data into a Python dictionary
-        received_config = ujson.loads(msg)
-
-        # Read the current config.json file into a string
-        with open('config.json', 'r') as file:
-            current_config_str = file.read()
-
-        # Parse the current_config_str into a Python dictionary
-        current_config = ujson.loads(current_config_str)
-
-        # Update ultrasonic sensors
-        for user_sensor in received_config['sensors']['ultrasonic']:
-            for sensor in current_config['sensors']['ultrasonic']:
-                if sensor['id'] == user_sensor['id']:
-                    sensor['enabled'] = user_sensor['enabled']
-
-        # Update bumper switches
-        for user_sensor in received_config['sensors']['bumper_switches']:
-            for sensor in current_config['sensors']['bumper_switches']:
-                if sensor['id'] == user_sensor['id']:
-                    sensor['enabled'] = user_sensor['enabled']
-
-        # Update imu
-        current_config['sensors']['imu']['enabled'] = received_config['sensors']['imu']['enabled']
-
-        # Update stepper motors
-        for user_motor in received_config['stepper_motors']:
-            for motor in current_config['stepper_motors']:
-                if motor['id'] == user_motor['id']:
-                    motor['enabled'] = user_motor['enabled']
-
-        # Serialize current_config dictionary to JSON format
-        updated_config_str = ujson.dumps(current_config)
-
-        # Write the updated configuration back to config.json
+        # Write the received JSON message directly to config.json
         with open('config.json', 'w') as file:
-            file.write(updated_config_str)
+            file.write(msg)
 
-        print("Updated config.json with received preferences.")
+        print("Received config.json saved as config.json on the Pico.")
 
     except Exception as e:
-        print("Error updating config.json:", e)
+        print("Error saving received config.json:", e)
         
-
 def init_from_json(sensors, steppers):
     """
     Initializes sensors and steppers from a config.json file.
@@ -100,41 +63,45 @@ def init_from_json(sensors, steppers):
     config = ujson.loads(config_str)
 
     # Initialize ultrasonic sensors based on configuration
-    for us_config in config["sensors"]["ultrasonic"]:
-        if us_config["enabled"]:
-            trigger_pin = us_config["trigger_pin"]
-            echo_pin = us_config["echo_pin"]
-            sensors.create_ultrasonic(us_config["id"], trigger_pin, echo_pin)
-            print(f"Ultrasonic sensor {us_config['id']} initialized on trigger pin {us_config['trigger_pin']} and echo pin {us_config['echo_pin']}")
+    if "SENSORS" in config and "ultrasonic" in config["SENSORS"]:
+        sensors.types["ultrasonic"]["poll_rate"] = config["SENSORS"]["ultrasonic"].get("polling_rate", 1)
+        for us_config in config["SENSORS"]["ultrasonic"]["sensors"]:
+            if us_config["enabled"]:
+                trigger_pin = us_config["trigger_pin"]
+                echo_pin = us_config["echo_pin"]
+                sensors.create_ultrasonic(us_config["id"], trigger_pin, echo_pin)
+                print(f"Ultrasonic sensor {us_config['id']} initialized on trigger pin {trigger_pin} and echo pin {echo_pin}")
 
     # Initialize bumper switches based on configuration
-    for bs_config in config["sensors"]["bumper_switches"]:
-        if bs_config["enabled"]:
-            pin = bs_config["pin"]
-            sensors.create_bumper(bs_config["id"], pin)
-            print(f"Bumper switch {bs_config['id']} initialized on pin {bs_config['pin']}")
+    if "SENSORS" in config and "bumper_switches" in config["SENSORS"]:
+        sensors.types["bumper"]["poll_rate"] = config["SENSORS"]["bumper_switches"].get("polling_rate", 1)
+        for bs_config in config["SENSORS"]["bumper_switches"]["sensors"]:
+            if bs_config["enabled"]:
+                pin = bs_config["pin"]
+                sensors.create_bumper(bs_config["id"], pin)
+                print(f"Bumper switch {bs_config['id']} initialized on pin {pin}")
 
     # Initialize IMU sensor based on configuration
-    if config["sensors"]["imu"]["enabled"]:
-        sda_pin = config["sensors"]["imu"]["sda_pin"]
-        scl_pin = config["sensors"]["imu"]["scl_pin"]
-        sensors.create_imu(config["sensors"]["imu"]["id"], sda_pin, scl_pin)
-        print(f"IMU sensor {config['sensors']['imu']['id']} initialized on SDA pin {config['sensors']['imu']['sda_pin']} and SCL pin {config['sensors']['imu']['scl_pin']}")
+    if "SENSORS" in config and "imu" in config["SENSORS"] and config["SENSORS"]["imu"]["enabled"]:
+        sensors.types["imu"]["poll_rate"] = config["SENSORS"]["imu"].get("polling_rate", 10)
+        sda_pin = config["SENSORS"]["imu"]["sda_pin"]
+        scl_pin = config["SENSORS"]["imu"]["scl_pin"]
+        sensors.create_imu(config["SENSORS"]["imu"]["id"], sda_pin, scl_pin)
+        print(f"IMU sensor {config['SENSORS']['imu']['id']} initialized on SDA pin {sda_pin} and SCL pin {scl_pin}")
 
     # Initialize stepper motors based on configuration
-    for motor_config in config["stepper_motors"]:
-        if motor_config["enabled"]:
-            # if if is one, initialize the right motor, else initialize the left motor
-            enable_pin = motor_config["enable_pin"]
-            step_pin = motor_config["step_pin"]
-            dir_pin = motor_config["dir_pin"]
-            led_pin = motor_config["led_pin"]
-            if motor_config["id"] == 1:
+    if "stepper_motors" in config:
+        for motor_config in config["stepper_motors"]:
+            if motor_config["enabled"]:
+                enable_pin = motor_config["enable_pin"]
+                step_pin = motor_config["step_pin"]
+                dir_pin = motor_config["dir_pin"]
+                led_pin = motor_config["led_pin"]
                 steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, led_pin)
-            else:
-                steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, led_pin)
-            print(f"Stepper motor {motor_config['id']} initialized with enable pin {motor_config['enable_pin']}, step pin {motor_config['step_pin']}, dir pin {motor_config['dir_pin']}, led pin {motor_config['led_pin']}")
-
+                print(f"Stepper motor {motor_config['id']} initialized with enable pin {enable_pin}, step pin {step_pin}, dir pin {dir_pin}, led pin {led_pin}")
+                
+    if "default_emergency_behavior" in config:
+        sensors.default_emergency_behavior = config["default_emergency_behavior"]
 # Handle commands received from user
 def command_handler(msg, steppers):
     """
@@ -144,10 +111,9 @@ def command_handler(msg, steppers):
             mystring = ""
             for data in msg:
                 mystring += str(data) + " "
-            print(mystring)
             if msg[0] == "s":
                 if msg[1] == "r":
-                    stepper = steppers.stepper_r
+                        stepper = steppers.stepper_r
                 elif msg[1] == "l":
                     stepper = steppers.stepper_l
                 if stepper:
@@ -169,7 +135,6 @@ def set_imu_flag(sensors):
 
 # Handle emergency situations where bumper switch is pressed or front ultrasonic data is less than 10 cm
 def check_emergency(sensors):
-    global s_r, s_l, sensors_obj
     emergency_ultrasonic = sensors.types["ultrasonic"]["sensor"][1].distance_cm()
     if  emergency_ultrasonic < 10.0:
         return True

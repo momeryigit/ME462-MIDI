@@ -50,15 +50,16 @@ def main():
 
     # Timer-based interrupt to poll ultrasonic sensors if they are initialized
     if sensors.types["ultrasonic"]["sensor"]:
-        timer_for_ultrasonic.init(freq=5, mode=Timer.PERIODIC, callback=lambda t: set_u_sonic_flag(sensors))
+        timer_for_ultrasonic.init(freq=sensors.types["ultrasonic"]["poll_rate"], mode=Timer.PERIODIC, callback=lambda t: set_u_sonic_flag(sensors))
     # Timer-based interrupt to poll IMU sensor if it is initialized
     if sensors.types["imu"]["sensor"]:
-        timer_for_imu.init(freq=5, mode=Timer.PERIODIC, callback=lambda t: set_imu_flag(sensors))
+        timer_for_imu.init(freq=sensors.types["imu"]["poll_rate"], mode=Timer.PERIODIC, callback=lambda t: set_imu_flag(sensors))
 
     while True:
 #         hb.beat()
         sensors.send_sensory_data()
-        check_emergency(sensors)
+        if sensors.default_emergency_behavior:
+            check_emergency(sensors)
         try:
             msg = comm.read_parse()
         except Exception as e:

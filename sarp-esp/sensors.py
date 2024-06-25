@@ -5,13 +5,14 @@ from imu import MPU6050
 class Sensors:
     def __init__(self):
         self.types = {
-            "ultrasonic": {"poll_rate": 100, "sensor": {}},
+            "ultrasonic": {"poll_rate": 5, "sensor": {}},
             "imu": {"poll_rate": 10, "sensor": {}},
             "bumper": {"poll_rate": 1, "sensor": {}},
         }
         self.timers = {}
         self.IMU_flag = False
         self.ultrasonic_flag = False
+        self.default_emergency_behavior = False
 
     def create_ultrasonic(self, id, trigger, echo):
         self.types["ultrasonic"]["sensor"][id] = HCSR04(trigger, echo)
@@ -21,7 +22,7 @@ class Sensors:
             i2c = I2C(0, sda=Pin(sda), scl=Pin(scl), freq=400000)
             self.types["imu"]["sensor"][id] = MPU6050(i2c)
         except Exception as e:
-            print("Could not initialize IMU: ", e)
+            print("Error initializing imu sensor:", e)
 
     def create_bumper(self, id, pin):
         self.types["bumper"]["sensor"][id] = Pin(pin, Pin.IN, Pin.PULL_DOWN)
