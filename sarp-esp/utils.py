@@ -3,35 +3,49 @@ This file contains utility functions for the Pico to handle peripheral_config, c
 """
 import ujson
 import time
-import stepper
-import sensors
-from heartbeat import Heartbeat
-
-s_r = None
-s_l = None
-sensors_obj = None
 
 # Wait to get configuration from connection
 def get_configs(comms):
     """
     Waits for a message from user containing configuration data then calls config_pico
     """
-    for _ in range(5):
+    handshake = False
+    
+    while not handshake:
+        try:
+            msg = comms.read_parse()
+            if msg:
+                if msg[0] == "HANDSHAKE":
+                    print("handshake")
+                    handshake = True
+                    break
+            else:
+                print("Waiting for handshake")
+                time.sleep(1)
+        except Exception as e:
+            print(e)
+            time.sleep(1)  # Avoid tight loop if there's an issue
+    config_file = False
+    while not config_file:
+#         print("in config")
         try:
             msg = comms.read_message()
             if msg:
+                print(msg)
                 config_pico(msg)
                 break
+            else:
+                print("handshake")
         except Exception as e:
-            print("Error retrieving config file:", e)
-            time.sleep(1)  # Avoid tight loop if there's an issue
-    else:
-        print("No configuration file received. Will initialize from current file")
+            
+            print("Error while receiving configurations. Trying again soon:", e)
+            time.sleep(1)
 
 def config_pico(msg):
     """
     Update the config.json file on pico during boot. Called from boot.py
     """
+    print("in second config")
     try:
         # Parse the received JSON data into a Python dictionary
         received_config = ujson.loads(msg)
@@ -75,13 +89,12 @@ def config_pico(msg):
 
     except Exception as e:
         print("Error updating config.json:", e)
+        
 
-def init_from_json():
+def init_from_json(sensors, steppers):
     """
     Initializes sensors and steppers from a config.json file.
     """
-    global sensors_obj, s_r, s_l
-    sensors_obj = sensors.sensors_obj
     with open('config.json', 'r') as file:
         config_str = file.read()
     config = ujson.loads(config_str)
@@ -91,21 +104,21 @@ def init_from_json():
         if us_config["enabled"]:
             trigger_pin = us_config["trigger_pin"]
             echo_pin = us_config["echo_pin"]
-            sensors_obj.create_ultrasonic(us_config["id"], trigger_pin, echo_pin)
+            sensors.create_ultrasonic(us_config["id"], trigger_pin, echo_pin)
             print(f"Ultrasonic sensor {us_config['id']} initialized on trigger pin {us_config['trigger_pin']} and echo pin {us_config['echo_pin']}")
 
     # Initialize bumper switches based on configuration
     for bs_config in config["sensors"]["bumper_switches"]:
         if bs_config["enabled"]:
             pin = bs_config["pin"]
-            sensors_obj.create_bumper(bs_config["id"], pin)
+            sensors.create_bumper(bs_config["id"], pin)
             print(f"Bumper switch {bs_config['id']} initialized on pin {bs_config['pin']}")
 
     # Initialize IMU sensor based on configuration
     if config["sensors"]["imu"]["enabled"]:
         sda_pin = config["sensors"]["imu"]["sda_pin"]
         scl_pin = config["sensors"]["imu"]["scl_pin"]
-        sensors_obj.create_imu(config["sensors"]["imu"]["id"], sda_pin, scl_pin)
+        sensors.create_imu(config["sensors"]["imu"]["id"], sda_pin, scl_pin)
         print(f"IMU sensor {config['sensors']['imu']['id']} initialized on SDA pin {config['sensors']['imu']['sda_pin']} and SCL pin {config['sensors']['imu']['scl_pin']}")
 
     # Initialize stepper motors based on configuration
@@ -117,19 +130,16 @@ def init_from_json():
             dir_pin = motor_config["dir_pin"]
             led_pin = motor_config["led_pin"]
             if motor_config["id"] == 1:
-                stepper.init_stepper_l(enable_pin, step_pin, dir_pin, led_pin)
-                s_l = stepper.stepper_l
+                steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, led_pin)
             else:
-                stepper.init_stepper_r(enable_pin, step_pin, dir_pin, led_pin)
-                s_r = stepper.stepper_r
+                steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, led_pin)
             print(f"Stepper motor {motor_config['id']} initialized with enable pin {motor_config['enable_pin']}, step pin {motor_config['step_pin']}, dir pin {motor_config['dir_pin']}, led pin {motor_config['led_pin']}")
 
 # Handle commands received from user
-def command_handler(msg, hb):
+def command_handler(msg, steppers):
     """
     Handles commands received via serial communication.
     """
-    global s_r, s_l
     if msg is not None:
             mystring = ""
             for data in msg:
@@ -137,9 +147,9 @@ def command_handler(msg, hb):
             print(mystring)
             if msg[0] == "s":
                 if msg[1] == "r":
-                    stepper = s_r
+                    stepper = steppers.stepper_r
                 elif msg[1] == "l":
-                    stepper = s_l
+                    stepper = steppers.stepper_l
                 if stepper:
                     if int(float(msg[2])) == 0:
                         stepper.stop()
@@ -148,20 +158,18 @@ def command_handler(msg, hb):
                     else:
                         stepper.step(stepper.freq)
                         stepper.accelerate(int(float(msg[2])))
-            elif msg[0] == "h":
-                hb.feed()
+#             elif msg[0] == "h":
+#                 hb.feed()
 
-def set_u_sonic_flag():
-    global sensors_obj
-    sensors_obj.ultrasonic_flag = True
+def set_u_sonic_flag(sensors):
+    sensors.ultrasonic_flag = True
 
-def set_imu_flag():
-    global sensors_obj
-    sensors_obj.IMU_flag = True
+def set_imu_flag(sensors):
+    sensors.IMU_flag = True
 
 # Handle emergency situations where bumper switch is pressed or front ultrasonic data is less than 10 cm
-def check_emergency():
+def check_emergency(sensors):
     global s_r, s_l, sensors_obj
-    emergency_ultrasonic = sensors_obj.types["ultrasonic"]["sensor"][1].distance_cm()
+    emergency_ultrasonic = sensors.types["ultrasonic"]["sensor"][1].distance_cm()
     if  emergency_ultrasonic < 10.0:
         return True

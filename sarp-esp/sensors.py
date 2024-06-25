@@ -5,7 +5,7 @@ from imu import MPU6050
 class Sensors:
     def __init__(self):
         self.types = {
-            "ultrasonic": {"poll_rate": 10, "sensor": {}},
+            "ultrasonic": {"poll_rate": 100, "sensor": {}},
             "imu": {"poll_rate": 10, "sensor": {}},
             "bumper": {"poll_rate": 1, "sensor": {}},
         }
@@ -63,8 +63,3 @@ class Sensors:
                 self.poll_imu(id)
             self.IMU_flag = False
     
-sensors_obj = None
-
-def init_sensors():
-    global sensors_obj
-    sensors_obj = Sensors()

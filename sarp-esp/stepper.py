@@ -47,6 +47,7 @@ class Stepper:
 
     # Method to accelerate the stepper motor to a target frequency
     def accelerate(self, target_freq):
+        print("In here")
         if target_freq < self.freq:
             self.decelerate = True
         else:
@@ -60,7 +61,7 @@ class Stepper:
         )
 
     # Callback method to change the frequency of the stepper motor
-    def _change_freq(self):
+    def _change_freq(self, timer):
         if self.freq < self.target_freq and not self.decelerate:
             self.freq += self.step_size
             self.step_pin.freq(abs(self.freq))
@@ -131,13 +132,15 @@ class Stepper:
             self.led_index = led_index
             self.update_leds(self.led_index)
 
-stepper_l = None
-stepper_r = None
+class Steppers(Stepper):
+    def __init__(self):
+        self.stepper_l = None
+        self.stepepr_r = None
 
-def init_stepper_r(en_pin, step_pin, dir_pin, led_pin):
-    global stepper_r
-    stepper_r = Stepper(en_pin, step_pin, dir_pin, led_pin)
+    def add_stepper(self, id, enable_pin, step_pin, dir_pin, led_pin, invert_dir=False, count_pin=None):
+        stepper = Stepper(enable_pin, step_pin, dir_pin, led_pin, invert_dir, count_pin)
+        if int(id) == 1:
+            self.stepper_l = stepper
+        else:
+            self.stepper_r = stepper
 
-def init_stepper_l(en_pin, step_pin, dir_pin, led_pin):
-    global stepper_l
-    stepper_l = Stepper(en_pin, step_pin, dir_pin, led_pin, invert_dir=True)

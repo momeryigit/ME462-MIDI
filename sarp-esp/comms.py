@@ -47,12 +47,3 @@ class SerialComm:
             self.send_message(msg)
         self.toSend = []
 
-# Global instance of comms to be accessed where needed
-serial_comms = None
-
-def init_serial():
-    """
-    Initializes the serial communication.
-    """
-    global serial_comms
-    serial_comms = SerialComm()
