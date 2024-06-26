@@ -7,8 +7,8 @@ setup(
     install_requires=[
         "pyserial",
     ],
-    author="Omar Habib, Sarp Dengizmen",
-    author_email="omar1farouk@gmail.com; e.dengizmen@gmail.com",
+    author="Omar Habib",
+    author_email="omar1farouk@gmail.com",
     description="A Python API for the MIDIbot",
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -1,4 +1,4 @@
-default_config ={
+{
     "SENSORS": {
         "imu": {
             "id": 1,
@@ -33,7 +33,9 @@ default_config ={
             "step_pin": 3,
             "dir_pin": 4,
             "enable_pin": 2,
-            "led_pin": 8
+            "led_pin": 8,
+            "step_size": 50,
+            "acc_timer_period": 10
         },
         {
             "id": 2,
@@ -41,8 +43,14 @@ default_config ={
             "step_pin": 6,
             "dir_pin": 7,
             "enable_pin": 5,
-            "led_pin": 9
+            "led_pin": 9,
+            "step_size": 50,
+            "acc_timer_period": 10
         }
     ],
-    "default_emergency_behavior": False
+    "default_emergency_behavior": False,
+    "heartbeat": {
+        "enabled": False,
+        "timer": 10000
+    }
 }

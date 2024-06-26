@@ -4,7 +4,7 @@ import neopixel
 import math
 
 class Stepper:
-    def __init__(self, enable_pin, step_pin, dir_pin, led_pin, invert_dir=False, count_pin=None):
+    def __init__(self, enable_pin, step_pin, dir_pin, led_pin, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
         # Initialize pins and variables
         self.en_pin = Pin(enable_pin, Pin.OUT)
         self.en_pin.value(0)
@@ -21,39 +21,37 @@ class Stepper:
         self.freq = 0
         self.pos = 0
         self.direction = 0
-        self.step_size = 0
         self.target_freq = 0
         
         #Acceleration Parameters
         self.acc_timer = Timer()
         
-        self.step_size = 50  # Hz
-        self.acc_timer_period = 10  # ms
+        self.acc_step_size = acc_step_size  # Hz
+        self.acc_timer_period = acc_timer_period  # ms
         
         self.tick_timer = None
         self.tick_counter = 0
 
         # Initialize the PIO state machine for step counting
-#         @rp2.asm_pio()
-#         def step_counter():
-#             wrap_target()
-#             wait(1, pin, 0)  # Wait for the pin to go high
-#             wait(0, pin, 0)  # Wait for the pin to go low
-#             irq(rel(0))  # Trigger an interrupt for each complete pulse
-#             wrap()
-# 
-#         self.sm = rp2.StateMachine(step_pin, step_counter, freq=5000, in_base=Pin(step_pin))
-#         self.sm.irq(self._pio_callback)
-#         self.sm.active(1)
-# 
-#     def _pio_callback(self, sm):
-#         if self.dir_pin.value() == 1:
-#             self.pos += 1
-#         else:
-#             self.pos -= 1
-#         if self.pos >= 1200 or self.pos <= -1200:
-#             self.pos = 0
-# #         print("wri", self.pos)
+        @rp2.asm_pio()
+        def step_counter():
+            wrap_target()
+            wait(1, pin, 0)  # Wait for the pin to go high
+            wait(0, pin, 0)  # Wait for the pin to go low
+            irq(rel(0))  # Trigger an interrupt for each complete pulse
+            wrap()
+
+        self.sm = rp2.StateMachine(step_pin, step_counter, freq=5000, in_base=Pin(step_pin))
+        self.sm.irq(self._pio_callback)
+        self.sm.active(1)
+
+    def _pio_callback(self, sm):
+        if self.dir_pin.value() == 1:
+            self.pos += 1
+        else:
+            self.pos -= 1
+        if self.pos >= 1200 or self.pos <= -1200:
+            self.pos = 0
 
     # Method to accelerate the stepper motor to a target frequency
     def accelerate(self, target_freq):
@@ -76,7 +74,7 @@ class Stepper:
         sign = int(tick_count/abs(tick_count))
         tick_count = abs(tick_count)
         
-        acc = self.step_size / (self.acc_timer_period/1000) # Acceleration in ticks/s^2
+        acc = self.acc_step_size / (self.acc_timer_period/1000) # Acceleration in ticks/s^2
         time = time # in s
         
         try:
@@ -99,10 +97,10 @@ class Stepper:
     # Callback method to change the frequency of the stepper motor
     def _change_freq(self, timer):
         if self.freq < self.target_freq and not self.decelerate:
-            self.freq += self.step_size
+            self.freq += self.acc_step_size
             self.step_pin.freq(abs(self.freq))
         elif self.freq > self.target_freq and self.decelerate:
-            self.freq -= self.step_size
+            self.freq -= self.acc_step_size
             self.step_pin.freq(abs(self.freq))
         else:
             # Stop the timer when the target frequency is reached
@@ -148,16 +146,6 @@ class Stepper:
 #         self.sm.active(0)
         self.en_pin.value(0)
         self.acc_timer.deinit()
-        
-
-    # Callback method for step interrupt
-    def _step_callback(self, pin):
-        if self.dir_pin.value() == 1:
-            self.pos += 1
-        else:
-            self.pos -= 1
-        if self.pos >= 1200 or self.pos <= -1200:
-            self.pos = 0
 
     def update_leds(self, led_index):
         # Update the LEDs
@@ -207,10 +195,10 @@ class Stepper:
 class Steppers(Stepper):
     def __init__(self):
         self.stepper_l = None
-        self.stepepr_r = None
+        self.stepper_r = None
 
-    def add_stepper(self, id, enable_pin, step_pin, dir_pin, led_pin, invert_dir=False, count_pin=None):
-        stepper = Stepper(enable_pin, step_pin, dir_pin, led_pin, invert_dir, count_pin)
+    def add_stepper(self, id, enable_pin, step_pin, dir_pin, led_pin, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+        stepper = Stepper(enable_pin, step_pin, dir_pin, led_pin, acc_step_size, acc_timer_period, invert_dir, count_pin)
         if int(id) == 1:
             self.stepper_l = stepper
         else:
