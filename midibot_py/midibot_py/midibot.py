@@ -70,7 +70,7 @@ class DifferentialDriveRobot:
             self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
         # Initialize communication and sensor objects
-        self.sensors = Sensors(self.stepper_ids, self.u_ids, self.b_ids, self.imu_connected, self.u_median_filter_len)
+        self.sensors = Sensors(self.stepper_ids, self.u_ids, self.b_ids, self.imu_connected, u_median_filter_len)
         self.serial_comm = SerialCommunication(serial_port, baudrate, timeout)
         self.socket_comm = SocketCommunication(ip, socket_port)
 
@@ -456,8 +456,22 @@ class DifferentialDriveRobot:
     
     def get_status(self):
         """
-        Request the current status of the robot.
+        Request the current status of the robot. Two steps. Firs it prints connection status 
+        and the sensors enabled. Then it sends a command to the robot to get the status.
+        So it should print a nicely formatted status of the robot connection and connected sensors and steppers
+
         """
+        print("Connection status:")
+        if self.serial_running:
+            print("Serial connection established")
+        if self.socket_running:
+            print("Socket connection established")
+        print("Sensors enabled:")
+        print("Ultrasonic sensors:", self.u_ids)
+        print("Bumper switches:", self.b_ids)
+        print("IMU enabled:", self.imu_connected)
+        print("Stepper motors enabled:", self.stepper_ids)
+        print("Default emergency behavior enabled:", self.default_emergency_behavior)
         self.send_command("GET_STATUS")
     
     def __del__(self):

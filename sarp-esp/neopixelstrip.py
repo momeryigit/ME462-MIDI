@@ -20,7 +20,7 @@ class NeoPixelStrip:
         self.np.write()
 
     def clear(self):
-        self.fill((0, 0, 0))
+        self.fill((0, 0, 0), self.num_pixels - 1)
 
     def show(self):
         self.np.write()
