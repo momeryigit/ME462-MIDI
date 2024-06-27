@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from midibot_py import DifferentialDriveRobot as Robot
+from romer_midibot import DifferentialDriveRobot as Robot
 
 
 class SerialNode(Node):

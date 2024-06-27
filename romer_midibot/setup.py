@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="midibot_py",
+    name="romer_midibot",
     version="0.3.0",
     packages=find_packages(),
     install_requires=[

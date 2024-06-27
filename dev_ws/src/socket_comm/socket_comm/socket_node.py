@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from midibot_py import SocketCommunication as Socket
+from romer_midibot import SocketCommunication as Socket
 
 
 class SocketNode(Node):

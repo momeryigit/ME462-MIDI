@@ -337,7 +337,9 @@ def command_handler(comm, msg, hb, steppers, sensors, neopixels):
             pass
         elif msg[0] == "re-config":
             print("Send 'PAUSE' command before re-configuring the robot.")
-        
+        elif msg[0] == "GET_STATUS": # print  sensors, steppers, neopixels ids connected
+            print("Functionality not implemented yet.")
+            pass
         else:
             print("Invalid command received: ", msg)
 

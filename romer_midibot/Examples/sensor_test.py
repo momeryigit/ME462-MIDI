@@ -1,4 +1,4 @@
-from midibot_py import DifferentialDriveRobot as Robot
+from romer_midibot import DifferentialDriveRobot as Robot
 from time import sleep
 
 # Change the serial port to the one you are using

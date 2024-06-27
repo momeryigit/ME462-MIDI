@@ -6,7 +6,7 @@ import sys
 import time
 import math
 import subprocess
-from midibot_py import DifferentialDriveRobot as Robot
+from romer_midibot import DifferentialDriveRobot as Robot
 
 # Constants
 DESIRED_ARUCO_DICTIONARY = "DICT_5X5_100"

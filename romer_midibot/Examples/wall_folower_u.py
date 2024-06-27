@@ -1,4 +1,4 @@
-from midibot_py import DifferentialDriveRobot as Robot
+from romer_midibot import DifferentialDriveRobot as Robot
 import math
 from time import sleep
 

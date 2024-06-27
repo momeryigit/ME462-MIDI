@@ -16,7 +16,7 @@ setup(
             glob(os.path.join("launch", "*launch.[pxy][yma]*")),
         ),
     ],
-    install_requires=["setuptools", "midibot_py"],
+    install_requires=["setuptools", "romer_midibot"],
     zip_safe=True,
     maintainer="sarpdengizmen",
     maintainer_email="e.dengizmen@gmail.com",
