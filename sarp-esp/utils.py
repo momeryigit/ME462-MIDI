@@ -7,6 +7,7 @@ import time
 from heartbeat import Heartbeat
 from sensors import Sensors
 from stepper import Steppers
+import machine
 
 def get_configs(comms):
     """
@@ -194,7 +195,7 @@ def init_heartbeat_from_json(config):
         hb = None
     return hb
 
-def command_handler(msg, steppers, hb):
+def command_handler(msg, steppers, hb, comm):
     """
     Handles commands received.
 
@@ -213,8 +214,7 @@ def command_handler(msg, steppers, hb):
                         msg[3] holds the duration in seconds.
                         The example message means 'Drive the right stepper 100 ticks in 5 seconds'
             "h":        This is heartbeat response to reset the watch dog timer
-            "config":   This is to receive new configuration data from the user.
-                        It breaks out of the main robot loop and tries to reinitialize from new configs.
+            "re-config":   This commands sets the robot to re-initialize. It waits for handshake and new config file.
     steppers : Steppers
         An instance of the Steppers class.
     hb : Heartbeat
@@ -247,11 +247,10 @@ def command_handler(msg, steppers, hb):
                     stepper.tick(int(float(msg[2])), int(float(msg[3])))
         elif hb and msg[0] == "h":
             hb.feed()
-        elif msg[0] == "config":
-            print("Received new configuration.")
+        elif msg[0] == "re-config":
             steppers.stop_all_steppers()
-            config_pico(msg[1])
-            print("Attempting to reinitialize from new configs ...")
+            print("'re-config' msg received")
+            machine.mem32[0x40058000] = machine.mem32[0x40058000] & ~(1 << 30) # Delete WDT
             raise Exception("Reinitialize")
 
 def check_emergency(sensors):
@@ -271,3 +270,4 @@ def check_emergency(sensors):
         if emergency_ultrasonic < 10.0:
             return True
     return False
+
