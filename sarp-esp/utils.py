@@ -6,10 +6,11 @@ import ujson
 import time
 from heartbeat import Heartbeat
 from sensors import Sensors
+from neopixel import NeoPixelStrips
 from stepper import Steppers
 import machine
 
-def get_configs(comms):
+def get_configs(comm):
     """
     Waits for a message from the user containing configuration data, then calls config_pico.
 
@@ -20,7 +21,7 @@ def get_configs(comms):
     
     while not handshake:
         try:
-            msg = comms.read_parse()
+            msg = comm.read_parse()
             if msg:
                 if msg[0] == "HANDSHAKE":
                     print("Handshake received.")
@@ -36,7 +37,7 @@ def get_configs(comms):
     config_file = False
     while not config_file:
         try:
-            msg = comms.read_message()
+            msg = comm.read_message()
             if msg:
                 print(msg)
                 config_pico(msg)
@@ -142,7 +143,34 @@ def init_sensors_from_config(config):
         sensors = None
     return sensors
 
-def init_steppers_from_json(config):
+def init_neopixels_from_config(config):
+    """
+    Initialize NeoPixel strips based on configuration.
+
+    Parameters:
+    config : dict
+        The configuration data.
+
+    Returns:
+    NeoPixelStrips: An instance of the NeoPixelStrips class after initializing the NeoPixel strips.
+    """
+    if "neopixel_strips" in config:
+        neopixels = NeoPixelStrips()
+        try:
+            for strip_config in config["neopixel_strips"]:
+                if strip_config["enabled"]:
+                    pin = strip_config["pin"]
+                    num_pixels = strip_config["num_pixels"]
+                    neopixels.add_new(strip_config["id"], pin, num_pixels)
+                    print(f"NeoPixel strip {strip_config['id']} initialized with pin {pin} and {num_pixels} pixels")
+        except Exception as e:
+            print("Error initializing NeoPixel strips:", e)
+    else:
+        print("No NeoPixel strips found in config.json")
+        neopixels = None
+    return neopixels
+
+def init_steppers_from_config(config, neopixels):
     """
     Initialize stepper motors based on configuration.
 
@@ -161,11 +189,20 @@ def init_steppers_from_json(config):
                     enable_pin = motor_config["enable_pin"]
                     step_pin = motor_config["step_pin"]
                     dir_pin = motor_config["dir_pin"]
-                    led_pin = motor_config["led_pin"]
+                    np_id = motor_config.get("np_id", None)
+                    if np_id:
+                        try:
+                            np = neopixels.neopixelstrips[np_id]
+                        except KeyError:
+                            print(f"For stepper {motor_config['id']}, no neopixel strip found with id {np_id}")
+                    else:
+                        np = None
+                    np_start = motor_config.get("np_start", 0)
+                    np_end = motor_config.get("np_end", 7)
                     acc_step_size = motor_config.get("acc_step_size", 50)
                     acc_timer_period = motor_config.get("acc_timer_period", 10)
-                    steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, led_pin, acc_step_size, acc_timer_period)
-                    print(f"Stepper motor {motor_config['id']} initialized with enable pin {enable_pin}, step pin {step_pin}, dir pin {dir_pin}, led pin {led_pin}")
+                    steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period)
+                    print(f"Stepper motor {motor_config['id']} initialized with enable pin {enable_pin}, step pin {step_pin}, dir pin {dir_pin}, neo pixel id {np_id}")
         except Exception as e:
             print("Error initializing stepper motors:", e)
     else:
@@ -173,7 +210,7 @@ def init_steppers_from_json(config):
         steppers = None
     return steppers
 
-def init_heartbeat_from_json(config):
+def init_heartbeat_from_config(config):
     """
     Initialize heartbeat based on configuration.
 
@@ -195,11 +232,13 @@ def init_heartbeat_from_json(config):
         hb = None
     return hb
 
-def command_handler(msg, steppers, hb, comm):
+def command_handler(comm, msg, hb, steppers, sensors, neopixels):
     """
     Handles commands received.
 
     Parameters:
+    comm : SerialComm
+        An instance of the SerialComm class.
     msg : list
         The received parsed command message.
         msg[0] : holds the command identifier.
@@ -213,18 +252,45 @@ def command_handler(msg, steppers, hb, comm):
                         msg[2] holds the number of ticks the stepper should move
                         msg[3] holds the duration in seconds.
                         The example message means 'Drive the right stepper 100 ticks in 5 seconds'
+            "np ..." :  The identifier for commands related to the neopixel leds.
+            "np off":   This command turns off all the neopixels.
+            "np fill 100 0 0": This command fills all the neopixels the color (100, 0, 0) RGB.
+            "np set 1 4 0 55 0": This command sets the neopixel of id=1 's 4th index pixel to color (0, 55, 0) RGB.
             "h":        This is heartbeat response to reset the watch dog timer
+            "PAUSE":    This command pauses the robot operation until 'CONTINUE' command is received.
+            "CONTINUE": This command continues the robot operation after a 'PAUSE' command.
+            "EMERGENCY_STOP": This command stops all the steppers immediately.
             "re-config":   This commands sets the robot to re-initialize. It waits for handshake and new config file.
     steppers : Steppers
         An instance of the Steppers class.
     hb : Heartbeat
         An instance of the Heartbeat class.
+    sensors : Sensors
+        An instance of the Sensors class.
+    neopixels : NeoPixelStrips
+        An instance of the NeoPixelStrips class.
     """
     if msg is not None:
-        mystring = ""
-        for data in msg:
-            mystring += str(data) + " "
-        if msg[0] == "s": 
+        if comm.pause_flag:
+            if msg[0] == "CONTINUE":
+                comm.pause_flag = False
+                hb = init_heartbeat_from_config(read_configs())
+                print("Continuing operation.")
+                return
+            elif msg[0] == "re-config":
+                print("'re-config' msg received")
+                comm.pause_flag = False
+                raise Exception("Reinitialize")
+            else:
+                return
+            
+        if msg[0] == "PAUSE":
+            steppers.stop_all_steppers()
+            neopixels.turn_off_all()
+            machine.mem32[0x40058000] = machine.mem32[0x40058000] & ~(1 << 30) # Delete WDT
+            comm.pause_flag = True
+            print("Paused until 'CONTINUE' command is received.")
+        elif msg[0] == "s": 
             if msg[1] == "r":
                 stepper = steppers.stepper_r
             elif msg[1] == "l":
@@ -235,6 +301,7 @@ def command_handler(msg, steppers, hb, comm):
                 else:
                     stepper.step(stepper.freq)
                     stepper.accelerate(int(float(msg[2])))
+
         elif msg[0] == "t": 
             if msg[1] == "r":
                 stepper = steppers.stepper_r
@@ -245,13 +312,34 @@ def command_handler(msg, steppers, hb, comm):
                     stepper.stop()
                 else:
                     stepper.tick(int(float(msg[2])), int(float(msg[3])))
+
+        elif msg[0] == "np":
+            if msg[1] == "off":
+                neopixels.turn_off_all()
+            elif msg[1] == "fill":
+                np_color = (int(msg[2]), int(msg[3]), int(msg[4]))
+                neopixels.fill_all(np_color)
+            elif msg[1] == "set":
+                np_id = int(msg[2])
+                np_pixel  = int(msg[3])
+                np_color = (int(msg[4]), int(msg[5]), int(msg[6]))
+                neopixels.neopixelstrips[np_id].set_pixel(np_pixel, np_color)
+            
+        elif msg[0] == "EMERGENCY_STOP":
+            steppers.emergency_stop_all()
+            neopixels.set_all((35, 0, 0))
+            print("EMERGENCY STOP")
+
         elif hb and msg[0] == "h":
             hb.feed()
+        
+        elif msg[0] == "CONTINUE":
+            pass
         elif msg[0] == "re-config":
-            steppers.stop_all_steppers()
-            print("'re-config' msg received")
-            machine.mem32[0x40058000] = machine.mem32[0x40058000] & ~(1 << 30) # Delete WDT
-            raise Exception("Reinitialize")
+            print("Send 'PAUSE' command before re-configuring the robot.")
+        
+        else:
+            print("Invalid command received: ", msg)
 
 def check_emergency(sensors):
     """

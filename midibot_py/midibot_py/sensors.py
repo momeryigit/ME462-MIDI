@@ -114,25 +114,25 @@ class Sensors:
             <values> could be multiple data.
         """
         parts = data.split()
-        nonsensor = False
-        try:
-            identifier = parts[0]
-            if identifier == "h":
-                self._manage_heartbeat_data()
-                return
-            elif identifier == "handshake":
-                self.handshake = True
-                return
-            elif identifier not in ["u", "i", "b", "sc"]:
+        identifier = parts[0]
+        if identifier == "h":
+            self._manage_heartbeat_data()
+            return
+        elif identifier == "handshake":
+            self.handshake = True
+            return
+        elif identifier not in ["u", "i", "b", "sc"]:
+            print("PICO message:", (" ").join(parts))
+            return
+        else:  
+            try:
+                sensor_id = parts[1]
+                sensor_data = parts[2:]
+            except Exception as e:
+                print("Error parsing sensor data:")
                 print("PICO message:", (" ").join(parts))
                 return
             
-            sensor_id = parts[1]
-            sensor_data = parts[2:]
-        except IndexError:
-            nonsensor = True
-            
-
         if identifier == "u":
             self._manage_u_sonic_data(sensor_id, sensor_data[0])
         elif identifier == "i":
@@ -141,10 +141,6 @@ class Sensors:
             self._manage_b_switch_data(sensor_id, sensor_data[0])
         elif identifier == "sc":
             self._manage_stepper_count(sensor_id, sensor_data)
-        elif nonsensor:
-            print(data)
-        else:
-            print("Unknown identifier: ")
 
     def _median_filter(self, u_id, u_value):
         """
@@ -257,6 +253,12 @@ class Sensors:
         self.ups_data['discharging'] = self.ups_discharging
         
         return self.ups_data
+
+    def delete_instance():
+        """
+        Delete the instance of the class.
+        """
+        Sensors._instance = None
 
 # Example usage
 # sensors1 = Sensors(u_count=4, b_count=4, imu_connected=True, u_median_filter_len=3)

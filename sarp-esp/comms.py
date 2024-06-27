@@ -6,6 +6,7 @@ class SerialComm:
         self.serialPoll = uselect.poll()
         self.serialPoll.register(sys.stdin, uselect.POLLIN)
         self.toSend = []
+        self.pause_flag = False
 
     def read_message(self):
         """

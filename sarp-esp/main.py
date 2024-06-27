@@ -4,7 +4,7 @@ from machine import freq
 import gc
 
 from comms import SerialComm
-from utils import get_configs, read_configs, init_sensors_from_config, init_steppers_from_json, init_heartbeat_from_json, command_handler, check_emergency
+from utils import get_configs, read_configs, init_sensors_from_config, init_neopixels_from_config, init_steppers_from_config, init_heartbeat_from_config, command_handler, check_emergency
 
 # Perform garbage collection
 gc.collect()
@@ -44,8 +44,9 @@ def main():
             config = read_configs()
             # Initialize sensors and stepper motors based on configuration
             sensors = init_sensors_from_config(config)
-            steppers = init_steppers_from_json(config)
-            hb = init_heartbeat_from_json(config)
+            neopixels = init_neopixels_from_config(config)
+            steppers = init_steppers_from_config(config, neopixels)
+            hb = init_heartbeat_from_config(config)
 
             # Start polling timers for all initialized sensors
             sensors.start_polling_timers()
@@ -59,12 +60,13 @@ def main():
                     # Send heartbeat signal
                     hb.beat()
 
-                # Send sensory data if polling flags are set
-                sensors.send_sensory_data()
+                if not comm.pause_flag:
+                    # Send sensory data if polling flags are set
+                    sensors.send_sensory_data()
 
-                if sensors.default_emergency_behavior:
-                    # Check for emergency situations
-                    check_emergency(sensors)
+                    if sensors.default_emergency_behavior:
+                        # Check for emergency situations
+                        check_emergency(sensors)
 
                 try:
                     # Read and parse messages from serial communication
@@ -75,7 +77,7 @@ def main():
                 if msg:
                     # Handle received commands
                     try:
-                        command_handler(msg, steppers, hb, comm)
+                        command_handler(comm, msg, hb, steppers, sensors, neopixels)
                     except Exception as e:
                         if str(e) == "Reinitialize":
                             print("Reinitializing...")

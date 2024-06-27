@@ -4,7 +4,7 @@ import neopixel
 import math
 
 class Stepper:
-    def __init__(self, enable_pin, step_pin, dir_pin, led_pin, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+    def __init__(self, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
         # Initialize pins and variables
         self.en_pin = Pin(enable_pin, Pin.OUT)
         self.en_pin.value(0)
@@ -16,7 +16,9 @@ class Stepper:
         self.dir = 1 if invert_dir else 0
         self.min_freq = 15
         self.max_freq = 4000
-        self.np = neopixel.NeoPixel(Pin(led_pin), 10)
+        self.np = np
+        self.np_start = np_start
+        self.np_end = np_end
         self.led_index = -1
         self.freq = 0
         self.pos = 0
@@ -146,12 +148,19 @@ class Stepper:
 
     def update_leds(self, led_index):
         # Update the LEDs
-        for i in range(10):
+        if not self.np:
+            return
+        for i in range(self.np_length):
             if i <= led_index:
-                self.np[i] = (0, 30, 60)
+                color = (0, 30, 60)
             else:
-                self.np[i] = (0, 0, 0)
-        self.np.write()
+               color = (0, 0, 0)
+        self.np.set_pixel(i, color)
+    
+    # Property for neopixel strip length
+    @property
+    def np_length(self):
+        return self.np_end - self.np_start + 1
 
     # Property for frequency
     @property
@@ -177,8 +186,10 @@ class Stepper:
             self.dir_pin.value(self.dir)
             self.direction = 1
         
+        if not self.np:
+            return
         #LEDS
-        steps = (self.max_freq - self.min_freq) / 10
+        steps = (self.max_freq - self.min_freq) / self.np_length
 
         if self._freq == 0 or ((abs(value) - self.min_freq) / steps) <= 0:
             self.update_leds(-1)  # Turn off all LEDs
@@ -195,8 +206,8 @@ class Steppers(Stepper):
         self.stepper_r = None
         self.other_steppers = {}
 
-    def add_stepper(self, id, enable_pin, step_pin, dir_pin, led_pin, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
-        stepper = Stepper(enable_pin, step_pin, dir_pin, led_pin, acc_step_size, acc_timer_period, invert_dir, count_pin)
+    def add_stepper(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+        stepper = Stepper(enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period, invert_dir, count_pin)
         if int(id) == 1:
             self.stepper_l = stepper
         elif int(id) == 2:
@@ -212,4 +223,13 @@ class Steppers(Stepper):
         if self.other_steppers:
             for stepper in self.other_steppers.values():
                 stepper.stop()
+                
+    def emrgency_stop_all(self):
+        if self.stepper_l:
+            self.stepper_l.emergency_brake()
+        if self.stepper_r:
+            self.stepper_r.emergency_brake()
+        if self.other_steppers:
+            for stepper in self.other_steppers.values():
+                stepper.emergency_brake()
 

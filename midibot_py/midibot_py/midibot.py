@@ -70,7 +70,7 @@ class DifferentialDriveRobot:
             self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
         # Initialize communication and sensor objects
-        self.sensors = Sensors(stepper_ids, u_ids, b_ids, imu_connected, u_median_filter_len)
+        self.sensors = Sensors(self.stepper_ids, self.u_ids, self.b_ids, self.imu_connected, self.u_median_filter_len)
         self.serial_comm = SerialCommunication(serial_port, baudrate, timeout)
         self.socket_comm = SocketCommunication(ip, socket_port)
 
@@ -169,41 +169,6 @@ class DifferentialDriveRobot:
             self.socket_comm.disconnect()
             self.socket_running = False
     
-    def pico_config(self):
-        #Establish handshake and send configuration to Pico
-        self.send_command("HANDSHAKE")
-        
-        while not self.sensors.handshake:
-            print('User waiting for handshake...')
-            time.sleep(0.5)
-
-        if not self.configs:
-            config = default_config
-
-            # Update the configuration based on user input
-            if "SENSORS" in config:
-                if "ultrasonic" in config["SENSORS"]:
-                    for sensor in config["SENSORS"]["ultrasonic"]["sensors"]:
-                        if sensor["id"] in self.u_ids:
-                            sensor["enabled"] = True
-                if "bumper_switches" in config["SENSORS"]:
-                    for sensor in config["SENSORS"]["bumper_switches"]["sensors"]:
-                        if sensor["id"] in self.b_ids:
-                            sensor["enabled"] = True
-                if "imu" in config["SENSORS"]:
-                    config["SENSORS"]["imu"]["enabled"] = self.imu_connected
-
-            if "stepper_motors" in config:
-                for motor in config["stepper_motors"]:
-                    if motor["id"] in self.stepper_ids:
-                        motor["enabled"] = True
-
-            config["default_emergency_behavior"] = self.default_emergency_behavior
-
-            self.send_command(json.dumps(config))
-        else:
-            self.send_command(json.dumps(self.configs))
-    
     def read_config_file(self, config_file):
             """
             Read a config.json file and return arrays of enabled sensor IDs and polling rates.
@@ -264,6 +229,62 @@ class DifferentialDriveRobot:
 
             return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_emergency_behavior
 
+    def pico_config(self):
+        """
+        Configure the Pico with the sensor and motor configuration.
+        """
+
+        #Establish handshake and send configuration to Pico
+        self.send_command("HANDSHAKE")
+        
+        while not self.sensors.handshake:
+            print('User waiting for handshake...')
+            time.sleep(0.5)
+
+        if not self.configs:
+            config = default_config
+
+            # Update the configuration based on user input
+            if "SENSORS" in config:
+                if "ultrasonic" in config["SENSORS"]:
+                    for sensor in config["SENSORS"]["ultrasonic"]["sensors"]:
+                        if sensor["id"] in self.u_ids:
+                            sensor["enabled"] = True
+                if "bumper_switches" in config["SENSORS"]:
+                    for sensor in config["SENSORS"]["bumper_switches"]["sensors"]:
+                        if sensor["id"] in self.b_ids:
+                            sensor["enabled"] = True
+                if "imu" in config["SENSORS"]:
+                    config["SENSORS"]["imu"]["enabled"] = self.imu_connected
+
+            if "stepper_motors" in config:
+                for motor in config["stepper_motors"]:
+                    if motor["id"] in self.stepper_ids:
+                        motor["enabled"] = True
+
+            config["default_emergency_behavior"] = self.default_emergency_behavior
+
+            self.configs = config
+            self.send_command(json.dumps(config))
+        else:
+            self.send_command(json.dumps(self.configs))
+
+    def pico_reconfig(self, config_file):
+        """
+        Reconfigure the Pico with a new configuration file. First a pause command is sent to the Pico to stop all movement and sensor polling.
+        No data will be received from the Pico until a continue command is sent. Then the new configuration file is read and if successful,
+        a the old instance of Sensors is deleted and a new instance is created with the new configuration. Finally, a reconfig command is sent
+        to the Pico to apply the new configuration.
+        """
+        self.send_pause_command()
+        self.config_file = config_file
+        self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
+        self.sensors.delete_instance()
+        self.sensors = Sensors(self.stepper_ids, self.u_ids, self.b_ids, self.imu_connected, self.u_median_filter_len)
+        self.send_reconfig_command()
+        time.sleep(1)
+        self.pico_config()
+        
     def set_data_callback(self, callback):
         """
         Set a callback function to handle incoming data from the robot.
@@ -287,6 +308,27 @@ class DifferentialDriveRobot:
             self.serial_comm.send_command(command)
         if self.socket_running:
             self.socket_comm.send_command(command)
+    
+    def send_pause_command(self):
+        """
+        Send a pause command to the robot. This will pause the robot's movement and sensor polling.
+        Robot will be waiting for a continue command to resume. Previous robot movement commands will not be stored.
+        All commands other than continue will be ignored.
+        """
+        self.send_command("PAUSE")
+    
+    def send_continue_command(self):
+        """
+        Send a continue command to the robot. This will resume the robot's sensor polling.
+        """
+        self.send_command("CONTINUE")
+    
+    def send_reconfig_command(self):
+        """
+        Send a reconfig command to the robot. This will reconfigure the robot with the new configuration file.
+        """
+        self.send_command("re-config")
+
 
     def set_ticks_duration(self, left_ticks, right_ticks, duration_l, duration_r):
         """
@@ -373,19 +415,51 @@ class DifferentialDriveRobot:
         Stop the robot by setting both wheel speeds to zero.
         """
         self.set_speed(0, 0)
+    
+    def emergency_stop(self):
+        """
+        Stop the robot immediately by sending an emergency stop command.
+        """
+        self.send_command("EMERGENCY_STOP")
+    
+    def turn_leds_off(self):
+        """
+        Turn off the LEDs on the robot.
+        """
+        self.send_command("np off")
+    
+    def fill_leds(self, color):
+        """
+        Fill all LEDs with a given color.
+
+        Args:
+            color (tuple): RGB color tuple.
+        """
+        self.send_command(f"np fill {color[0]} {color[1]} {color[2]}")
+
+    def set_led_pixel(self, np_id, pixel_index, color):
+        """
+        Set the color of a single LED pixel.
+
+        Args:
+            np_id (int): ID of the neopixel strip.
+            pixel_index (int): Index of the pixel to set.
+            color (tuple): RGB color tuple. Should be integer in the range [0, 255]
+        """
+        self.send_command(f"np set {np_id} {pixel_index} {color[0]} {color[1]} {color[2]}")
 
     def get_sensor_data(self, sensor_type="u"):
         """
         Get sensor data from the robot. Default is ultrasound sensor data.
         """
         return self.sensors.request_sensor_data(sensor_type)
-
+    
     def get_status(self):
         """
         Request the current status of the robot.
         """
         self.send_command("GET_STATUS")
-
+    
     def __del__(self):
         """
         Destructor to stop the robot and disconnect on deletion.

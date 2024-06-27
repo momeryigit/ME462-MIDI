@@ -32,7 +32,17 @@ class NeoPixelStrip:
         self.np.write()
 
 
-# Example usage
-strip = NeoPixelStrip(pin=8, num_pixels=10)  # Adjust pin number and number of pixels accordingly
-strip.fill((60,0,0), 0)
-
+class NeoPixelStrips(NeoPixelStrip):
+    def __init__(self):
+        self.neopixelstrips = {}
+    
+    def add_new(self, id, pin, num_pixels):
+        self.neopixelstrips[int(id)] = NeoPixelStrip(pin, num_pixels)
+    
+    def fill_all(self, color):
+        for strip in self.neopixelstrips.values():
+            strip.fill(color, strip.num_pixels)
+    def turn_off_all(self):
+        for strip in self.neopixelstrips.values():
+            strip.clear()
+            strip.show()
