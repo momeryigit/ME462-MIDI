@@ -71,10 +71,13 @@ class Sensors:
         # Stepper motor counts
         if stepper_ids:
             self.stepper_count = {}
-            if 1 in stepper_ids:
-                self.stepper_count['S_L'] = 0
-            if 2 in stepper_ids:
-                self.stepper_count['S_R'] = 0
+            for id in stepper_ids:
+                if id == 1:
+                    self.stepper_count['S_L'] = 0
+                elif id == 2:
+                    self.stepper_count['S_R'] = 0
+                else:
+                    self.stepper_count[f"S_{id}"] = 0
                         
         self._initialized = True
         
@@ -214,6 +217,8 @@ class Sensors:
             self.stepper_count['S_L'] = count
         elif stepper_id == '2':
             self.stepper_count['S_R'] = count
+        else:
+            self.stepper_count[f"S_{stepper_id}"] = count
     
     def _manage_heartbeat_data(self):
         """
