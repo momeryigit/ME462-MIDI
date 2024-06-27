@@ -196,11 +196,23 @@ def init_heartbeat_from_json(config):
 
 def command_handler(msg, steppers, hb):
     """
-    Handles commands received via serial communication.
+    Handles commands received.
 
     Parameters:
     msg : list
-        The received command message.
+        The received parsed command message.
+        msg[0] : holds the command identifier.
+        command types:
+            "s l 500" : If the identifier is s, this is to drive the stepper at some frequency.
+                        msg[1] holds the stepper id or predefined left/right stepper.
+                        msg[2] holds the frequency the stepper motors will be driven at
+                        The example message means 'Drive the left stepper at 500 Hz'.
+            "t r 100 5": If message identifier is t, this is to drive the stepper a number of ticks in a given duration
+                        msg[1] holds the stepper id or predefined left/right stepper.
+                        msg[2] holds the number of ticks the stepper should move
+                        msg[3] holds the duration in seconds.
+                        The example message means 'Drive the right stepper 100 ticks in 5 seconds'
+            "h":        This is heartbeat response to reset the watch dog timer
     steppers : Steppers
         An instance of the Steppers class.
     hb : Heartbeat
@@ -210,7 +222,7 @@ def command_handler(msg, steppers, hb):
         mystring = ""
         for data in msg:
             mystring += str(data) + " "
-        if msg[0] == "s":
+        if msg[0] == "s": 
             if msg[1] == "r":
                 stepper = steppers.stepper_r
             elif msg[1] == "l":
@@ -221,7 +233,7 @@ def command_handler(msg, steppers, hb):
                 else:
                     stepper.step(stepper.freq)
                     stepper.accelerate(int(float(msg[2])))
-        elif msg[0] == "t":
+        elif msg[0] == "t": 
             if msg[1] == "r":
                 stepper = steppers.stepper_r
             elif msg[1] == "l":
@@ -237,6 +249,7 @@ def command_handler(msg, steppers, hb):
 def check_emergency(sensors):
     """
     Handle emergency situations where bumper switch is pressed or front ultrasonic data is less than 10 cm.
+    Only called if default emergency behavior is enabled.
 
     Parameters:
     sensors : Sensors
