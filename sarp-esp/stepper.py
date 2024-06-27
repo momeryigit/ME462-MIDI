@@ -203,4 +203,13 @@ class Steppers(Stepper):
             self.stepper_r = stepper
         else:
             self.other_steppers[int(id)] = stepper
+    
+    def stop_all_steppers(self):
+        if self.stepper_l:
+            self.stepper_l.stop()
+        if self.stepper_r:
+            self.stepper_r.stop()
+        if self.other_steppers:
+            for stepper in self.other_steppers.values():
+                stepper.stop()
 
