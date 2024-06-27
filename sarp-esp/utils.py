@@ -213,6 +213,8 @@ def command_handler(msg, steppers, hb):
                         msg[3] holds the duration in seconds.
                         The example message means 'Drive the right stepper 100 ticks in 5 seconds'
             "h":        This is heartbeat response to reset the watch dog timer
+            "config":   This is to receive new configuration data from the user.
+                        It breaks out of the main robot loop and tries to reinitialize from new configs.
     steppers : Steppers
         An instance of the Steppers class.
     hb : Heartbeat
@@ -245,6 +247,12 @@ def command_handler(msg, steppers, hb):
                     stepper.tick(int(float(msg[2])), int(float(msg[3])))
         elif hb and msg[0] == "h":
             hb.feed()
+        elif msg[0] == "config":
+            print("Received new configuration.")
+            steppers.stop_all_steppers()
+            config_pico(msg[1])
+            print("Attempting to reinitialize from new configs ...")
+            raise Exception("Reinitialize")
 
 def check_emergency(sensors):
     """
