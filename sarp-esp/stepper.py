@@ -1,11 +1,11 @@
 from machine import Pin, PWM, Timer
 import rp2
-import neopixel
 import math
 
 class Stepper:
-    def __init__(self, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+    def __init__(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
         # Initialize pins and variables
+        self.id = id
         self.en_pin = Pin(enable_pin, Pin.OUT)
         self.en_pin.value(0)
         self.step_pin = PWM(Pin(step_pin))
@@ -133,6 +133,7 @@ class Stepper:
         self.step_pin.duty_u16(0)
         self.en_pin.value(1)
         self.acc_timer.deinit()
+        print(f"sc {self.id} {self.pos}")
         
     def set_zero(self):
         self.freq = 0
@@ -207,7 +208,7 @@ class Steppers(Stepper):
         self.other_steppers = {}
 
     def add_stepper(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
-        stepper = Stepper(enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period, invert_dir, count_pin)
+        stepper = Stepper(id, enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period, invert_dir, count_pin)
         if int(id) == 1:
             self.stepper_l = stepper
         elif int(id) == 2:

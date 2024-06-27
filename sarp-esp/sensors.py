@@ -1,6 +1,7 @@
 from machine import Pin, Timer, I2C
 from hcsr04 import HCSR04
 from imu import MPU6050
+import utime
 
 class Sensors:
     """
@@ -17,8 +18,11 @@ class Sensors:
             "bumper": {"poll_rate": 1, "sensor": {}},
         }
         self.timers = {}
+        self.bumper_interupt_times = {}
         self.IMU_flag = False
         self.ultrasonic_flag = False
+        self.bumper_flag = False
+
         self.default_emergency_behavior = False
 
     def create_ultrasonic(self, id, trigger, echo):
@@ -56,14 +60,29 @@ class Sensors:
     def create_bumper(self, id, pin):
         """
         Create and initialize a bumper switch.
-
+        Also, when the bumper switch is pressed (with debouncing), the robot will stop and print a message.
         Parameters:
         id : str
             Identifier for the bumper switch.
         pin : int
             GPIO pin number for the bumper switch.
         """
-        self.types["bumper"]["sensor"][id] = Pin(pin, Pin.IN, Pin.PULL_DOWN)
+        bumper_pin = Pin(pin, Pin.IN, Pin.PULL_DOWN)
+        self.types["bumper"]["sensor"][id] = bumper_pin
+        self.bumper_interupt_times[id] = utime.ticks_ms()
+        bumper_pin.irq(trigger=Pin.IRQ_RISING, handler=lambda id: self.bumper_isr(id))
+
+    def bumper_isr(self, id):
+        """
+        Interrupt service routine for the bumper switch. 
+
+        Parameters:
+        id : str
+            Identifier for the bumper switch.
+        """
+        if utime.ticks_diff(utime.ticks_ms(), self.bumper_interupt_times[id]) > 100:
+            print(f"BP {id}")
+            self.bumper_interupt_times[id] = utime.ticks_ms()
 
     def poll_ultrasonic(self, id):
         """
@@ -107,6 +126,12 @@ class Sensors:
         Set the IMU sensor polling flag to True.
         """
         self.IMU_flag = True
+    
+    def set_bumper_flag(self):
+        """
+        Set the bumper switch polling flag to True.
+        """
+        self.bumper_flag = True
 
     def start_polling_timers(self):
         """
@@ -128,6 +153,15 @@ class Sensors:
             self.timers["imu"] = Timer()
             self.timers["imu"].init(
                 freq=self.types["imu"]["poll_rate"], mode=Timer.PERIODIC, callback=lambda t: self.set_imu_flag()
+            )
+        
+        # Start polling for bumper switches
+        if self.types["bumper"]["sensor"]:
+            if "bumper" in self.timers:
+                self.timers["bumper"].deinit()
+            self.timers["bumper"] = Timer()
+            self.timers["bumper"].init(
+                freq=self.types["bumper"]["poll_rate"], mode=Timer.PERIODIC, callback=lambda t: self.set_bumper_flag()
             )
 
     def set_poll_rate(self, sensor_type, poll_rate):

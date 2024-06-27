@@ -70,6 +70,12 @@
             "pin": 9,
             "num_pixels": 10
         }
-    ]
+    ],
+    "robot_parameters": {
+        "microstepping": 0.5,
+        "wheel_radius": 0.045,
+        "wheel_separation": 0.295,
+        "ticks_per_rev_full_step": 0.5
+    }
 }
 

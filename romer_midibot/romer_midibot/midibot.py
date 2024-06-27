@@ -66,6 +66,12 @@ class DifferentialDriveRobot:
             self.b_ids = b_ids
             self.imu_connected = imu_connected
             self.default_emergency_behavior = default_emergency_behavior
+
+            # Default robot parameters. If config file is specified, these will be read from config file
+            self._microstepping = 0.5 # half step
+            self._wheel_radius = 0.045 # meters
+            self._wheel_separation = 0.295 # meters
+            self._ticks_per_rev_full_step = 600 # ticks per revolution at full step
         else:
             self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
@@ -77,44 +83,29 @@ class DifferentialDriveRobot:
         # Initialize internal thread lock
         self._internal_lock = threading.Lock()
         self._initialized = True
-
-        # Robot parameters
-        self._wheel_radius = 0.045  # in meters
-        self._wheel_separation = 0.295  # in meters
-        self._ticks_per_rev = 600  # Number of ticks per revolution of the motor
+    
+    # Robot parameters
+    @property
+    def microstepping(self):
+        return self._microstepping
 
     @property
     def wheel_radius(self):
         return self._wheel_radius
 
-    @wheel_radius.setter
-    def wheel_radius(self, value):
-        if value > 0:
-            self._wheel_radius = value
-        else:
-            raise ValueError("Wheel radius must be a positive value")
-
     @property
     def wheel_separation(self):
         return self._wheel_separation
 
-    @wheel_separation.setter
-    def wheel_separation(self, value):
-        if value > 0:
-            self._wheel_separation = value
-        else:
-            raise ValueError("Wheel separation must be a positive value")
-
     @property
     def ticks_per_rev(self):
-        return self._ticks_per_rev
-
-    @ticks_per_rev.setter
-    def ticks_per_rev(self, value):
-        if value > 0:
-            self._ticks_per_rev = value
-        else:
-            raise ValueError("Ticks per revolution must be a positive value")
+        """
+        Ticks per revolution of the motor at the current microstepping level. 
+        Full step is the default microstepping level. = 600
+        Half step = 600/(1/2) = 1200
+        Quarter step = 600/(1/4) = 2400 and so on
+        """
+        return self._ticks_per_rev_full_step / self._microstepping
 
     def connect(self, connection_type=None):
         """
@@ -201,7 +192,6 @@ class DifferentialDriveRobot:
             stepper_ids = []
             default_emergency_behavior = False
 
-
             # Read ultrasonic sensor IDs
             if "SENSORS" in config_data and "ultrasonic" in config_data["SENSORS"]:
                 for sensor in config_data["SENSORS"]["ultrasonic"]["sensors"]:
@@ -226,6 +216,15 @@ class DifferentialDriveRobot:
 
             # Read enable default bumper behavior flag
             default_emergency_behavior = config_data.get("default_emergency_behavior", False)
+
+            # Read robot parameters
+            if "robot_parameters" in config_data:
+                robot_params = config_data["robot_parameters"]
+                self._microstepping = robot_params.get("microstepping", 0.5)
+                self._wheel_radius = robot_params.get("wheel_radius", 0.045)
+                self._wheel_separation = robot_params.get("wheel_separation", 0.295)
+                self._ticks_per_rev_full_step = robot_params.get("ticks_per_rev_full_step", 600)
+
 
             return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_emergency_behavior
 
@@ -480,3 +479,4 @@ class DifferentialDriveRobot:
         """
         self.stop()
         self.disconnect()
+

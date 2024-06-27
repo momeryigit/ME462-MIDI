@@ -121,6 +121,9 @@ class Sensors:
         elif identifier == "handshake":
             self.handshake = True
             return
+        elif identifier =="BP":
+            self._manage_bumper_press(parts[1])
+            return
         elif identifier not in ["u", "i", "b", "sc"]:
             print("PICO message:", (" ").join(parts))
             return
@@ -141,6 +144,15 @@ class Sensors:
             self._manage_b_switch_data(sensor_id, sensor_data[0])
         elif identifier == "sc":
             self._manage_stepper_count(sensor_id, sensor_data)
+    
+    def _manage_bumper_press(self, b_id):
+        """
+        Manage bumper press data.
+        
+        Args:
+            b_id (str): The ID of the bumper switch.
+        """
+        print(f"Bumper {b_id} pressed")
 
     def _median_filter(self, u_id, u_value):
         """
@@ -165,6 +177,7 @@ class Sensors:
             self.u_sonic_data[f'u_{u_id}'] = median_value
             # Reset the deque
             self.u_median_filter[f'u_{u_id}'].clear()
+
     def _manage_u_sonic_data(self, u_id, u_data):
         """
         Manage ultrasonic sensor data.
@@ -206,7 +219,7 @@ class Sensors:
         
         Args:
             stepper_id (str): The ID of the stepper motor.
-            count_data (list): The list containing the count data from the stepper motor.
+            count_data (list): The list containing the step count data from the stepper motor.
         """
         count = int(count_data[0])
         if stepper_id == '1':
