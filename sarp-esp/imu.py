@@ -35,9 +35,7 @@ class MPU6050(object):
     def __init__(self, side_str, device_addr=None, transposition=(0, 1, 2), scaling=(1, 1, 1)):
 
         self._accel = Vector3d(transposition, scaling, self._accel_callback)
-        self._accel.calibrate(self.stop_func)
         self._gyro = Vector3d(transposition, scaling, self._gyro_callback)
-        self._gyro.calibrate(self.stop_func)
         self.buf1 = bytearray(1)                # Pre-allocated buffers for reads: allows reads to
         self.buf2 = bytearray(2)                # be done in interrupt handlers
         self.buf3 = bytearray(3)
@@ -72,6 +70,9 @@ class MPU6050(object):
         self.passthrough = True                 # Enable mag access from main I2C bus
         self.accel_range = 0                    # default to highest sensitivity
         self.gyro_range = 0                     # Likewise for gyro
+
+        self._accel.calibrate(self.stop_func)
+        self._gyro.calibrate(self.stop_func)
 
     # read from device
     def _read(self, buf, memaddr, addr):        # addr = I2C device address, memaddr = memory location within the I2C device
