@@ -241,7 +241,7 @@ def command_handler(msg, steppers, hb, comm):
             elif msg[1] == "l":
                 stepper = steppers.stepper_l
             if stepper:
-                if int(float(msg[2])) or int(float(msg[3]))== 0:
+                if int(float(msg[2])) == 0 or int(float(msg[3])) == 0:
                     stepper.stop()
                 else:
                     stepper.tick(int(float(msg[2])), int(float(msg[3])))
