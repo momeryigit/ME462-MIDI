@@ -6,7 +6,7 @@ import ujson
 import time
 from heartbeat import Heartbeat
 from sensors import Sensors
-from neopixel import NeoPixelStrips
+from neopixelstrip import NeoPixelStrips
 from stepper import Steppers
 import machine
 
