@@ -218,10 +218,19 @@ def command_handler(msg, steppers, hb):
             if stepper:
                 if int(float(msg[2])) == 0:
                     stepper.stop()
-                    print(stepper.pos)
                 else:
                     stepper.step(stepper.freq)
                     stepper.accelerate(int(float(msg[2])))
+        elif msg[0] == "t":
+            if msg[1] == "r":
+                stepper = steppers.stepper_r
+            elif msg[1] == "l":
+                stepper = steppers.stepper_l
+            if stepper:
+                if int(float(msg[2])) or int(float(msg[3]))== 0:
+                    stepper.stop()
+                else:
+                    stepper.tick(int(float(msg[2])), int(float(msg[3])))
         elif hb and msg[0] == "h":
             hb.feed()
 

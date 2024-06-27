@@ -50,7 +50,7 @@ class Stepper:
             self.pos += 1
         else:
             self.pos -= 1
-        if self.pos >= 1200 or self.pos <= -1200:
+        if self.pos >= 1000000 or self.pos <= -1000000:
             self.pos = 0
 
     # Method to accelerate the stepper motor to a target frequency
@@ -129,7 +129,6 @@ class Stepper:
     def stop(self):
         self.freq = 0
         self.step_pin.duty_u16(0)
-#         self.sm.active(0)
         self.en_pin.value(1)
         self.acc_timer.deinit()
         
@@ -137,13 +136,11 @@ class Stepper:
         self.freq = 0
         self.step_pin.duty_u16(0)
         self.en_pin.value(1)
-#         self.sm.active(0)
         
     # Method to brake the stepper motor (locked)
     def emergency_brake(self):
         self.freq = 0
         self.step_pin.duty_u16(0)
-#         self.sm.active(0)
         self.en_pin.value(0)
         self.acc_timer.deinit()
 

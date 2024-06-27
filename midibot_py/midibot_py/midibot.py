@@ -168,30 +168,6 @@ class DifferentialDriveRobot:
         if self.socket_running:
             self.socket_comm.disconnect()
             self.socket_running = False
-
-    def set_data_callback(self, callback):
-        """
-        Set a callback function to handle incoming data from the robot.
-
-        Args:
-            callback (function): Callback function to handle incoming data.
-        """
-        if self.serial_running:
-            self.serial_comm.set_data_callback(callback)
-        elif self.socket_running:
-            self.socket_comm.set_data_callback(callback)
-
-    def send_command(self, command):
-        """
-        Send a command to the robot using either serial or socket communication.
-
-        Args:
-            command (str): Command to be sent to the robot.
-        """
-        if self.serial_running:
-            self.serial_comm.send_command(command)
-        if self.socket_running:
-            self.socket_comm.send_command(command)
     
     def pico_config(self):
         #Establish handshake and send configuration to Pico
@@ -288,6 +264,45 @@ class DifferentialDriveRobot:
 
             return ultrasonic_ids, bumper_switch_ids, imu_enabled, stepper_ids, default_emergency_behavior
 
+    def set_data_callback(self, callback):
+        """
+        Set a callback function to handle incoming data from the robot.
+
+        Args:
+            callback (function): Callback function to handle incoming data.
+        """
+        if self.serial_running:
+            self.serial_comm.set_data_callback(callback)
+        elif self.socket_running:
+            self.socket_comm.set_data_callback(callback)
+
+    def send_command(self, command):
+        """
+        Send a command to the robot using either serial or socket communication.
+
+        Args:
+            command (str): Command to be sent to the robot.
+        """
+        if self.serial_running:
+            self.serial_comm.send_command(command)
+        if self.socket_running:
+            self.socket_comm.send_command(command)
+
+    def set_ticks_duration(self, left_ticks, right_ticks, duration_l, duration_r):
+        """
+        Set the number of ticks and duration for the left and right wheels of the robot.
+
+        Args:
+            left_ticks (int): Number of ticks for the left wheel.
+            right_ticks (int): Number of ticks for the right wheel.
+            duration_l (float): Duration to reach the left ticks in seconds.
+            duration_r (float): Duration to reach the right ticks in seconds.
+        """
+        command_l = f"t l {left_ticks} {duration_l}"
+        command_r = f"t r {right_ticks} {duration_r}"
+        self.send_command(command_l)
+        self.send_command(command_r)
+    
     def set_speed(self, left_speed, right_speed):
         """
         Set the speed of the left and right wheels of the robot.
@@ -307,9 +322,30 @@ class DifferentialDriveRobot:
 
         Args:
             duration (float): Duration to move forward in seconds.
-            speed (float, optional): Speed at which to move forward. Defaults to 500.
+            speed (int): Speed at which to move forward. Defaults to 500.
+                                minimum = 100 (ideally min=250), maximum = 4000 (ideally max=3600)
         """
-        self.set_speed(speed, speed)  # Example values, adjust as needed
+        self.set_speed(speed, speed)
+        time.sleep(duration)
+        self.stop()
+    
+    def rotate(self, duration=5, speed=600, direction="cw"):
+        """
+        Rotate the robot at a given speed in a give direction for a set duration.
+
+        Args:
+            duration (float): Duration of rotation in seconds. Defaults to 5 s
+            speed (int): Speed of rotation in frequency of wheel rotation. Defaults to 600 Hz
+            direction (string): 'cw' for clockwise roation. 'ccw' for counter-clockwise rotation
+        
+        """
+        if direction.lower() == "cw":
+            self.set_speed(speed, -speed)
+        elif direction.lower() == "ccw":
+            self.set_speed(-speed, speed)
+        else:
+            print("Set direction is incorrect. direction should be 'cw' or 'ccw'.")
+            return
         time.sleep(duration)
         self.stop()
 
