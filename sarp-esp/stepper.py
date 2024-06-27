@@ -193,11 +193,14 @@ class Steppers(Stepper):
     def __init__(self):
         self.stepper_l = None
         self.stepper_r = None
+        self.other_steppers = {}
 
     def add_stepper(self, id, enable_pin, step_pin, dir_pin, led_pin, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
         stepper = Stepper(enable_pin, step_pin, dir_pin, led_pin, acc_step_size, acc_timer_period, invert_dir, count_pin)
         if int(id) == 1:
             self.stepper_l = stepper
-        else:
+        elif int(id) == 2:
             self.stepper_r = stepper
+        else:
+            self.other_steppers[int(id)] = stepper
 
