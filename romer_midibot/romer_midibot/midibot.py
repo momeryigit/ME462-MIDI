@@ -71,8 +71,8 @@ class DifferentialDriveRobot:
             # Default robot parameters. If config file is specified, these will be read from config file
             self._microstepping = 0.5 # half step
             self._wheel_radius = 0.045 # meters
-            self._wheel_separation = 0.295 # meters
-            self._ticks_per_rev_full_step = 600 # ticks per revolution at full step
+            self._wheel_separation = 0.3 # meters
+            self._ticks_per_rev_full_step = 1200 # ticks per revolution at full step
         else:
             self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
@@ -344,14 +344,31 @@ class DifferentialDriveRobot:
         command_r = f"t r {right_ticks} {duration_r}"
         self.send_command(command_l)
         self.send_command(command_r)
+        
+    def set_distance_duration(self, left_distance, right_distance, duration_l, duration_r):
+        """
+        Set the distance for each wheel and the duration to reach the distance.
+        
+        Args:
+            left_distance (float): Distance to travel for the left wheel in meters.
+            right_distance (float): Distance to travel for the right wheel in meters.
+            duration_l (float): Duration to reach the left distance in seconds.
+            duration_r (float): Duration to reach the right distance in seconds.
+        """
+        left_ticks = self.ticks_per_rev * left_distance / (2 * math.pi * self.wheel_radius)
+        
+        right_ticks = self.ticks_per_rev * right_distance / (2 * math.pi * self.wheel_radius)
+        self.set_ticks_duration(int(left_ticks), int(right_ticks), duration_l, duration_r)
+        
+    
     
     def set_speed(self, left_speed, right_speed):
         """
         Set the speed of the left and right wheels of the robot.
 
         Args:
-            left_speed (float): Speed of the left wheel. 
-            right_speed (float): Speed of the right wheel.
+            left_speed (float): Speed of the left wheel in ticks per second.
+            right_speed (float): Speed of the right wheel in ticks per second.
         """
         command_l = f"s l {left_speed}"
         command_r = f"s r {right_speed}"

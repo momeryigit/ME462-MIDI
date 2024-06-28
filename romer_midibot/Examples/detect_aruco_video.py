@@ -90,8 +90,8 @@ def main():
 	aruco_params = cv2.aruco.DetectorParameters_create()
 	cap = setup_camera()
 
-	robot = Robot(port="/dev/ttyACM0")
-	robot.connect("serial")
+	robot = Robot(serial_port="/dev/ttyACM0")
+	robot.connect(connection_type="serial")
 
 	last_command_time = time.time()
 	photos_taken = 0
