@@ -54,7 +54,7 @@
             "invert_dir": true
         }
     ],
-    "default_emergency_behavior": false,
+    "default_emergency_behavior": true,
     "heartbeat": {
         "enabled": false,
         "timer": 10000

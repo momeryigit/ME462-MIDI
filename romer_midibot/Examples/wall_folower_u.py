@@ -71,7 +71,7 @@ class PIDController:
 
 
 # Instantiate robot and PID controller
-robot = Robot("COM7", imu_connected=True)
+robot = Robot("COM6", imu_connected=True)
 pid = PIDController(8, 0.011, 0.02, 50.0, robot)  # Example PID parameters, adjust as needed
 
 try:
@@ -88,7 +88,7 @@ try:
         u_sonic_dict = robot.get_sensor_data("u")
         # Calculate control effort based on distance error
         pid.calculate_control_effort(u_sonic_dict["u_3"])
-        sleep(0.3)
+        sleep(0.5)
 except KeyboardInterrupt:
     # Stop the robot and disconnect on keyboard interrupt
     robot.stop()

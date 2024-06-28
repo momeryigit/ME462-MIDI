@@ -342,6 +342,8 @@ def command_handler(comm, msg, hb, steppers, sensors, neopixels):
         elif msg[0] == "GET_STATUS": # print  sensors, steppers, neopixels ids connected
             print("Functionality not implemented yet.")
             pass
+        elif msg[0] == "HANDSHAKE":
+            print("handshake")
         else:
             print("Invalid command received: ", msg)
 
