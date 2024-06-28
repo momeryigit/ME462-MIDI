@@ -70,19 +70,20 @@ class Sensors:
         bumper_pin = Pin(pin, Pin.IN, Pin.PULL_DOWN)
         self.types["bumper"]["sensor"][id] = bumper_pin
         self.bumper_interupt_times[id] = utime.ticks_ms()
-        bumper_pin.irq(trigger=Pin.IRQ_RISING, handler=lambda id: self.bumper_isr(id))
+        
+        def bumper_isr(Pin):
+            """
+            Interrupt service routine for the bumper switch. 
 
-    def bumper_isr(self, id):
-        """
-        Interrupt service routine for the bumper switch. 
-
-        Parameters:
-        id : str
-            Identifier for the bumper switch.
-        """
-        if utime.ticks_diff(utime.ticks_ms(), self.bumper_interupt_times[id]) > 100:
-            print(f"BP {id}")
-            self.bumper_interupt_times[id] = utime.ticks_ms()
+            Parameters:
+            id : str
+                Identifier for the bumper switch.
+            """
+            if utime.ticks_diff(utime.ticks_ms(), self.bumper_interupt_times[id]) > 100:
+                print(f"BP {id}")
+                self.bumper_interupt_times[id] = utime.ticks_ms()
+        
+        bumper_pin.irq(trigger=Pin.IRQ_RISING, handler=bumper_isr)
 
     def poll_ultrasonic(self, id):
         """
@@ -202,3 +203,9 @@ class Sensors:
             for id in self.types["imu"]["sensor"]:
                 self.poll_imu(id)
             self.IMU_flag = False
+        if self.bumper_flag:
+            # Poll all bumpers
+            for id in self.types["bumper"]["sensor"]:
+                self.poll_bumper(id)
+            self.bumper_flag = False
+

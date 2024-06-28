@@ -24,7 +24,7 @@ def get_configs(comm):
             msg = comm.read_parse()
             if msg:
                 if msg[0] == "HANDSHAKE":
-                    print("Handshake received.")
+                    print("handshake")
                     handshake = True
                     break
             else:
@@ -44,6 +44,7 @@ def get_configs(comm):
                 break
             else:
                 print("Waiting for configuration file.")
+                time.sleep(1)
         except Exception as e:
             print("Error while receiving configurations. Trying again soon:", e)
             time.sleep(1)
@@ -201,7 +202,8 @@ def init_steppers_from_config(config, neopixels):
                     np_end = motor_config.get("np_end", 7)
                     acc_step_size = motor_config.get("acc_step_size", 50)
                     acc_timer_period = motor_config.get("acc_timer_period", 10)
-                    steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period)
+                    invert_dir = motor_config.get("invert_dir", False)
+                    steppers.add_stepper(motor_config["id"], enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period, invert_dir)
                     print(f"Stepper motor {motor_config['id']} initialized with enable pin {enable_pin}, step pin {step_pin}, dir pin {dir_pin}, neo pixel id {np_id}")
         except Exception as e:
             print("Error initializing stepper motors:", e)
@@ -340,6 +342,8 @@ def command_handler(comm, msg, hb, steppers, sensors, neopixels):
         elif msg[0] == "GET_STATUS": # print  sensors, steppers, neopixels ids connected
             print("Functionality not implemented yet.")
             pass
+        elif msg[0] == "HANDSHAKE":
+            print("handshake")
         else:
             print("Invalid command received: ", msg)
 
@@ -360,4 +364,5 @@ def check_emergency(sensors):
         if emergency_ultrasonic < 10.0:
             return True
     return False
+
 
