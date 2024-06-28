@@ -72,7 +72,7 @@ class DifferentialDriveRobot:
             self._microstepping = 0.5 # half step
             self._wheel_radius = 0.045 # meters
             self._wheel_separation = 0.3 # meters
-            self._ticks_per_rev_full_step = 1200 # ticks per revolution at full step
+            self._ticks_per_rev_full_step = 600 # ticks per revolution at full step
         else:
             self.u_ids, self.b_ids, self.imu_connected, self.stepper_ids, self.default_emergency_behavior = self.read_config_file(config_file)
 
