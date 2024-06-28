@@ -29,13 +29,6 @@ else
     echo "'gpu_mem=128' is already set in $config_file."
 fi
 
-# Check and set dtparam=pwr_led_gpio=27, forwarding the power LED to GPIO 27
-if ! grep -q "^dtparam=pwr_led_gpio=27$" "$config_file"; then
-    echo "dtparam=pwr_led_gpio=27" | sudo tee -a "$config_file" > /dev/null
-    echo "Added 'dtparam=pwr_led_gpio=27' to $config_file."
-else
-    echo "'dtparam=pwr_led_gpio=27' is already set in $config_file."
-fi
 
 # Navigate to the directory containing the Dockerfile
 cd ./Docker_files
