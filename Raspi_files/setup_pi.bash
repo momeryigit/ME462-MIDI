@@ -80,7 +80,20 @@ else
     echo "Function 'start_or_exec_container' already exists in .bashrc."
 fi
 
+#Adds the rpicam-hello command to .bashrc allowing for the camera to be initalized on startup.
+if ! grep -q "rpicam-hello" ~/.bashrc; then
+    # If not, append the command to .bashrc
+    echo "rpicam-hello" >> ~/.bashrc
+    echo "Command 'rpicam-hello' added to .bashrc."
+else
+    echo "Command 'rpicam-hello' already exists in .bashrc."
+fi
+
+
 container_name="midi_container"
 # Call the function to ensure the container is running after setup
-sudo docker run -it --user dockerwros --name $container_name --network=host --ipc=host -v $HOME/ME462-MIDI:/home/dockerwros/ME462-MIDI -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged $image_name
+sudo docker run --user dockerwros --name $container_name --network=host --ipc=host -v $HOME/ME462-MIDI:/home/dockerwros/ME462-MIDI -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged $image_name
+
+# Reboot the Raspberry Pi to apply changes
+sudo reboot
 
