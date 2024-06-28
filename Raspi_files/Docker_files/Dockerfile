@@ -46,8 +46,8 @@ RUN apt-get update && \
     libglib2.0-dev \
     libgstreamer-plugins-base1.0-dev \
     swig
-    #swig && \
-    ##rm -rf /var/lib/apt/lists/*
+#swig && \
+##rm -rf /var/lib/apt/lists/*
 
 # Arguments for user creation
 ARG USERNAME=dockerwros
