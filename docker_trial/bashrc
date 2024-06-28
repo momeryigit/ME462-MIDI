@@ -1,8 +1,0 @@
-# Source the ROS setup script
-source /opt/ros/iron/setup.bash
-
-# Source colcon autocomplete
-source /usr/share/colcon_argcomplete/hook/colcon-colcon_argcomplete.bash
-
-# Set permission for I2C devices
-sudo chmod a+rw /dev/i2c-*

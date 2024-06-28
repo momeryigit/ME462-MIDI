@@ -5,6 +5,8 @@
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="e.dengizmen@gmail.com">sarpdengizmen</maintainer>
+  <maintainer email="omar1farouk@gmail.com">Omar Habib</maintainer>
+
   <license>Apache-2.0</license>
 
 
@@ -15,6 +17,7 @@
 
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>rclpy</exec_depend>
+  <exec_depend>romer_midibot</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>

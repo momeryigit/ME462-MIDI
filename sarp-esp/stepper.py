@@ -1,123 +1,231 @@
-import machine
+from machine import Pin, PWM, Timer
+import rp2
 import math
-import time
 
 class Stepper:
-    def __init__(self,step_pin,dir_pin,en_pin=None,steps_per_rev=600,speed_sps=10,invert_dir=False,timer_id=-1):
-        
-        if not isinstance(step_pin, machine.Pin):
-            step_pin=machine.Pin(step_pin,machine.Pin.OUT)
-        if not isinstance(dir_pin, machine.Pin):
-            dir_pin=machine.Pin(dir_pin,machine.Pin.OUT)
-        if (en_pin != None) and (not isinstance(en_pin, machine.Pin)):
-            en_pin=machine.Pin(en_pin,machine.Pin.OUT)
-                 
-        self.step_value_func = step_pin.value
-        self.dir_value_func = dir_pin.value
-        self.en_pin = en_pin
+    def __init__(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=6, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+        # Initialize pins and variables
+        self.id = id
+        self.en_pin = Pin(enable_pin, Pin.OUT)
+        self.en_pin.value(1)
+        self.step_pin = PWM(Pin(step_pin))
+        self.dir_pin = Pin(dir_pin, Pin.OUT)
+        self.count_pin = count_pin
+        self.decelerate = False
         self.invert_dir = invert_dir
-
-        self.timer = machine.Timer()
-        self.timer_is_running=False
-        self.free_run_mode=0
-        self.enabled=True
-        
-        self.target_pos = 0
+        self.dir = 1 if invert_dir else 0
+        self._freq = 0
+        self.min_freq = 15
+        self.max_freq = 4000
+        self.np = np
+        self.np_start = np_start
+        self.np_end = np_end
+        self.np_length = np_end - np_start + 1
+        self.led_index = -1
         self.pos = 0
-        self.steps_per_sec = speed_sps
-        self.steps_per_rev = steps_per_rev
+        self.direction = 0
+        self.target_freq = 0
         
-        self.track_target()
-        
-    def speed(self,sps):
-        self.steps_per_sec = sps
-        if self.timer_is_running:
-            self.track_target()
-    
-    def speed_rps(self,rps):
-        self.speed(rps*self.steps_per_rev)
+        # Acceleration Parameters
+        self.acc_timer = Timer()
+        self.acc_step_size = acc_step_size  # Hz
+        self.acc_timer_period = acc_timer_period  # ms
+        self.tick_timer = None
+        self.tick_counter = 0
 
-    def target(self,t):
-        self.target_pos = t
+        # Initialize the PIO state machine for step counting
+        @rp2.asm_pio()
+        def step_counter():
+            wrap_target()
+            wait(1, pin, 0)  # Wait for the pin to go high
+            wait(0, pin, 0)  # Wait for the pin to go low
+            irq(rel(0))  # Trigger an interrupt for each complete pulse
+            wrap()
 
-    def target_deg(self,deg):
-        self.target(self.steps_per_rev*deg/360.0)
-    
-    def target_rad(self,rad):
-        self.target(self.steps_per_rev*rad/(2.0*math.pi))
-    
-    def get_pos(self):
-        return self.pos
-    
-    def get_pos_deg(self):
-        return self.get_pos()*360.0/self.steps_per_rev
-    
-    def get_pos_rad(self):
-        return self.get_pos()*(2.0*math.pi)/self.steps_per_rev
-    
-    def overwrite_pos(self,p):
-        self.pos = 0
-    
-    def overwrite_pos_deg(self,deg):
-        self.overwrite_pos(deg*self.steps_per_rev/360.0)
-    
-    def overwrite_pos_rad(self,rad):
-        self.overwrite_pos(rad*self.steps_per_rev/(2.0*math.pi))
+        self.sm = rp2.StateMachine(step_pin, step_counter, freq=5000, in_base=Pin(step_pin))
+        self.sm.irq(self._pio_callback)
+        self.sm.active(1)
 
-    def step(self,d):
-        if d>0:
-            if self.enabled:
-                self.dir_value_func(1^self.invert_dir)
-                self.step_value_func(1)
-                self.step_value_func(0)
-            self.pos+=1
-        elif d<0:
-            if self.enabled:
-                self.dir_value_func(0^self.invert_dir)
-                self.step_value_func(1)
-                self.step_value_func(0)
-            self.pos-=1
-
-    def _timer_callback(self,t):
-        if self.free_run_mode>0:
-            self.step(1)
-        elif self.free_run_mode<0:
-            self.step(-1)
-        elif self.target_pos>self.pos:
-            self.step(1)
-        elif self.target_pos<self.pos:
-            self.step(-1)
-    
-    def free_run(self,d):
-        self.free_run_mode=d
-        if self.timer_is_running:
-            self.timer.deinit()
-        if d!=0:
-            self.timer.init(freq=self.steps_per_sec,callback=self._timer_callback)
-            self.timer_is_running=True
+    def _pio_callback(self, sm):
+        if self.dir_pin.value() == 1:
+            self.pos += 1
         else:
-            self.dir_value_func(0)
+            self.pos -= 1
+        if self.pos >= 1000000 or self.pos <= -1000000:
+            self.pos = 0
 
-    def track_target(self):
-        self.free_run_mode=0
-        if self.timer_is_running:
-            self.timer.deinit()
-        self.timer.init(freq=self.steps_per_sec,callback=self._timer_callback)
-        self.timer_is_running=True
+    # Method to accelerate the stepper motor to a target frequency
+    def accelerate(self, target_freq):
+        if target_freq < self.freq:
+            self.decelerate = True
+        else:
+            self.decelerate = False
+        freq_diff = abs(target_freq - self.freq)
+        self.target_freq = target_freq
 
+        # Start the timer
+        self.acc_timer.init(
+            period=self.acc_timer_period, mode=Timer.PERIODIC, callback=self._change_freq
+        )
+
+    def tick(self, tick_count, time):
+        """
+        Goes a certain number of ticks in the specified time period. Calculations result in a frequency input, which the robot accelerates to and decelerates from to achieve tick_count in time period.
+        """
+        sign = int(tick_count / abs(tick_count))
+        tick_count = abs(tick_count)
+        
+        acc = self.acc_step_size / (self.acc_timer_period / 1000)  # Acceleration in ticks/s^2
+        time = time  # in s
+        
+        try:
+            freq_1 = (acc * time + math.sqrt(acc**2 * time**2 - 4 * acc * tick_count)) / 2
+            freq_2 = (acc * time - math.sqrt(acc**2 * time**2 - 4 * acc * tick_count)) / 2
+        except ValueError:
+            print("Invalid input, not possible with current acceleration profile.")
+            return
+        
+        if freq_1 < self.max_freq and 2 * freq_1 / acc <= time:
+            self.tick_timer = Timer()
+            self.tick_timer.init(period=int((time - freq_1 / acc) * 1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
+            self.step(self.freq)
+            self.accelerate(sign * int(freq_1))
+            self.tick_counter = 1
+        elif freq_2 < self.max_freq and 2 * freq_2 / acc <= time:
+            self.tick_timer = Timer()
+            self.tick_timer.init(period=int((time - freq_2 / acc) * 1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
+            self.step(self.freq)
+            self.accelerate(sign * int(freq_2))
+            self.tick_counter = 1
+
+    # Callback method to change the frequency of the stepper motor
+    def _change_freq(self, timer):
+        if self.freq < self.target_freq and not self.decelerate:
+            self.freq += self.acc_step_size
+            self.step_pin.freq(abs(self.freq))
+        elif self.freq > self.target_freq and self.decelerate:
+            self.freq -= self.acc_step_size
+            self.step_pin.freq(abs(self.freq))
+        else:
+            # Stop the timer when the target frequency is reached
+            self.freq = self.target_freq
+            self.step_pin.freq(abs(self.freq))
+            self.acc_timer.deinit()
+                
+            if self.tick_timer and self.tick_counter == 2:
+                self.tick_timer.deinit()
+                self.tick_timer = None
+                self.tick_counter = 0
+                
+            if self.tick_counter == 1:
+                self.tick_counter += 1
+            if self.target_freq == 0:
+                self.set_zero()
+
+    # Method to step the stepper motor at a certain frequency
+    def step(self, freq):
+        self.en_pin.value(0)
+        self.freq = freq
+        self.step_pin.freq(abs(self.freq))
+        self.step_pin.duty_u16(int((30 / 100) * 65_535))
+
+    # Method to stop the stepper motor (free)
     def stop(self):
-        self.free_run_mode=0
-        if self.timer_is_running:
-            self.timer.deinit()
-        self.timer_is_running=False
-        self.dir_value_func(0)
+        self.freq = 0
+        self.step_pin.duty_u16(0)
+        self.en_pin.value(1)
+        self.acc_timer.deinit()
+        print(f"sc {self.id} {self.pos}")
+        
+    def set_zero(self):
+        self.freq = 0
+        self.step_pin.duty_u16(0)
+        self.en_pin.value(1)
+        
+    # Method to brake the stepper motor (locked)
+    def emergency_brake(self):
+        self.freq = 0
+        self.step_pin.duty_u16(0)
+        self.en_pin.value(1)
+        self.acc_timer.deinit()
 
-    def enable(self,e):
-        if self.en_pin:
-            self.en_pin.value(e)
-        self.enabled=e
-        if not e:
-            self.dir_value_func(0)
+    def update_leds(self, led_index):
+        # Update the LEDs
+        if not self.np:
+            return
+        for i in range(self.np_length):
+            if i <= led_index:
+                self.np.set_pixel(i, (0, 30, 60))
+            else:
+                self.np.set_pixel(i, (0, 0, 0))
+                
+    # Property for frequency
+    @property
+    def freq(self):
+        return self._freq
+
+    # Setter for frequency
+    @freq.setter
+    def freq(self, value):
+        if abs(value) > self.max_freq:
+            self._freq = self.max_freq
+        else:
+            self._freq = value
+
+        if abs(self._freq) < self.min_freq:
+            self._freq = -self.min_freq if self.decelerate else self.min_freq
+
+        if self._freq < 0:
+            self.dir_pin.value(1 - self.dir)
+            self.direction = -1
+        else:
+            self.dir_pin.value(self.dir)
+            self.direction = 1
+        
+        if not self.np:
+            return
+        # LEDs
+        steps = (self.max_freq - self.min_freq) // self.np_length
+
+        if self._freq == 0 or ((abs(value) - self.min_freq) / steps) <= 0:
+            self.update_leds(-1)  # Turn off all LEDs
+            return
+
+        led_index = round((abs(self._freq) - self.min_freq) / steps)
+        if self.led_index != led_index:
+            self.led_index = led_index
+            self.update_leds(self.led_index)
+
+class Steppers(Stepper):
+    def __init__(self):
+        self.stepper_l = None
+        self.stepper_r = None
+        self.other_steppers = {}
+
+    def add_stepper(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+        stepper = Stepper(id, enable_pin, step_pin, dir_pin, np, np_start, np_end, acc_step_size, acc_timer_period, invert_dir, count_pin)
+        if int(id) == 1:
+            self.stepper_l = stepper
+        elif int(id) == 2:
+            self.stepper_r = stepper
+        else:
+            self.other_steppers[int(id)] = stepper
     
-    def is_enabled(self):
-        return self.enabled
+    def stop_all_steppers(self):
+        if self.stepper_l:
+            self.stepper_l.stop()
+        if self.stepper_r:
+            self.stepper_r.stop()
+        if self.other_steppers:
+            for stepper in self.other_steppers.values():
+                stepper.stop()
+                
+    def emergency_stop_all(self):
+        if self.stepper_l:
+            self.stepper_l.emergency_brake()
+        if self.stepper_r:
+            self.stepper_r.emergency_brake()
+        if self.other_steppers:
+            for stepper in self.other_steppers.values():
+                stepper.emergency_brake()
+

@@ -1,4 +1,5 @@
 from utime import sleep_ms
+import time
 from machine import I2C
 from vector3d import Vector3d
 
@@ -70,6 +71,9 @@ class MPU6050(object):
         self.accel_range = 0                    # default to highest sensitivity
         self.gyro_range = 0                     # Likewise for gyro
 
+        self._accel.calibrate(self.stop_func)
+        self._gyro.calibrate(self.stop_func)
+
     # read from device
     def _read(self, buf, memaddr, addr):        # addr = I2C device address, memaddr = memory location within the I2C device
         '''
@@ -106,6 +110,12 @@ class MPU6050(object):
         except OSError:
             raise MPUException(self._I2Cerror)
         return 'asleep'
+
+    def stop_func(duration=10):
+        start_time = time.time()
+        def stop():
+            return time.time() - start_time > duration
+        return stop
 
     # chip_id
     @property
