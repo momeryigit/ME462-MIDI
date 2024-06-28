@@ -8,7 +8,7 @@
 # --network=host : use the host network
 #ipc=host : use the host IPC namespace
 # --privileged : give the container full access to the host devices read/write
-# ex: docker run -it --user docker --network=host --ipc=host -v $PWD/../../dev_ws:/home/${USERNAME}/dev_ws -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged my_image
+# ex: docker run -it --user dockerwros --network=host --ipc=host -v $PWD/../../dev_ws:/home/${USERNAME}/dev_ws -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged my_image
 
 # Use the official ROS iron base image
 FROM ros:iron-ros-base
@@ -50,7 +50,7 @@ RUN apt-get update && \
     ##rm -rf /var/lib/apt/lists/*
 
 # Arguments for user creation
-ARG USERNAME=docker
+ARG USERNAME=dockerwros
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
