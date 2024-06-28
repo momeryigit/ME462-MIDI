@@ -35,12 +35,11 @@ cd ./Docker_files
 
 # Add the current user to the Docker group
 sudo usermod -aG docker $USER
-newgrp docker
 
 
 image_name="midi_image"
 # Build the Docker image with the name midi_image
-docker build -t $image_name .
+sudo docker build -t $image_name .
 
 
 # Function to start or run the Docker container based on its status
@@ -81,5 +80,5 @@ else
 fi
 
 # Call the function to ensure the container is running after setup
-docker run -it --user dockerwros --name $container_name --network=host --ipc=host -v $HOME/ME462-MIDI:/home/dockerwros/ME462-MIDI -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged $image_name
+sudo docker run -it --user dockerwros --name $container_name --network=host --ipc=host -v $HOME/ME462-MIDI:/home/dockerwros/ME462-MIDI -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged $image_name
 
