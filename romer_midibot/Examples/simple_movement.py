@@ -39,9 +39,9 @@ try:
     
         blink_leds_n_times(robot, 3, (0, 255, 0))
         # Controlling robot with distance and time
-        robot.set_distance_duration(2,2,10,10) # Make steppers rotate for 2 meters in 10 seconds
+        robot.set_distance_duration(2,2,5,5) # Make steppers rotate for 2 meters in 10 seconds
         sleep(12)
-        robot.set_distance_duration(-2,2,10,10) # Make steppers rotate for 2 meters in 10 seconds  
+        robot.set_distance_duration(-2,-2,5,5) # Make steppers rotate for 2 meters in 10 seconds  
         sleep(12)
         blink_leds_n_times(robot, 3, (0, 255, 0))
         
