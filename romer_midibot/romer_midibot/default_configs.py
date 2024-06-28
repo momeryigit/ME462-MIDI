@@ -1,4 +1,4 @@
-{
+default_config ={
     "SENSORS": {
         "imu": {
             "id": 1,
