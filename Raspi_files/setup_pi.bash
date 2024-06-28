@@ -74,6 +74,7 @@ EOF
 if ! grep -q "start_or_exec_container" ~/.bashrc; then
     # If not, append the function definition to .bashrc
     echo "$function_definition" >> ~/.bashrc
+    echo "start_or_exec_container" >> ~/.bashrc
     echo "Function 'start_or_exec_container' added to .bashrc."
 else
     echo "Function 'start_or_exec_container' already exists in .bashrc."
