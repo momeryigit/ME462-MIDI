@@ -79,6 +79,7 @@ else
     echo "Function 'start_or_exec_container' already exists in .bashrc."
 fi
 
+container_name="midi_container"
 # Call the function to ensure the container is running after setup
 sudo docker run -it --user dockerwros --name $container_name --network=host --ipc=host -v $HOME/ME462-MIDI:/home/dockerwros/ME462-MIDI -v /dev:/dev -v /run/udev:/run/udev -v /run/dbus/:/run/dbus --privileged $image_name
 
