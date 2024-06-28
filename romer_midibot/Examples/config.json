@@ -57,7 +57,7 @@
     "default_emergency_behavior": false,
     "heartbeat": {
         "enabled": false,
-        "timer": 10000
+        "timer": 8000
     },
     "neopixel_strips":[
         {
