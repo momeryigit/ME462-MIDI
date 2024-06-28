@@ -14,26 +14,28 @@ def main():
     Main function to initialize sensors and stepper motors, handle sensor polling, command handling, and emergency checks.
     """
     # Set the CPU frequency to 80 MHz
-    freq(120000000)
+    freq(80000000)
 
     # Disable the heartbeat timer in the beginning Only way to do it on pico is to delete from memory.
     machine.mem32[0x40058000] = machine.mem32[0x40058000] & ~(1 << 30)
 
-    # Initialize serial communication
-    comm = None    
-    for _ in range(3):
-        try:
-            comm = SerialComm()
-            print("Serial connection established")
-            break
-        except Exception as e:
-            print(f"Failed to initialize serial port: {str(e)}")
-            time.sleep(1)
-    else:
-        raise Exception("Failed to initialize serial communication after 3 attempts")
+
 
     while True:
+        gc.collect()
         try:
+            # Initialize serial communication
+            comm = None    
+            for _ in range(3):
+                try:
+                    comm = SerialComm()
+                    print("Serial connection established")
+                    break
+                except Exception as e:
+                    print(f"Failed to initialize serial port: {str(e)}")
+                    time.sleep(1)
+            else:
+                raise Exception("Failed to initialize serial communication after 3 attempts")
             try:
                 # Get configuration data from the user
                 get_configs(comm)
@@ -53,7 +55,7 @@ def main():
             
             # Allow some time for initialization
             time.sleep(1)
-
+                        
             while True:
                 # Main loop of the robot. Only breaks out of the loop if reinitialization is required.
                 if hb:
@@ -84,13 +86,12 @@ def main():
                             break  # Break out of the loop to reinitialize
                         else:
                             print("error: ", e)
-
-                # Perform garbage collection
-                gc.collect()
-
+                
+                time.sleep(0.1)
         except Exception as e:
             print(f"Exception in main loop: {str(e)}")
 
 if __name__ == "__main__":
     main()
+
 

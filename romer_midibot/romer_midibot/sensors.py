@@ -210,8 +210,11 @@ class Sensors:
             b_id (str): The ID of the bumper switch.
             b_data (str): The state of the bumper switch (True/False).
         """
-        b_state = b_data.lower() == 'true'
-        self.b_switch_data[f'b_{b_id}'] = b_state
+        b_state = int(b_data)
+        if b_state == 1:
+            self.b_switch_data[f'b_{b_id}'] = False
+        else:
+            self.b_switch_data[f'b_{b_id}'] = True
     
     def _manage_stepper_count(self, stepper_id, count_data):
         """
@@ -267,7 +270,7 @@ class Sensors:
         
         return self.ups_data
 
-    def delete_instance():
+    def delete_instance(self):
         """
         Delete the instance of the class.
         """

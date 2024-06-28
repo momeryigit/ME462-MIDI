@@ -2,3 +2,7 @@
 .vscode/
 comparer.py
 old_main.py
+romer_midibot/build/
+romer_midibot/dist/
+romer_midibot/romer_midibot/__pycache__/
+romer_midibot/romer_midibot.egg-info/

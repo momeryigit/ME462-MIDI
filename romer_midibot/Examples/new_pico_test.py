@@ -2,7 +2,7 @@ from romer_midibot import DifferentialDriveRobot as Robot
 import time
 
 
-robot = Robot(serial_port= "COM7", imu_connected=False, config_file=r"C:\Users\hp elitebook83\Desktop\ME462-MIDI\romer_midibot\Examples\config.json")
+robot = Robot(serial_port= "COM6", imu_connected=False)
 robot.connect(connection_type="serial")
 
 try:

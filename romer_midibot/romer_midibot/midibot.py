@@ -54,6 +54,7 @@ class DifferentialDriveRobot:
         self.timeout = timeout
         self.config_file = config_file
         self.configs = None
+        self.u_median_filter_len = u_median_filter_len
 
         # Initialize flags for connection states
         self.serial_running = False
@@ -370,7 +371,7 @@ class DifferentialDriveRobot:
         time.sleep(duration)
         self.stop()
     
-    def rotate(self, duration=5, speed=600, direction="cw"):
+    def rotate(self, duration=5, speed=800, direction="cw"):
         """
         Rotate the robot at a given speed in a give direction for a set duration.
 
@@ -398,11 +399,11 @@ class DifferentialDriveRobot:
             linear_speed (float): Desired linear speed in meters per second.
             angular_speed (float): Desired angular speed in radians per second.
         """
-        w_l = (linear_speed - (angular_speed * self._wheel_separation / 2)) / self._wheel_radius
-        w_r = (linear_speed + (angular_speed * self._wheel_separation / 2)) / self._wheel_radius
+        w_l = (linear_speed - (angular_speed * self.wheel_separation / 2)) / self.wheel_radius
+        w_r = (linear_speed + (angular_speed * self.wheel_separation / 2)) / self.wheel_radius
 
-        f_l = w_l / (2 * math.pi) * self._ticks_per_rev
-        f_r = w_r / (2 * math.pi) * self._ticks_per_rev
+        f_l = w_l / (2 * math.pi) * self.ticks_per_rev
+        f_r = w_r / (2 * math.pi) * self.ticks_per_rev
 
         f_l = round(f_l, 3)
         f_r = round(f_r, 3)

@@ -3,34 +3,33 @@ import rp2
 import math
 
 class Stepper:
-    def __init__(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=7, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
+    def __init__(self, id, enable_pin, step_pin, dir_pin, np=None, np_start=0, np_end=6, acc_step_size=50, acc_timer_period=10, invert_dir=False, count_pin=None):
         # Initialize pins and variables
         self.id = id
         self.en_pin = Pin(enable_pin, Pin.OUT)
-        self.en_pin.value(0)
+        self.en_pin.value(1)
         self.step_pin = PWM(Pin(step_pin))
         self.dir_pin = Pin(dir_pin, Pin.OUT)
         self.count_pin = count_pin
         self.decelerate = False
         self.invert_dir = invert_dir
         self.dir = 1 if invert_dir else 0
+        self._freq = 0
         self.min_freq = 15
         self.max_freq = 4000
         self.np = np
         self.np_start = np_start
         self.np_end = np_end
+        self.np_length = np_end - np_start + 1
         self.led_index = -1
-        self.freq = 0
         self.pos = 0
         self.direction = 0
         self.target_freq = 0
         
-        #Acceleration Parameters
+        # Acceleration Parameters
         self.acc_timer = Timer()
-        
         self.acc_step_size = acc_step_size  # Hz
         self.acc_timer_period = acc_timer_period  # ms
-        
         self.tick_timer = None
         self.tick_counter = 0
 
@@ -71,31 +70,34 @@ class Stepper:
 
     def tick(self, tick_count, time):
         """
-        Goes a certain number of ticks in the spesified time period. Calculations result in a frequency input, which the robot accelerates to and decelerates from to achieve tick_count in time period.
+        Goes a certain number of ticks in the specified time period. Calculations result in a frequency input, which the robot accelerates to and decelerates from to achieve tick_count in time period.
         """
-        sign = int(tick_count/abs(tick_count))
+        sign = int(tick_count / abs(tick_count))
         tick_count = abs(tick_count)
         
-        acc = self.acc_step_size / (self.acc_timer_period/1000) # Acceleration in ticks/s^2
-        time = time # in s
+        acc = self.acc_step_size / (self.acc_timer_period / 1000)  # Acceleration in ticks/s^2
+        time = time  # in s
         
         try:
-            freq_1 = (acc*time + math.sqrt(acc**2*time**2 - 4*acc*tick_count))/2
-            freq_2 = (acc*time - math.sqrt(acc**2*time**2 - 4*acc*tick_count))/2
+            freq_1 = (acc * time + math.sqrt(acc**2 * time**2 - 4 * acc * tick_count)) / 2
+            freq_2 = (acc * time - math.sqrt(acc**2 * time**2 - 4 * acc * tick_count)) / 2
         except ValueError:
             print("Invalid input, not possible with current acceleration profile.")
+            return
         
-        if freq_1 < self.max_freq and 2*freq_1/acc <= time:
+        if freq_1 < self.max_freq and 2 * freq_1 / acc <= time:
             self.tick_timer = Timer()
-            self.tick_timer.init(period=int((time - freq_1/acc)*1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
-            self.accelerate(sign*int(freq_1))
+            self.tick_timer.init(period=int((time - freq_1 / acc) * 1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
+            self.step(self.freq)
+            self.accelerate(sign * int(freq_1))
             self.tick_counter = 1
-        elif freq_2 < self.max_freq and 2*freq_2/acc <= time:
+        elif freq_2 < self.max_freq and 2 * freq_2 / acc <= time:
             self.tick_timer = Timer()
-            self.tick_timer.init(period=int((time - freq_2/acc)*1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
-            self.accelerate(sign*int(freq_2))
+            self.tick_timer.init(period=int((time - freq_2 / acc) * 1000), mode=Timer.ONE_SHOT, callback=lambda _: self.accelerate(0))
+            self.step(self.freq)
+            self.accelerate(sign * int(freq_2))
             self.tick_counter = 1
-            
+
     # Callback method to change the frequency of the stepper motor
     def _change_freq(self, timer):
         if self.freq < self.target_freq and not self.decelerate:
@@ -116,7 +118,7 @@ class Stepper:
                 self.tick_counter = 0
                 
             if self.tick_counter == 1:
-                self.tick_counter +=1
+                self.tick_counter += 1
             if self.target_freq == 0:
                 self.set_zero()
 
@@ -144,7 +146,7 @@ class Stepper:
     def emergency_brake(self):
         self.freq = 0
         self.step_pin.duty_u16(0)
-        self.en_pin.value(0)
+        self.en_pin.value(1)
         self.acc_timer.deinit()
 
     def update_leds(self, led_index):
@@ -153,16 +155,10 @@ class Stepper:
             return
         for i in range(self.np_length):
             if i <= led_index:
-                color = (0, 30, 60)
+                self.np.set_pixel(i, (0, 30, 60))
             else:
-               color = (0, 0, 0)
-        self.np.set_pixel(i, color)
-    
-    # Property for neopixel strip length
-    @property
-    def np_length(self):
-        return self.np_end - self.np_start + 1
-
+                self.np.set_pixel(i, (0, 0, 0))
+                
     # Property for frequency
     @property
     def freq(self):
@@ -178,7 +174,6 @@ class Stepper:
 
         if abs(self._freq) < self.min_freq:
             self._freq = -self.min_freq if self.decelerate else self.min_freq
-    
 
         if self._freq < 0:
             self.dir_pin.value(1 - self.dir)
@@ -189,8 +184,8 @@ class Stepper:
         
         if not self.np:
             return
-        #LEDS
-        steps = (self.max_freq - self.min_freq) / self.np_length
+        # LEDs
+        steps = (self.max_freq - self.min_freq) // self.np_length
 
         if self._freq == 0 or ((abs(value) - self.min_freq) / steps) <= 0:
             self.update_leds(-1)  # Turn off all LEDs
@@ -200,7 +195,7 @@ class Stepper:
         if self.led_index != led_index:
             self.led_index = led_index
             self.update_leds(self.led_index)
-            
+
 class Steppers(Stepper):
     def __init__(self):
         self.stepper_l = None
@@ -225,7 +220,7 @@ class Steppers(Stepper):
             for stepper in self.other_steppers.values():
                 stepper.stop()
                 
-    def emrgency_stop_all(self):
+    def emergency_stop_all(self):
         if self.stepper_l:
             self.stepper_l.emergency_brake()
         if self.stepper_r:
