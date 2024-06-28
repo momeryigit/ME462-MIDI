@@ -71,6 +71,15 @@ start_or_exec_container() {
 EOF
 )
 
+#Adds the rpicam-hello command to .bashrc allowing for the camera to be initalized on startup.
+if ! grep -q "rpicam-hello" ~/.bashrc; then
+    # If not, append the command to .bashrc
+    echo "rpicam-hello" >> ~/.bashrc
+    echo "Command 'rpicam-hello' added to .bashrc."
+else
+    echo "Command 'rpicam-hello' already exists in .bashrc."
+fi
+
 if ! grep -q "start_or_exec_container" ~/.bashrc; then
     # If not, append the function definition to .bashrc
     echo "$function_definition" >> ~/.bashrc
@@ -80,14 +89,7 @@ else
     echo "Function 'start_or_exec_container' already exists in .bashrc."
 fi
 
-#Adds the rpicam-hello command to .bashrc allowing for the camera to be initalized on startup.
-if ! grep -q "rpicam-hello" ~/.bashrc; then
-    # If not, append the command to .bashrc
-    echo "rpicam-hello" >> ~/.bashrc
-    echo "Command 'rpicam-hello' added to .bashrc."
-else
-    echo "Command 'rpicam-hello' already exists in .bashrc."
-fi
+
 
 
 container_name="midi_container"
