@@ -35,6 +35,7 @@ class DifferentialDriveRobot:
             timeout (int, optional): Timeout in seconds for communication operations. Defaults to 1.
             ip (str, optional): IP address of pico for socket communication. Defaults to "192.168.137.28".
             socket_port (int, optional): Port for socket communication on pc raspberry pi. Defaults to 8080.
+            config_file (str, optional): Path to the config.json file. Defaults to None.
             stepper_ids ([int], optional): Integer array of stepper motor IDs. Defaults to [1, 2].
             u_ids ([int], optional): Integer array of ultrasonic sensors. Defaults to [1, 2, 3, 4].
             b_ids ([int], optional): Integer array of bumper sensors. Defaults to [1, 2, 3, 4].
