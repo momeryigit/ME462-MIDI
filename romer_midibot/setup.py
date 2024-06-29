@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as file:
 
 setup(
     name="romer-midibot",
-    version="1.1.5",
+    version="1.1.6",
     packages=find_packages(),
     install_requires=[
         "pyserial",

@@ -472,6 +472,12 @@ class DifferentialDriveRobot:
         """
         return self.sensors.request_sensor_data(sensor_type)
     
+    def get_ups_data(self):
+        """
+        Get ups data
+        """
+        return self.sensors.get_ups_data()
+    
     def get_status(self):
         """
         Request the current status of the robot. Two steps. Firs it prints connection status 
