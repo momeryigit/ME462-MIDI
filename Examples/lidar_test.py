@@ -28,8 +28,8 @@ def in_dead_zone(angle):
 
 def get_data():
     r = laser.doProcessSimple(scan)
+    data = {}
     if r:
-        data = {}
         for point in scan.points:
             angle = point.angle
             angle=round((math.degrees(angle) + 360) % 360, 1)
@@ -47,6 +47,8 @@ if ret:
     if ret:
         while True:
             scan = get_data()
+            if scan:
+                print(scan)
             time.sleep(0.1)
     laser.turnOff()
 laser.disconnecting()
