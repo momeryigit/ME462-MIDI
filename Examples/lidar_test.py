@@ -20,6 +20,8 @@ scan = ydlidar.LaserScan()
 
 angular_dead_zones = [(10,22), (110,122), (175,190), (292, 305)]
 
+data = {}
+
 def in_dead_zone(angle):
     # Check angular dead zones
     for start, end in angular_dead_zones:
@@ -27,8 +29,8 @@ def in_dead_zone(angle):
             return True
 
 def get_data():
+    global data
     r = laser.doProcessSimple(scan)
-    data = {}
     if r:
         for point in scan.points:
             angle = point.angle
@@ -39,16 +41,15 @@ def get_data():
             if range == 0:
                 continue
             data[angle] = range
-        return data
+        print("Data", data )
+        data.clear()
+        time.sleep(0.2)
 
 ret = laser.initialize()
 if ret:
     ret = laser.turnOn()
     if ret:
         while True:
-            scan = get_data()
-            if scan:
-                print(scan)
-            time.sleep(0.1)
+            get_data()
     laser.turnOff()
 laser.disconnecting()
