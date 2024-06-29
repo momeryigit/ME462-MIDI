@@ -2,11 +2,8 @@ import ydlidar
 import time
 import math
 
+port = input("Enter the port name: ")
 
-ports = ydlidar.lidarPortList()
-port = "/dev/ydlidar"
-for key, value in ports.items():
-    port = value
     
 laser = ydlidar.CYdLidar()
 laser.setlidaropt(ydlidar.LidarPropSerialPort, port)
