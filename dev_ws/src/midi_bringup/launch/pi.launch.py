@@ -34,7 +34,7 @@ def generate_launch_description():
                 'launch/ydlidar_launch_view.py'
             )
         ]),
-        condition=IfCondition(PythonExpression([lidar, " == 'True'"]))
+        condition=IfCondition(PythonExpression(["'", lidar, "'.lower() == 'true'"]))
     )
     
     ld.add_action(serial_node)
